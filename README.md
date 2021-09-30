@@ -5,6 +5,8 @@ Includes / Will Include :
   - [x] LQR Control of Modules
   - [ ] Localization Pose Estimator
   - [ ] Trajectory Generation / Following
+  - [ ] Maverick
+  - [ ] Venom
 
 ## Localization:
 Will use the WPILib [SwerveDrivePoseEstimator](https://docs.wpilib.org/en/stable/docs/software/advanced-controls/state-space/state-space-pose_state-estimators.html) which implements a Uncented Kalman Filter with latency compensation. <br />
