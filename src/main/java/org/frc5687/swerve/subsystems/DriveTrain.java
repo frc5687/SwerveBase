@@ -2,6 +2,7 @@
 package org.frc5687.swerve.subsystems;
 
 import static org.frc5687.swerve.Constants.DriveTrain.*;
+import static org.frc5687.swerve.Constants.DifferentialSwerveModule.*;
 import static org.frc5687.swerve.RobotMap.CAN.TALONFX.*;
 
 import com.kauailabs.navx.frc.AHRS;
@@ -198,7 +199,7 @@ public class DriveTrain extends OutliersSubsystem {
                                     ? ChassisSpeeds.fromFieldRelativeSpeeds(
                                             vx, vy, omega, getHeading())
                                     : new ChassisSpeeds(vx, vy, omega));
-            SwerveDriveKinematics.normalizeWheelSpeeds(swerveModuleStates, MAX_MPS);
+            SwerveDriveKinematics.normalizeWheelSpeeds(swerveModuleStates, MAX_MODULE_SPEED_MPS);
             setFrontLeftModuleState(swerveModuleStates[0]);
             setFrontRightModuleState(swerveModuleStates[1]);
             setBackLeftModuleState(swerveModuleStates[2]);
@@ -214,7 +215,7 @@ public class DriveTrain extends OutliersSubsystem {
                                     _angleController.calculate(
                                             getHeading().getRadians(), _PIDAngle),
                                     new Rotation2d(_PIDAngle)));
-            SwerveDriveKinematics.normalizeWheelSpeeds(swerveModuleStates, MAX_MPS);
+            SwerveDriveKinematics.normalizeWheelSpeeds(swerveModuleStates, MAX_MODULE_SPEED_MPS);
             setFrontLeftModuleState(swerveModuleStates[0]);
             setFrontRightModuleState(swerveModuleStates[1]);
             setBackLeftModuleState(swerveModuleStates[2]);

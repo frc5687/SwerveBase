@@ -57,7 +57,8 @@ public class Constants {
         public static final double GEAR_RATIO_WHEEL = 6.46875;
         public static final double GEAR_RATIO_STEER = 9.2;
         public static final double FALCON_RATE = 600.0;
-        public static final double WHEEL_RADIUS = 0.0429; // Meters with compression.
+        public static final double WHEEL_RADIUS = 0.0508; // Meters with compression.
+        public static final double MAX_MODULE_SPEED_MPS = (FALCON_FREE_SPEED / GEAR_RATIO_WHEEL) * WHEEL_RADIUS;
         public static final double TICKS_TO_ROTATIONS = 2048.0;
         public static final double VOLTAGE = 12.0;
         public static final double FEED_FORWARD = VOLTAGE / (FALCON_FREE_SPEED / GEAR_RATIO_WHEEL);
