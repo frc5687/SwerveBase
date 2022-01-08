@@ -1,32 +1,30 @@
-/* (C)5687-2021 */
+/* Team 5687 (C)5687-2022 */
 package org.frc5687.swerve.subsystems;
 
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import edu.wpi.first.math.*;
+import edu.wpi.first.math.controller.LinearQuadraticRegulator;
+import edu.wpi.first.math.estimator.KalmanFilter;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.*;
+import edu.wpi.first.math.system.LinearSystem;
+import edu.wpi.first.math.system.LinearSystemLoop;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import edu.wpi.first.wpilibj.controller.LinearQuadraticRegulator;
-import edu.wpi.first.wpilibj.estimator.KalmanFilter;
-import edu.wpi.first.wpilibj.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.geometry.Translation2d;
-import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.system.LinearSystem;
-import edu.wpi.first.wpilibj.system.LinearSystemLoop;
-import edu.wpi.first.wpilibj.system.plant.DCMotor;
-import edu.wpi.first.wpilibj.util.Units;
-import edu.wpi.first.wpiutil.math.*;
-import edu.wpi.first.wpiutil.math.numbers.*;
 import org.frc5687.swerve.Constants;
 import org.frc5687.swerve.util.Helpers;
 
 /**
  * Created 10/11/2020 by Dennis Slobodzian.
  *
- * Wrapper class for a differential swerve module using
- * LQR as the controller for azimuth angle and wheel velocity of the module.
- *
- * */
-
+ * <p>Wrapper class for a differential swerve module using LQR as the controller for azimuth angle
+ * and wheel velocity of the module.
+ */
 public class DiffSwerveModule {
     private final TalonFX _rightFalcon;
     private final TalonFX _leftFalcon;
@@ -273,9 +271,9 @@ public class DiffSwerveModule {
 
     public double getWheelAngularVelocity() {
         return Units.rotationsPerMinuteToRadiansPerSecond(
-                getLeftFalconRPM() / Constants.DifferentialSwerveModule.GEAR_RATIO_WHEEL
-                        - getRightFalconRPM()
-                        / Constants.DifferentialSwerveModule.GEAR_RATIO_WHEEL)
+                        getLeftFalconRPM() / Constants.DifferentialSwerveModule.GEAR_RATIO_WHEEL
+                                - getRightFalconRPM()
+                                        / Constants.DifferentialSwerveModule.GEAR_RATIO_WHEEL)
                 / 2.0;
     }
 
@@ -290,9 +288,9 @@ public class DiffSwerveModule {
 
     public double getAzimuthAngularVelocity() {
         return Units.rotationsPerMinuteToRadiansPerSecond(
-                getLeftFalconRPM() / Constants.DifferentialSwerveModule.GEAR_RATIO_STEER
-                        + getRightFalconRPM()
-                        / Constants.DifferentialSwerveModule.GEAR_RATIO_STEER)
+                        getLeftFalconRPM() / Constants.DifferentialSwerveModule.GEAR_RATIO_STEER
+                                + getRightFalconRPM()
+                                        / Constants.DifferentialSwerveModule.GEAR_RATIO_STEER)
                 / 2.0;
     }
 

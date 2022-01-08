@@ -1,24 +1,24 @@
-/* Team 5687 (C)2020-2021 */
+/* Team 5687 (C)2020-2022 */
 package org.frc5687.swerve.subsystems;
 
-import static org.frc5687.swerve.Constants.DriveTrain.*;
 import static org.frc5687.swerve.Constants.DifferentialSwerveModule.*;
+import static org.frc5687.swerve.Constants.DriveTrain.*;
 import static org.frc5687.swerve.RobotMap.CAN.TALONFX.*;
 
 import com.kauailabs.navx.frc.AHRS;
-import edu.wpi.first.wpilibj.controller.HolonomicDriveController;
-import edu.wpi.first.wpilibj.controller.PIDController;
-import edu.wpi.first.wpilibj.controller.ProfiledPIDController;
-import edu.wpi.first.wpilibj.geometry.Pose2d;
-import edu.wpi.first.wpilibj.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.wpilibj.kinematics.SwerveDriveOdometry;
-import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.trajectory.Trajectory;
-import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
-import edu.wpi.first.wpilibj.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.trajectory.constraint.SwerveDriveKinematicsConstraint;
+import edu.wpi.first.math.controller.HolonomicDriveController;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.constraint.SwerveDriveKinematicsConstraint;
 import org.frc5687.swerve.OI;
 import org.frc5687.swerve.RobotMap;
 import org.frc5687.swerve.util.OutliersContainer;
@@ -131,7 +131,6 @@ public class DriveTrain extends OutliersSubsystem {
         metric("FL/Encoder Angle", _frontLeft.getModuleAngle());
         metric("FR/Encoder Angle", _frontRight.getModuleAngle());
 
-
         metric("BR/Predicted Angle", _backRight.getPredictedAzimuthAngle());
 
         metric("BR/Encoder Azimuth Vel", _backRight.getAzimuthAngularVelocity());
@@ -199,7 +198,7 @@ public class DriveTrain extends OutliersSubsystem {
                                     ? ChassisSpeeds.fromFieldRelativeSpeeds(
                                             vx, vy, omega, getHeading())
                                     : new ChassisSpeeds(vx, vy, omega));
-            SwerveDriveKinematics.normalizeWheelSpeeds(swerveModuleStates, MAX_MODULE_SPEED_MPS);
+            SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, MAX_MODULE_SPEED_MPS);
             setFrontLeftModuleState(swerveModuleStates[0]);
             setFrontRightModuleState(swerveModuleStates[1]);
             setBackLeftModuleState(swerveModuleStates[2]);
@@ -215,7 +214,7 @@ public class DriveTrain extends OutliersSubsystem {
                                     _angleController.calculate(
                                             getHeading().getRadians(), _PIDAngle),
                                     new Rotation2d(_PIDAngle)));
-            SwerveDriveKinematics.normalizeWheelSpeeds(swerveModuleStates, MAX_MODULE_SPEED_MPS);
+            SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, MAX_MODULE_SPEED_MPS);
             setFrontLeftModuleState(swerveModuleStates[0]);
             setFrontRightModuleState(swerveModuleStates[1]);
             setBackLeftModuleState(swerveModuleStates[2]);
@@ -237,7 +236,7 @@ public class DriveTrain extends OutliersSubsystem {
         ChassisSpeeds adjustedSpeeds =
                 _controller.calculate(_odomerty.getPoseMeters(), goal, heading);
         SwerveModuleState[] moduleStates = _kinematics.toSwerveModuleStates(adjustedSpeeds);
-        SwerveDriveKinematics.normalizeWheelSpeeds(moduleStates, MAX_MPS);
+        SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, MAX_MODULE_SPEED_MPS);
         setFrontLeftModuleState(moduleStates[0]);
         setFrontRightModuleState(moduleStates[1]);
         setBackLeftModuleState(moduleStates[2]);

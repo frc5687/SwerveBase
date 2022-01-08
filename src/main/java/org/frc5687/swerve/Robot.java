@@ -1,4 +1,4 @@
-/* Team 5687 (C)2020-2021 */
+/* Team 5687 (C)2020-2022 */
 package org.frc5687.swerve;
 
 import edu.wpi.first.wpilibj.*;
@@ -46,7 +46,7 @@ public class Robot extends OutliersRobot implements ILoggingSource {
         loadConfigFromUSB();
         RioLogger.getInstance().init(_fileLogLevel, _dsLogLevel);
         LiveWindow.disableAllTelemetry();
-        DriverStation.getInstance().silenceJoystickConnectionWarning(true);
+        DriverStation.silenceJoystickConnectionWarning(true);
 
         metric("Identity", _identityMode.toString());
         info("Robot " + _name + " running in " + _identityMode.toString() + " mode");
@@ -85,7 +85,7 @@ public class Robot extends OutliersRobot implements ILoggingSource {
      */
     @Override
     public void autonomousInit() {
-        _fmsConnected = DriverStation.getInstance().isFMSAttached();
+        _fmsConnected = DriverStation.isFMSAttached();
         _robotContainer.autonomousInit();
         if (_autoCommand != null) {
             _autoCommand.schedule();
@@ -93,7 +93,7 @@ public class Robot extends OutliersRobot implements ILoggingSource {
     }
 
     public void teleopInit() {
-        _fmsConnected = DriverStation.getInstance().isFMSAttached();
+        _fmsConnected = DriverStation.isFMSAttached();
         _robotContainer.teleopInit();
 
         // _limelight.disableLEDs();

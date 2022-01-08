@@ -1,9 +1,8 @@
-/* Team 5687 (C)2020-2021 */
+/* Team 5687 (C)2020-2022 */
 package org.frc5687.swerve;
 
-import edu.wpi.first.wpilibj.geometry.Translation2d;
-import edu.wpi.first.wpilibj.util.Units;
-import edu.wpi.first.wpiutil.math.numbers.*;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 
 public class Constants {
     public static final int TICKS_PER_UPDATE = 1;
@@ -32,7 +31,8 @@ public class Constants {
 
         public static final double MAX_MPS = 3.5; // Max speed of robot (m/s) .
 
-        public static final double MAX_ANG_VEL = Math.PI * 2.0; // Max rotation rate of robot (rads/s)
+        public static final double MAX_ANG_VEL =
+                Math.PI * 2.0; // Max rotation rate of robot (rads/s)
         public static final double MAX_MPSS = 0.5; // Max acceleration of robot (m/s^2)
 
         public static final double ANGLE_kP = 3.5;
@@ -58,7 +58,8 @@ public class Constants {
         public static final double GEAR_RATIO_STEER = 9.2;
         public static final double FALCON_RATE = 600.0;
         public static final double WHEEL_RADIUS = 0.0508; // Meters with compression.
-        public static final double MAX_MODULE_SPEED_MPS = (FALCON_FREE_SPEED / GEAR_RATIO_WHEEL) * WHEEL_RADIUS;
+        public static final double MAX_MODULE_SPEED_MPS =
+                (FALCON_FREE_SPEED / GEAR_RATIO_WHEEL) * WHEEL_RADIUS;
         public static final double TICKS_TO_ROTATIONS = 2048.0;
         public static final double VOLTAGE = 12.0;
         public static final double FEED_FORWARD = VOLTAGE / (FALCON_FREE_SPEED / GEAR_RATIO_WHEEL);
