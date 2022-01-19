@@ -30,7 +30,7 @@ public class DriveTrain extends OutliersSubsystem {
     private DiffSwerveModule _backLeft;
 
     private SwerveDriveKinematics _kinematics;
-    private SwerveDriveOdometry _odomerty;
+    private SwerveDriveOdometry _odometry;
 
     private double _PIDAngle;
 
@@ -81,7 +81,7 @@ public class DriveTrain extends OutliersSubsystem {
                             _frontRight.getModulePosition(),
                             _backLeft.getModulePosition(),
                             _backRight.getModulePosition());
-            _odomerty = new SwerveDriveOdometry(_kinematics, getHeading());
+            _odometry = new SwerveDriveOdometry(_kinematics, getHeading());
 
             _controller =
                     new HolonomicDriveController(
@@ -116,7 +116,7 @@ public class DriveTrain extends OutliersSubsystem {
 
     @Override
     public void periodic() {
-        _odomerty.update(
+        _odometry.update(
                 getHeading(),
                 _frontLeft.getState(),
                 _frontRight.getState(),
@@ -234,7 +234,7 @@ public class DriveTrain extends OutliersSubsystem {
 
     public void trajectoryFollower(Trajectory.State goal, Rotation2d heading) {
         ChassisSpeeds adjustedSpeeds =
-                _controller.calculate(_odomerty.getPoseMeters(), goal, heading);
+                _controller.calculate(_odometry.getPoseMeters(), goal, heading);
         SwerveModuleState[] moduleStates = _kinematics.toSwerveModuleStates(adjustedSpeeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, MAX_MODULE_SPEED_MPS);
         setFrontLeftModuleState(moduleStates[0]);
@@ -244,7 +244,7 @@ public class DriveTrain extends OutliersSubsystem {
     }
 
     public Pose2d getOdometryPose() {
-        return _odomerty.getPoseMeters();
+        return _odometry.getPoseMeters();
     }
 
     public void startModules() {
