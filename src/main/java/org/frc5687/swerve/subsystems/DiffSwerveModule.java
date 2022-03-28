@@ -35,6 +35,8 @@ public class DiffSwerveModule {
     private Matrix<N2, N1> _u;
 
     private final double _encoderOffset;
+    private final boolean _encoderInverted;
+
     private boolean _running;
 
     public DiffSwerveModule(
@@ -42,18 +44,20 @@ public class DiffSwerveModule {
             int leftMotorID,
             int rightMotorID,
             int encoderNum,
-            double encoderOffset) {
+            double encoderOffset,
+            boolean encoderInverted) {
         // setup azimuth bore encoder.
         _boreEncoder = new DutyCycleEncoder(encoderNum);
         _boreEncoder.setDistancePerRotation(2.0 * Math.PI);
         _encoderOffset = encoderOffset;
+        _encoderInverted = encoderInverted;
 
         _reference = Matrix.mat(Nat.N3(), Nat.N1()).fill(0, 0, 0);
         _positionVector = positionVector;
 
         // setup both falcon motors.
-        _leftFalcon = new TalonFX(leftMotorID);
-        _rightFalcon = new TalonFX(rightMotorID);
+        _leftFalcon = new TalonFX(leftMotorID, "DriveTrain");
+        _rightFalcon = new TalonFX(rightMotorID, "DriveTrain");
         _leftFalcon.configFactoryDefault();
         _rightFalcon.configFactoryDefault();
         _rightFalcon.setInverted(false);
@@ -266,14 +270,16 @@ public class DiffSwerveModule {
 
     public double getModuleAngle() {
         return Helpers.boundHalfAngle(
-                (_boreEncoder.getDistance() % (2.0 * Math.PI)) - _encoderOffset, true);
+                ((_encoderInverted ? (-1.0) : 1.0)
+                        * _boreEncoder.getDistance() % (2.0 * Math.PI)) - _encoderOffset,
+                true);
     }
 
     public double getWheelAngularVelocity() {
         return Units.rotationsPerMinuteToRadiansPerSecond(
-                        getLeftFalconRPM() / Constants.DifferentialSwerveModule.GEAR_RATIO_WHEEL
-                                - getRightFalconRPM()
-                                        / Constants.DifferentialSwerveModule.GEAR_RATIO_WHEEL)
+                getLeftFalconRPM() / Constants.DifferentialSwerveModule.GEAR_RATIO_WHEEL
+                        - getRightFalconRPM()
+                        / Constants.DifferentialSwerveModule.GEAR_RATIO_WHEEL)
                 / 2.0;
     }
 
@@ -288,9 +294,9 @@ public class DiffSwerveModule {
 
     public double getAzimuthAngularVelocity() {
         return Units.rotationsPerMinuteToRadiansPerSecond(
-                        getLeftFalconRPM() / Constants.DifferentialSwerveModule.GEAR_RATIO_STEER
-                                + getRightFalconRPM()
-                                        / Constants.DifferentialSwerveModule.GEAR_RATIO_STEER)
+                getLeftFalconRPM() / Constants.DifferentialSwerveModule.GEAR_RATIO_STEER
+                        + getRightFalconRPM()
+                        / Constants.DifferentialSwerveModule.GEAR_RATIO_STEER)
                 / 2.0;
     }
 

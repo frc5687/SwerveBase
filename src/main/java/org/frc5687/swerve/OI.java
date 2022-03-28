@@ -36,16 +36,8 @@ public class OI extends OutliersProxy {
     public OI() {
         _driverGamepad = new Gamepad(0);
 
-        _leftJoystick = new Joystick(1);
-        _rightJoystick = new Joystick(2);
-
         _driverRightStickButton =
                 new JoystickButton(_driverGamepad, Gamepad.Buttons.RIGHT_STICK.getNumber());
-
-        _trigger = new JoystickButton(_rightJoystick, 1);
-        _thumbButton = new JoystickButton(_rightJoystick, 2);
-        _shootButton = new JoystickButton(_leftJoystick, 1);
-        _resetYawButton = new JoystickButton(_rightJoystick, 4);
 
         _driverAButton = new JoystickButton(_driverGamepad, Gamepad.Buttons.A.getNumber());
         _driverBButton = new JoystickButton(_driverGamepad, Gamepad.Buttons.B.getNumber());
@@ -58,8 +50,8 @@ public class OI extends OutliersProxy {
     public void initializeButtons(DriveTrain driveTrain) {}
 
     public double getDriveY() {
-        //        yIn = getSpeedFromAxis(_leftJoystick, _leftJoystick.getYChannel());
-        yIn = getSpeedFromAxis(_driverGamepad, Gamepad.Axes.LEFT_Y.getNumber());
+//        yIn = getSpeedFromAxis(_leftJoystick, _leftJoystick.getYChannel());
+        yIn = -getSpeedFromAxis(_driverGamepad, Gamepad.Axes.LEFT_Y.getNumber());
         yIn = applyDeadband(yIn, DEADBAND);
 
         double yOut = yIn / (Math.sqrt(yIn * yIn + (xIn * xIn)) + Constants.EPSILON);
