@@ -11,57 +11,49 @@ public class Constants {
     public static final double EPSILON = 0.00001;
 
     public static class DriveTrain {
-
-        // Control
-        public static final double DEADBAND = 0.2; // Avoid unintentional joystick movement
+        public static final double kDt = 0.02;
+        public static final double TRANSLATION_DEADBAND =
+                0.2; // Avoid unintentional joystick movement
+        public static final double ROTATION_DEADBAND = 0.2; // Avoid unintentional joystick movement
+        public static final double POWER = 1.75; // Determines the curve of drive input
 
         // Size of the robot chassis in meters
         public static final double WIDTH = 0.6223; // meters
         public static final double LENGTH = 0.6223; // meters
 
-        /**
-         * Swerve modules are on four corners of robot:
-         *
-         * NW  <- Width of robot ->  NE
-         *             / \
-         *              |
-         *        Length of robot
-         *              |
-         *             \ /
-         *  SW                       SE
-         */
-
         // Distance of swerve modules from center of robot
         public static final double SWERVE_NS_POS = LENGTH / 2.0;
+
         public static final double SWERVE_WE_POS = WIDTH / 2.0;
 
         /**
-         *
          * Coordinate system is wacky:
          *
-         * (X, Y):
-         *   X is N or S, N is +
-         *   Y is W or E, W is +
+         * <p>(X, Y): X is N or S, N is + Y is W or E, W is +
          *
-         *   NW (+,+)  NE (+,-)
+         * <p>NW (+,+) NE (+,-)
          *
-         *   SW (-,+)  SE (-,-)
+         * <p>SW (-,+) SE (-,-)
          *
-         * We go counter-counter clockwise starting at NW of chassis:
+         * <p>We go counter-counter clockwise starting at NW of chassis:
          *
-         *  NW, SW, SE, NE
+         * <p>NW, SW, SE, NE
          *
-         * Note: when robot is flipped over, this is clockwise.
-         *
+         * <p>Note: when robot is flipped over, this is clockwise.
          */
 
         // Position vectors for the swerve module kinematics
         // i.e. location of each swerve module from center of robot
         // see coordinate system above to understand signs of vector coordinates
-        public static final Translation2d NORTH_WEST = new Translation2d( SWERVE_NS_POS, SWERVE_WE_POS ); // +,+
-        public static final Translation2d SOUTH_WEST = new Translation2d( -SWERVE_NS_POS, SWERVE_WE_POS ); // -,+
-        public static final Translation2d SOUTH_EAST = new Translation2d( -SWERVE_NS_POS, -SWERVE_WE_POS ); // -,-
-        public static final Translation2d NORTH_EAST = new Translation2d( SWERVE_NS_POS, -SWERVE_WE_POS ); // +,-
+        public static final Translation2d NORTH_WEST =
+                new Translation2d(SWERVE_NS_POS, SWERVE_WE_POS); // +,+
+
+        public static final Translation2d SOUTH_WEST =
+                new Translation2d(-SWERVE_NS_POS, SWERVE_WE_POS); // -,+
+        public static final Translation2d SOUTH_EAST =
+                new Translation2d(-SWERVE_NS_POS, -SWERVE_WE_POS); // -,-
+        public static final Translation2d NORTH_EAST =
+                new Translation2d(SWERVE_NS_POS, -SWERVE_WE_POS); // +,-
 
         // Should be 0, but can correct for hardware error in swerve module headings here.
         public static final double NORTH_WEST_OFFSET = 0; // radians
@@ -77,31 +69,33 @@ public class Constants {
 
         // Maximum rates of motion
         public static final double MAX_MPS = 3.0; // Max speed of robot (m/s)
-        public static final double MAX_MPS_DURING_CLIMB = MAX_MPS / 4; // Max speed of robot (m/s) during climb
-        public static final double MAX_ANG_VEL = Math.PI * 1.5; // Max rotation rate of robot (rads/s)
+        public static final double MAX_MPS_DURING_CLIMB =
+                MAX_MPS / 4; // Max speed of robot (m/s) during climb
+        public static final double MAX_ANG_VEL =
+                Math.PI * 1.5; // Max rotation rate of robot (rads/s)
         public static final double MAX_MPSS = 0.5; // Max acceleration of robot (m/s^2)
 
+        public static final double POLE_THRESHOLD = Units.degreesToRadians(10.0);
+
         // PID controller settings
-        public static final double ANGLE_kP = 4.0;
-        public static final double ANGLE_kI = 0.0;
-        public static final double ANGLE_kD = 0.0;
+        public static final double STABILIZATION_kP = 4.0;
+        public static final double STABILIZATION_kI = 0.0;
+        public static final double STABILIZATION_kD = 0.0;
+
+        public static final double SNAP_kP = 4.0;
+        public static final double SNAP_kI = 0.0;
+        public static final double SNAP_kD = 0.0;
+
+        public static final double VISION_kP = 4.0;
+        public static final double VISION_kI = 0.0;
+        public static final double VISION_kD = 0.0;
+
         public static final double PROFILE_CONSTRAINT_VEL = MAX_ANG_VEL;
         public static final double PROFILE_CONSTRAINT_ACCEL = Math.PI * 3.0;
 
         public static final double kP = 11.5;
         public static final double kI = 0.0;
         public static final double kD = 0.5;
-
-        // Vision PID controller
-        public static final double VISION_TOLERANCE = 0.040; // rads
-        public static final double VISION_kP = 5.65;
-        public static final double VISION_kI = 0.0;
-        public static final double VISION_kD = 0.2;
-        public static final double VISION_IRANGE = MAX_MPS * 2;
-        public static final long VISION_LATENCY = 50;
-
-        public static final double POSITION_TOLERANCE = 0.01;
-        public static final double ANGLE_TOLERANCE = 0.02;
     }
 
     public static class DifferentialSwerveModule {
@@ -140,11 +134,14 @@ public class Constants {
         public static final double MODEL_AZIMUTH_ANGLE_NOISE = .1; // radians
         public static final double MODEL_AZIMUTH_ANG_VELOCITY_NOISE = 5.0; // radians per sec
         public static final double MODEL_WHEEL_ANG_VELOCITY_NOISE = 5.0; // radians per sec
-        // Noise from sensors. Falcon With Gearbox causes us to have more uncertainty so we increase
+        // Noise from sensors. Falcon With Gearbox causes us to have more uncertainty, so we
+        // increase
         // the noise.
         public static final double SENSOR_AZIMUTH_ANGLE_NOISE = 0.01; // radians
         public static final double SENSOR_AZIMUTH_ANG_VELOCITY_NOISE = 0.1; // radians per sec
         public static final double SENSOR_WHEEL_ANG_VELOCITY_NOISE = 0.1; // radians per sec
         public static final double CONTROL_EFFORT = VOLTAGE;
+
+        public static final double MINIMUM_VELOCITY = 0.01; // meters per second
     }
 }

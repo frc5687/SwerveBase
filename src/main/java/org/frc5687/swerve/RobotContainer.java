@@ -1,4 +1,4 @@
-/* Team 5687 (C)2021 */
+/* Team 5687 (C)2021-2022 */
 package org.frc5687.swerve;
 
 import com.kauailabs.navx.frc.AHRS;
@@ -27,7 +27,7 @@ public class RobotContainer extends OutliersContainer {
         _oi = new OI();
         _imu = new AHRS(SPI.Port.kMXP, (byte) 200);
 
-        _driveTrain = new DriveTrain(this, _oi, _imu);
+        _driveTrain = new DriveTrain(this, _imu);
 
         setDefaultCommand(_driveTrain, new Drive(_driveTrain, _oi));
         _robot.addPeriodic(this::controllerPeriodic, 0.005, 0.005);

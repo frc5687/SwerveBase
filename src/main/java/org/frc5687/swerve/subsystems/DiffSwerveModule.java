@@ -270,16 +270,16 @@ public class DiffSwerveModule {
 
     public double getModuleAngle() {
         return Helpers.boundHalfAngle(
-                ((_encoderInverted ? (-1.0) : 1.0)
-                        * _boreEncoder.getDistance() % (2.0 * Math.PI)) - _encoderOffset,
+                ((_encoderInverted ? (-1.0) : 1.0) * _boreEncoder.getDistance() % (2.0 * Math.PI))
+                        - _encoderOffset,
                 true);
     }
 
     public double getWheelAngularVelocity() {
         return Units.rotationsPerMinuteToRadiansPerSecond(
-                getLeftFalconRPM() / Constants.DifferentialSwerveModule.GEAR_RATIO_WHEEL
-                        - getRightFalconRPM()
-                        / Constants.DifferentialSwerveModule.GEAR_RATIO_WHEEL)
+                        getLeftFalconRPM() / Constants.DifferentialSwerveModule.GEAR_RATIO_WHEEL
+                                - getRightFalconRPM()
+                                        / Constants.DifferentialSwerveModule.GEAR_RATIO_WHEEL)
                 / 2.0;
     }
 
@@ -294,9 +294,9 @@ public class DiffSwerveModule {
 
     public double getAzimuthAngularVelocity() {
         return Units.rotationsPerMinuteToRadiansPerSecond(
-                getLeftFalconRPM() / Constants.DifferentialSwerveModule.GEAR_RATIO_STEER
-                        + getRightFalconRPM()
-                        / Constants.DifferentialSwerveModule.GEAR_RATIO_STEER)
+                        getLeftFalconRPM() / Constants.DifferentialSwerveModule.GEAR_RATIO_STEER
+                                + getRightFalconRPM()
+                                        / Constants.DifferentialSwerveModule.GEAR_RATIO_STEER)
                 / 2.0;
     }
 

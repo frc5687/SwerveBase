@@ -1,4 +1,4 @@
-/* Team 5687 (C)2020-2021 */
+/* Team 5687 (C)2020-2022 */
 package org.frc5687.swerve;
 
 import static org.frc5687.swerve.Constants.DriveTrain.*;
@@ -18,11 +18,6 @@ public class OI extends OutliersProxy {
     protected Joystick _rightJoystick;
 
     protected Button _driverRightStickButton;
-
-    private JoystickButton _trigger;
-    private JoystickButton _thumbButton;
-    private JoystickButton _shootButton;
-    private JoystickButton _resetYawButton;
 
     private Button _driverAButton;
     private Button _driverBButton;
@@ -50,9 +45,9 @@ public class OI extends OutliersProxy {
     public void initializeButtons(DriveTrain driveTrain) {}
 
     public double getDriveY() {
-//        yIn = getSpeedFromAxis(_leftJoystick, _leftJoystick.getYChannel());
+        //        yIn = getSpeedFromAxis(_leftJoystick, _leftJoystick.getYChannel());
         yIn = -getSpeedFromAxis(_driverGamepad, Gamepad.Axes.LEFT_Y.getNumber());
-        yIn = applyDeadband(yIn, DEADBAND);
+        yIn = applyDeadband(yIn, TRANSLATION_DEADBAND);
 
         double yOut = yIn / (Math.sqrt(yIn * yIn + (xIn * xIn)) + Constants.EPSILON);
         yOut = (yOut + (yIn * 2)) / 3.0;
@@ -62,7 +57,7 @@ public class OI extends OutliersProxy {
     public double getDriveX() {
         //        xIn = -getSpeedFromAxis(_leftJoystick, _leftJoystick.getXChannel());
         xIn = -getSpeedFromAxis(_driverGamepad, Gamepad.Axes.LEFT_X.getNumber());
-        xIn = applyDeadband(xIn, DEADBAND);
+        xIn = applyDeadband(xIn, TRANSLATION_DEADBAND);
 
         double xOut = xIn / (Math.sqrt(yIn * yIn + (xIn * xIn)) + Constants.EPSILON);
         xOut = (xOut + (xIn * 2)) / 3.0;
@@ -70,8 +65,9 @@ public class OI extends OutliersProxy {
     }
 
     public double getRotationX() {
-        double speed = getSpeedFromAxis(_rightJoystick, _rightJoystick.getZChannel());
-        speed = applyDeadband(speed, 0.2);
+        //        double speed = -getSpeedFromAxis(_rightJoystick, _rightJoystick.getXChannel());
+        double speed = -getSpeedFromAxis(_driverGamepad, Gamepad.Axes.RIGHT_X.getNumber());
+        speed = applyDeadband(speed, ROTATION_DEADBAND);
         return speed;
     }
 
