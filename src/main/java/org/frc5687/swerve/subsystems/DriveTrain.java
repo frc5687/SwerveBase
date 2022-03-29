@@ -217,6 +217,7 @@ public class DriveTrain extends OutliersSubsystem {
                                         correctedOmega));
 
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, MAX_MODULE_SPEED_MPS);
+        setModuleStates(swerveModuleStates);
     }
 
     public SwerveDriveKinematicsConstraint getKinematicConstraint() {
