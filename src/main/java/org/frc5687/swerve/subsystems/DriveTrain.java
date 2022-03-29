@@ -130,7 +130,8 @@ public class DriveTrain extends OutliersSubsystem {
     }
 
     @Override
-    public void updateDashboard() {}
+    public void updateDashboard() {
+    }
 
     public void setModuleStates(SwerveModuleState[] states) {
         for (int module = 0; module < _modules.size(); module++) {
@@ -203,6 +204,8 @@ public class DriveTrain extends OutliersSubsystem {
         metric("Drive X", _translationVector.getX());
         metric("Drive Y", _translationVector.getY());
         metric("Corrected Omega", correctedOmega);
+        metric("Heading state", getCurrentHeadingState().name());
+        metric("Target Heading", _headingController.getTargetHeading().getRadians());
         SwerveModuleState[] swerveModuleStates =
                 _kinematics.toSwerveModuleStates(
                         fieldRelative
@@ -217,6 +220,7 @@ public class DriveTrain extends OutliersSubsystem {
                                         correctedOmega));
 
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, MAX_MODULE_SPEED_MPS);
+        metric("module vel", swerveModuleStates[0].speedMetersPerSecond);
         setModuleStates(swerveModuleStates);
     }
 
@@ -280,4 +284,5 @@ public class DriveTrain extends OutliersSubsystem {
     public void startModules() {
         _modules.forEach(DiffSwerveModule::start);
     }
+
 }

@@ -384,7 +384,6 @@ public class DiffSwerveModule {
      * @param state is the desired swerve module state.
      */
     public void setModuleState(SwerveModuleState state) {
-        SmartDashboard.putNumber("new state angle", state.angle.getRadians());
         setReference(
                 VecBuilder.fill(
                         state.angle.getRadians(),

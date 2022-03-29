@@ -46,6 +46,7 @@ public class SwerveHeadingController {
         _stabilizationPID.enableContinuousInput(-Math.PI, Math.PI);
         _snapPID.enableContinuousInput(-Math.PI, Math.PI);
         _visionPID.enableContinuousInput(-Math.PI, Math.PI);
+        _targetHeading = new Rotation2d();
     }
 
     public HeadingState getHeadingState() {

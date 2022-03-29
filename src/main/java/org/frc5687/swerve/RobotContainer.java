@@ -55,10 +55,6 @@ public class RobotContainer extends OutliersContainer {
         s.setDefaultCommand(subSystem, command);
     }
 
-    @Override
-    public void updateDashboard() {
-        _driveTrain.updateDashboard();
-    }
 
     public void controllerPeriodic() {
         if (_driveTrain != null) {
