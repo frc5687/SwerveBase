@@ -41,6 +41,7 @@ public class DriveTrain extends OutliersSubsystem {
     private AHRS _imu;
     private HolonomicDriveController _controller;
     private SwerveHeadingController _headingController;
+    private boolean _lockHeading = false;
 
     public DriveTrain(OutliersContainer container, AHRS imu) {
         super(container);
@@ -79,7 +80,7 @@ public class DriveTrain extends OutliersSubsystem {
                             Constants.DriveTrain.NORTH_EAST_OFFSET,
                             Constants.DriveTrain.NORTH_EAST_ENCODER_INVERTED);
 
-            _modules = Arrays.asList(_northWest, _southWest, _southEast, _northWest);
+            _modules = Arrays.asList(_northWest, _southWest, _southEast, _northEast);
 
             // NB: it matters which order these are defined
             _kinematics =
@@ -130,8 +131,7 @@ public class DriveTrain extends OutliersSubsystem {
     }
 
     @Override
-    public void updateDashboard() {
-    }
+    public void updateDashboard() {}
 
     public void setModuleStates(SwerveModuleState[] states) {
         for (int module = 0; module < _modules.size(); module++) {
@@ -186,7 +186,10 @@ public class DriveTrain extends OutliersSubsystem {
         omega *= MAX_ANG_VEL;
 
         if (omega == 0 && _translationVector.getNorm() != 0) {
-            _headingController.setTargetHeading(getHeading());
+            if (!_lockHeading) {
+                _headingController.setTargetHeading(getHeading());
+            }
+            _lockHeading = true;
             _headingController.setHeadingState(STABILIZE);
         } else if (useSnap) {
             _headingController.setTargetHeading(getSnapHeading());
@@ -195,6 +198,7 @@ public class DriveTrain extends OutliersSubsystem {
             _headingController.setTargetHeading(getVisionHeading());
             _headingController.setHeadingState(VISION);
         } else {
+            _lockHeading = false;
             _headingController.setHeadingState(OFF);
         }
 
@@ -284,5 +288,4 @@ public class DriveTrain extends OutliersSubsystem {
     public void startModules() {
         _modules.forEach(DiffSwerveModule::start);
     }
-
 }

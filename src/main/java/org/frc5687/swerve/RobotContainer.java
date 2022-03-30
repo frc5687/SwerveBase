@@ -55,7 +55,6 @@ public class RobotContainer extends OutliersContainer {
         s.setDefaultCommand(subSystem, command);
     }
 
-
     public void controllerPeriodic() {
         if (_driveTrain != null) {
             _driveTrain.controllerPeriodic();

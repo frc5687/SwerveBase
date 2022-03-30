@@ -13,8 +13,8 @@ public class Constants {
     public static class DriveTrain {
         public static final double kDt = 0.02;
         public static final double TRANSLATION_DEADBAND =
-                0.2; // Avoid unintentional joystick movement
-        public static final double ROTATION_DEADBAND = 0.2; // Avoid unintentional joystick movement
+                0.1; // Avoid unintentional joystick movement
+        public static final double ROTATION_DEADBAND = 0.1; // Avoid unintentional joystick movement
         public static final double POWER = 1.75; // Determines the curve of drive input
 
         // Size of the robot chassis in meters
@@ -62,10 +62,10 @@ public class Constants {
         public static final double NORTH_EAST_OFFSET = 0; // radians
 
         // In case encoder is measuring rotation in the opposite direction we expect.
-        public static final boolean NORTH_WEST_ENCODER_INVERTED = true;
-        public static final boolean SOUTH_WEST_ENCODER_INVERTED = true;
-        public static final boolean SOUTH_EAST_ENCODER_INVERTED = true;
-        public static final boolean NORTH_EAST_ENCODER_INVERTED = true;
+        public static final boolean NORTH_WEST_ENCODER_INVERTED = false;
+        public static final boolean SOUTH_WEST_ENCODER_INVERTED = false;
+        public static final boolean SOUTH_EAST_ENCODER_INVERTED = false;
+        public static final boolean NORTH_EAST_ENCODER_INVERTED = false;
 
         // Maximum rates of motion
         public static final double MAX_MPS = 3.0; // Max speed of robot (m/s)
@@ -75,10 +75,10 @@ public class Constants {
                 Math.PI * 1.5; // Max rotation rate of robot (rads/s)
         public static final double MAX_MPSS = 0.5; // Max acceleration of robot (m/s^2)
 
-        public static final double POLE_THRESHOLD = Units.degreesToRadians(10.0);
+        public static final double POLE_THRESHOLD = Units.degreesToRadians(5.0);
 
         // PID controller settings
-        public static final double STABILIZATION_kP = 4.0;
+        public static final double STABILIZATION_kP = 2.0;
         public static final double STABILIZATION_kI = 0.0;
         public static final double STABILIZATION_kD = 0.0;
 

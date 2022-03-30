@@ -15,7 +15,6 @@ import edu.wpi.first.math.system.LinearSystemLoop;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frc5687.swerve.Constants;
 import org.frc5687.swerve.util.Helpers;
 
@@ -56,8 +55,8 @@ public class DiffSwerveModule {
         _positionVector = positionVector;
 
         // setup both falcon motors.
-        _leftFalcon = new TalonFX(leftMotorID, "DriveTrain");
-        _rightFalcon = new TalonFX(rightMotorID, "DriveTrain");
+        _leftFalcon = new TalonFX(leftMotorID, "rio");
+        _rightFalcon = new TalonFX(rightMotorID, "rio");
         _leftFalcon.configFactoryDefault();
         _rightFalcon.configFactoryDefault();
         _rightFalcon.setInverted(false);
@@ -384,12 +383,21 @@ public class DiffSwerveModule {
      * @param state is the desired swerve module state.
      */
     public void setModuleState(SwerveModuleState state) {
-        setReference(
-                VecBuilder.fill(
-                        state.angle.getRadians(),
-                        _swerveControlLoop.getXHat(1),
-                        state.speedMetersPerSecond
-                                / Constants.DifferentialSwerveModule.WHEEL_RADIUS));
+        if (state.speedMetersPerSecond != 0) {
+            setReference(
+                    VecBuilder.fill(
+                            state.angle.getRadians(),
+                            _swerveControlLoop.getXHat(1),
+                            state.speedMetersPerSecond
+                                    / Constants.DifferentialSwerveModule.WHEEL_RADIUS));
+        } else {
+            setReference(
+                    VecBuilder.fill(
+                            getModuleAngle(),
+                            _swerveControlLoop.getXHat(1),
+                            state.speedMetersPerSecond
+                                    / Constants.DifferentialSwerveModule.WHEEL_RADIUS));
+        }
     }
 
     /**
