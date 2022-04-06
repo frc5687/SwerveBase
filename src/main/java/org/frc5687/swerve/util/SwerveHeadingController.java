@@ -43,8 +43,23 @@ public class SwerveHeadingController {
         return _headingState;
     }
 
-    public void setHeadingState(HeadingState state) {
+    public void setState(HeadingState state) {
         _headingState = state;
+    }
+
+    public void setStabilizationHeading(Rotation2d heading) {
+        _targetHeading = heading;
+        setState(HeadingState.STABILIZE);
+    }
+
+    public void setVisionHeading(Rotation2d heading) {
+        _targetHeading = heading;
+        setState(HeadingState.VISION);
+    }
+
+    public void setSnapHeading(Rotation2d heading) {
+        _targetHeading = heading;
+        setState(HeadingState.SNAP);
     }
 
     public Rotation2d getTargetHeading() {

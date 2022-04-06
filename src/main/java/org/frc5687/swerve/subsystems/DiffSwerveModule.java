@@ -16,10 +16,8 @@ import edu.wpi.first.math.numbers.*;
 import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.LinearSystemLoop;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import org.frc5687.swerve.Constants;
 import org.frc5687.swerve.util.Helpers;
 
 /**
@@ -36,11 +34,6 @@ public class DiffSwerveModule {
     private final LinearSystemLoop<N3, N2, N3> _swerveControlLoop;
     private Matrix<N3, N1> _reference; // same thing as a set point.
     private Matrix<N2, N1> _u;
-
-    private TrapezoidProfile.State _angleReference = new TrapezoidProfile.State();
-    private TrapezoidProfile.State _wheelVelocityReference = new TrapezoidProfile.State();
-    private final TrapezoidProfile.Constraints _profiledSteerConstraints;
-    private final TrapezoidProfile.Constraints _profiledWheelConstraints;
 
     private final double _encoderOffset;
     private final boolean _encoderInverted;
@@ -110,15 +103,6 @@ public class DiffSwerveModule {
         _swerveControlLoop =
                 new LinearSystemLoop<>(
                         swerveModuleModel, swerveController, swerveObserver, VOLTAGE, kDt);
-
-        _profiledSteerConstraints =
-                new TrapezoidProfile.Constraints(
-                        Constants.DifferentialSwerveModule.MAX_ANGULAR_VELOCITY,
-                        Constants.DifferentialSwerveModule.MAX_ANGULAR_ACCELERATION);
-        _profiledWheelConstraints =
-                new TrapezoidProfile.Constraints(
-                        Constants.DifferentialSwerveModule.MAX_MODULE_ACCELERATION,
-                        Constants.DifferentialSwerveModule.MAX_MODULE_JERK);
         //         Initializes the vectors and matrices.
         _swerveControlLoop.reset(VecBuilder.fill(0, 0, 0));
         _u = VecBuilder.fill(0, 0);
@@ -153,37 +137,6 @@ public class DiffSwerveModule {
                         CURRENT_LIMIT,
                         CURRENT_THRESHOLD,
                         CURRENT_TRIGGER_TIME));
-    }
-    /**
-     * Calculated the profiled reference with angle wrapping.
-     *
-     * @return Vector (r-x) vector with profiled values.
-     */
-    private Matrix<N3, N1> profiledReference() {
-        double angleMinimumGoalDistance =
-                MathUtil.inputModulus(_reference.get(0, 0) - getModuleAngle(), -Math.PI, Math.PI);
-        double angleMinimumSetpointDistance =
-                MathUtil.inputModulus(
-                        _angleReference.position - getModuleAngle(), -Math.PI, Math.PI);
-        _reference.set(0, 0, angleMinimumGoalDistance + getModuleAngle());
-        _angleReference.position = angleMinimumSetpointDistance + getModuleAngle();
-        var steerProfile =
-                new TrapezoidProfile(
-                        _profiledSteerConstraints,
-                        new TrapezoidProfile.State(_reference.get(0, 0), _reference.get(1, 0)),
-                        _angleReference);
-        _angleReference = steerProfile.calculate(Constants.DifferentialSwerveModule.kDt);
-
-        var wheelProfile =
-                new TrapezoidProfile(
-                        _profiledWheelConstraints,
-                        new TrapezoidProfile.State(_reference.get(2, 0), 0),
-                        _wheelVelocityReference);
-        _wheelVelocityReference = wheelProfile.calculate(Constants.DifferentialSwerveModule.kDt);
-        return VecBuilder.fill(
-                _angleReference.position - getModuleAngle(),
-                _angleReference.velocity - getAzimuthAngularVelocity(),
-                _wheelVelocityReference.position - getWheelAngularVelocity());
     }
     /**
      * wraps angle so that absolute encoder can be continuous. (i.e) No issues when switching
@@ -230,14 +183,12 @@ public class DiffSwerveModule {
                         _swerveControlLoop
                                 .getController()
                                 .getK()
-                                .times(profiledReference())
-                                //                                        wrapAngle(
-                                //
-                                // _swerveControlLoop.getNextR(),
-                                //
-                                // _swerveControlLoop.getXHat(),
-                                //                                                -Math.PI,
-                                //                                                Math.PI))
+                                .times( // profiledReference())
+                                        wrapAngle(
+                                                _swerveControlLoop.getNextR(),
+                                                _swerveControlLoop.getXHat(),
+                                                -Math.PI,
+                                                Math.PI))
                                 .plus(
                                         VecBuilder.fill(
                                                 FEED_FORWARD * _reference.get(2, 0),

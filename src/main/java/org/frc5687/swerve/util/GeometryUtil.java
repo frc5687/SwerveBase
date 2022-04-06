@@ -2,7 +2,6 @@
 package org.frc5687.swerve.util;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 
 public class GeometryUtil {
 
@@ -19,10 +18,6 @@ public class GeometryUtil {
         return new Rotation2d(pole_cos, pole_sin);
     }
 
-    public static Rotation2d getDirection(Translation2d translation) {
-        return new Rotation2d(translation.getX(), translation.getY());
-    }
-
     public static Rotation2d inverse(Rotation2d rot) {
         return new Rotation2d(rot.getCos(), -rot.getSin());
     }
@@ -31,7 +26,7 @@ public class GeometryUtil {
         return inverse(rot).rotateBy(other).getRadians();
     }
 
-    public static Translation2d rotationToTranslation(Rotation2d rot) {
-        return new Translation2d(rot.getCos(), rot.getSin());
+    public static Vector2d rotationToVector(Rotation2d rot) {
+        return new Vector2d(rot.getCos(), rot.getSin());
     }
 }

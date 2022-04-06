@@ -12,7 +12,6 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -27,6 +26,7 @@ import org.frc5687.swerve.Constants;
 import org.frc5687.swerve.RobotMap;
 import org.frc5687.swerve.util.OutliersContainer;
 import org.frc5687.swerve.util.SwerveHeadingController;
+import org.frc5687.swerve.util.Vector2d;
 
 public class DriveTrain extends OutliersSubsystem {
     private DiffSwerveModule _northWest, _southWest, _northEast, _southEast;
@@ -35,7 +35,7 @@ public class DriveTrain extends OutliersSubsystem {
     private SwerveDriveKinematics _kinematics;
     private SwerveDriveOdometry _odometry;
 
-    private Translation2d _translationVector;
+    private Vector2d _translationVector;
     private Rotation2d _snapHeading;
 
     private AHRS _imu;
@@ -113,7 +113,7 @@ public class DriveTrain extends OutliersSubsystem {
                                             Constants.DriveTrain.PROFILE_CONSTRAINT_VEL,
                                             Constants.DriveTrain.PROFILE_CONSTRAINT_ACCEL)));
             _headingController = new SwerveHeadingController(Constants.DriveTrain.kDt);
-            _translationVector = new Translation2d();
+            _translationVector = new Vector2d();
         } catch (Exception e) {
             error(e.getMessage());
         }
@@ -135,7 +135,16 @@ public class DriveTrain extends OutliersSubsystem {
     }
 
     @Override
-    public void updateDashboard() {}
+    public void updateDashboard() {
+        metric("SW/Velocity", _southWest.getWheelVelocity());
+        metric("SW/Angle", _southWest.getModuleAngle());
+        metric("SE/Velocity", _southEast.getWheelVelocity());
+        metric("SE/Angle", _southEast.getModuleAngle());
+        metric("NW/Velocity", _northWest.getWheelVelocity());
+        metric("NW/Angle", _northWest.getModuleAngle());
+        metric("NE/Velocity", _northEast.getWheelVelocity());
+        metric("NE/Angle", _northEast.getModuleAngle());
+    }
 
     public void setModuleStates(SwerveModuleState[] states) {
         for (int module = 0; module < _modules.size(); module++) {
@@ -151,71 +160,58 @@ public class DriveTrain extends OutliersSubsystem {
      * @param omega angular velocity (rotating speed)
      * @param fieldRelative forward is always forward no mater orientation of robot.
      */
-    public void drive(
-            double vx,
-            double vy,
-            double omega,
-            boolean fieldRelative,
-            boolean useVision,
-            boolean useSnap) {
+    public void drive(double vx, double vy, double omega, boolean fieldRelative) {
 
         metric("vx", vx);
         metric("vy", vy);
         metric("omega", omega);
-        Translation2d translation = new Translation2d(vx, vy);
+        Vector2d translation = new Vector2d(vx, vy);
 
-        double magnitude = translation.getNorm();
+        double magnitude = translation.magnitude();
 
-        if (Math.abs(
-                        getDistance(
-                                getDirection(translation),
-                                getNearestPole(getDirection(translation))))
+        if (Math.abs(getDistance(translation.direction(), getNearestPole(translation.direction())))
                 < POLE_THRESHOLD) {
             translation =
-                    rotationToTranslation(getNearestPole(getDirection(translation)))
-                            .times(magnitude);
+                    rotationToVector(getNearestPole(translation.direction())).scale(magnitude);
         }
 
         if (magnitude < TRANSLATION_DEADBAND) {
-            translation = new Translation2d();
+            translation = new Vector2d();
             magnitude = 0;
         }
 
-        Rotation2d direction = getDirection(translation);
+        Rotation2d direction = translation.direction();
         double scaledMagnitude = Math.pow(magnitude, POWER);
         translation =
-                new Translation2d(
+                new Vector2d(
                         direction.getCos() * scaledMagnitude, direction.getSin() * scaledMagnitude);
+
+        if (translation.magnitude() > 1.0) {
+            translation = translation.normalize();
+        }
 
         omega = (Math.abs(omega) < ROTATION_DEADBAND) ? 0 : omega;
         // scale rotation
         omega = Math.pow(Math.abs(omega), POWER) * Math.signum(omega);
 
-        translation = translation.times(MAX_MPS);
+        translation = translation.scale(MAX_MPS);
         omega *= MAX_ANG_VEL;
 
         _translationVector = translation;
 
-        if (omega == 0 && _translationVector.getNorm() != 0) {
+        if (omega == 0 && _translationVector.magnitude() != 0) {
             if (!_lockHeading) {
                 _headingController.setTargetHeading(getHeading());
             }
             _lockHeading = true;
-            _headingController.setHeadingState(STABILIZE);
-        } else if (useSnap) {
-            _headingController.setTargetHeading(getSnapHeading());
-            _headingController.setHeadingState(SNAP);
-        } else if (useVision) {
-            _headingController.setTargetHeading(getVisionHeading());
-            _headingController.setHeadingState(VISION);
         } else {
             _lockHeading = false;
-            _headingController.setHeadingState(OFF);
+            _headingController.setState(OFF);
         }
 
         double correctedOmega = omega + _headingController.getRotationCorrection(getHeading());
-        metric("Drive X", _translationVector.getX());
-        metric("Drive Y", _translationVector.getY());
+        metric("Drive X", _translationVector.x());
+        metric("Drive Y", _translationVector.y());
         metric("Corrected Omega", correctedOmega);
         metric("Heading state", getCurrentHeadingState().name());
         metric("Target Heading", _headingController.getTargetHeading().getRadians());
@@ -223,19 +219,27 @@ public class DriveTrain extends OutliersSubsystem {
                 _kinematics.toSwerveModuleStates(
                         fieldRelative
                                 ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                                        _translationVector.getX(),
-                                        _translationVector.getY(),
+                                        _translationVector.x(),
+                                        _translationVector.y(),
                                         correctedOmega,
                                         getHeading())
                                 : new ChassisSpeeds(
-                                        _translationVector.getX(),
-                                        _translationVector.getY(),
+                                        _translationVector.x(),
+                                        _translationVector.y(),
                                         correctedOmega));
 
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, MAX_MODULE_SPEED_MPS);
-        metric("module vel", swerveModuleStates[0].speedMetersPerSecond);
-        metric("module angle", swerveModuleStates[0].angle.getDegrees());
+        //        metric("module vel", swerveModuleStates[0].speedMetersPerSecond);
+        //        metric("module angle", swerveModuleStates[0].angle.getDegrees());
         setModuleStates(swerveModuleStates);
+    }
+
+    public void stabilize(Rotation2d heading) {
+        _headingController.setStabilizationHeading(heading);
+    }
+
+    public void vision(Rotation2d visionHeading) {
+        _headingController.setVisionHeading(visionHeading);
     }
 
     public SwerveDriveKinematicsConstraint getKinematicConstraint() {

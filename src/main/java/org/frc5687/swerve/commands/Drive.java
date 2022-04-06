@@ -1,6 +1,7 @@
 /* Team 5687 (C)2021-2022 */
 package org.frc5687.swerve.commands;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import org.frc5687.swerve.OI;
 import org.frc5687.swerve.subsystems.DriveTrain;
@@ -10,10 +11,14 @@ public class Drive extends OutliersCommand {
     private final DriveTrain _driveTrain;
 
     private final OI _oi;
+    private final SlewRateLimiter _vxLimiter;
+    private final SlewRateLimiter _vyLimiter;
 
     public Drive(DriveTrain driveTrain, OI oi) {
         _driveTrain = driveTrain;
         _oi = oi;
+        _vxLimiter = new SlewRateLimiter(4); // units per sec
+        _vyLimiter = new SlewRateLimiter(4); // units per sec
         addRequirements(_driveTrain);
     }
 
@@ -27,17 +32,15 @@ public class Drive extends OutliersCommand {
     public void execute() {
         super.execute();
         //  driveX and driveY are swapped due to coordinate system that WPILib uses.
-        double x = _oi.getDriveY();
-        double y = _oi.getDriveX();
+        double x = _vxLimiter.calculate(_oi.getDriveY());
+        double y = _vyLimiter.calculate(_oi.getDriveX());
         double omega = _oi.getRotationX();
         if (_oi.snap()) {
             _driveTrain.setSnapHeading(new Rotation2d(Math.PI / 2.0));
-            _driveTrain.drive(x, y, omega, true, false, true);
         } else if (_oi.autoAim()) {
-            _driveTrain.drive(x, y, omega, true, true, false);
-        } else {
-            _driveTrain.drive(x, y, omega, true, false, false);
+            _driveTrain.vision(_driveTrain.getVisionHeading());
         }
+        _driveTrain.drive(x, y, omega, true);
     }
 
     @Override

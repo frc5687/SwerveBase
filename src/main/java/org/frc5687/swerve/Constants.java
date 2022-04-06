@@ -8,10 +8,10 @@ public class Constants {
     public static final int TICKS_PER_UPDATE = 1;
     public static final double METRIC_FLUSH_PERIOD = 1.0;
     public static final double UPDATE_PERIOD = 0.02;
-    public static final double EPSILON = 0.00001;
+    public static final double EPSILON = 1e-12;
 
     public static class DriveTrain {
-        public static final String CAN_BUS = "rio";
+        public static final String CAN_BUS = "DriveTrain";
         public static final double kDt = 0.02;
         public static final double TRANSLATION_DEADBAND =
                 0.1; // Avoid unintentional joystick movement
@@ -63,10 +63,10 @@ public class Constants {
         public static final double NORTH_EAST_OFFSET = 0; // radians
 
         // In case encoder is measuring rotation in the opposite direction we expect.
-        public static final boolean NORTH_WEST_ENCODER_INVERTED = false;
-        public static final boolean SOUTH_WEST_ENCODER_INVERTED = false;
-        public static final boolean SOUTH_EAST_ENCODER_INVERTED = false;
-        public static final boolean NORTH_EAST_ENCODER_INVERTED = false;
+        public static final boolean NORTH_WEST_ENCODER_INVERTED = true;
+        public static final boolean SOUTH_WEST_ENCODER_INVERTED = true;
+        public static final boolean SOUTH_EAST_ENCODER_INVERTED = true;
+        public static final boolean NORTH_EAST_ENCODER_INVERTED = true;
 
         // Maximum rates of motion
         public static final double MAX_MPS = 3.0; // Max speed of robot (m/s)
@@ -128,7 +128,7 @@ public class Constants {
         // angle more aggressively than the wheel angular velocity.
         public static final double Q_AZIMUTH_ANG_VELOCITY = 1.1; // radians per sec
         public static final double Q_AZIMUTH = 0.08; // radians
-        public static final double Q_WHEEL_ANG_VELOCITY = 5; // radians per sec
+        public static final double Q_WHEEL_ANG_VELOCITY = 1; // radians per sec
         // This is for Kalman filter which isn't used for azimuth angle due to angle wrapping.
         // Model noise are assuming that our model isn't as accurate as our sensors.
         public static final double MODEL_AZIMUTH_ANGLE_NOISE = .1; // radians
@@ -144,10 +144,10 @@ public class Constants {
         public static final double MAX_MODULE_SPEED_MPS =
                 (FALCON_FREE_SPEED / GEAR_RATIO_WHEEL) * WHEEL_RADIUS;
         public static final double MAX_ANGULAR_VELOCITY = FALCON_FREE_SPEED / GEAR_RATIO_STEER;
-        public static final double MAX_ANGULAR_ACCELERATION = MAX_ANGULAR_VELOCITY * 10;
+        public static final double MAX_ANGULAR_ACCELERATION = MAX_ANGULAR_VELOCITY * 20;
 
         public static final double MAX_MODULE_ACCELERATION =
-                (FALCON_FREE_SPEED / GEAR_RATIO_WHEEL) * 1.5;
+                (FALCON_FREE_SPEED / GEAR_RATIO_WHEEL) * 20;
         public static final double MAX_MODULE_JERK = MAX_MODULE_ACCELERATION * 10;
     }
 }
