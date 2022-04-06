@@ -54,7 +54,8 @@ public class DriveTrain extends OutliersSubsystem {
                             RobotMap.CAN.TALONFX.NORTH_WEST_INNER,
                             RobotMap.DIO.NORTH_WEST,
                             Constants.DriveTrain.NORTH_WEST_OFFSET,
-                            Constants.DriveTrain.NORTH_WEST_ENCODER_INVERTED);
+                            Constants.DriveTrain.NORTH_WEST_ENCODER_INVERTED,
+                            Constants.DriveTrain.CAN_BUS);
             _southWest =
                     new DiffSwerveModule(
                             Constants.DriveTrain.SOUTH_WEST,
@@ -62,7 +63,8 @@ public class DriveTrain extends OutliersSubsystem {
                             RobotMap.CAN.TALONFX.SOUTH_WEST_INNER,
                             RobotMap.DIO.SOUTH_WEST,
                             Constants.DriveTrain.SOUTH_WEST_OFFSET,
-                            Constants.DriveTrain.SOUTH_WEST_ENCODER_INVERTED);
+                            Constants.DriveTrain.SOUTH_WEST_ENCODER_INVERTED,
+                            CAN_BUS);
             _southEast =
                     new DiffSwerveModule(
                             Constants.DriveTrain.SOUTH_EAST,
@@ -70,7 +72,8 @@ public class DriveTrain extends OutliersSubsystem {
                             RobotMap.CAN.TALONFX.SOUTH_EAST_OUTER,
                             RobotMap.DIO.SOUTH_EAST,
                             Constants.DriveTrain.SOUTH_EAST_OFFSET,
-                            Constants.DriveTrain.SOUTH_EAST_ENCODER_INVERTED);
+                            Constants.DriveTrain.SOUTH_EAST_ENCODER_INVERTED,
+                            CAN_BUS);
             _northEast =
                     new DiffSwerveModule(
                             Constants.DriveTrain.NORTH_EAST,
@@ -78,7 +81,8 @@ public class DriveTrain extends OutliersSubsystem {
                             RobotMap.CAN.TALONFX.NORTH_EAST_OUTER,
                             RobotMap.DIO.NORTH_EAST,
                             Constants.DriveTrain.NORTH_EAST_OFFSET,
-                            Constants.DriveTrain.NORTH_EAST_ENCODER_INVERTED);
+                            Constants.DriveTrain.NORTH_EAST_ENCODER_INVERTED,
+                            CAN_BUS);
 
             _modules = Arrays.asList(_northWest, _southWest, _southEast, _northEast);
 
@@ -159,12 +163,17 @@ public class DriveTrain extends OutliersSubsystem {
         metric("vy", vy);
         metric("omega", omega);
         Translation2d translation = new Translation2d(vx, vy);
-        Rotation2d direction = getDirection(translation);
 
         double magnitude = translation.getNorm();
 
-        if (Math.abs(getDistance(direction, getNearestPole(direction))) < POLE_THRESHOLD) {
-            translation = rotationToTranslation(getNearestPole(direction)).times(magnitude);
+        if (Math.abs(
+                        getDistance(
+                                getDirection(translation),
+                                getNearestPole(getDirection(translation))))
+                < POLE_THRESHOLD) {
+            translation =
+                    rotationToTranslation(getNearestPole(getDirection(translation)))
+                            .times(magnitude);
         }
 
         if (magnitude < TRANSLATION_DEADBAND) {
@@ -172,7 +181,7 @@ public class DriveTrain extends OutliersSubsystem {
             magnitude = 0;
         }
 
-        direction = getDirection(translation);
+        Rotation2d direction = getDirection(translation);
         double scaledMagnitude = Math.pow(magnitude, POWER);
         translation =
                 new Translation2d(
@@ -184,6 +193,8 @@ public class DriveTrain extends OutliersSubsystem {
 
         translation = translation.times(MAX_MPS);
         omega *= MAX_ANG_VEL;
+
+        _translationVector = translation;
 
         if (omega == 0 && _translationVector.getNorm() != 0) {
             if (!_lockHeading) {
@@ -201,8 +212,6 @@ public class DriveTrain extends OutliersSubsystem {
             _lockHeading = false;
             _headingController.setHeadingState(OFF);
         }
-
-        _translationVector = translation;
 
         double correctedOmega = omega + _headingController.getRotationCorrection(getHeading());
         metric("Drive X", _translationVector.getX());
@@ -225,6 +234,7 @@ public class DriveTrain extends OutliersSubsystem {
 
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, MAX_MODULE_SPEED_MPS);
         metric("module vel", swerveModuleStates[0].speedMetersPerSecond);
+        metric("module angle", swerveModuleStates[0].angle.getDegrees());
         setModuleStates(swerveModuleStates);
     }
 

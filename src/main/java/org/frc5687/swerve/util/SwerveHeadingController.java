@@ -1,9 +1,8 @@
 /* Team 5687 (C)2022 */
 package org.frc5687.swerve.util;
 
-import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import org.frc5687.swerve.Constants;
 
 // use 1323's Swerve heading controller
@@ -11,37 +10,28 @@ public class SwerveHeadingController {
 
     private HeadingState _headingState;
     private Rotation2d _targetHeading;
-    private final ProfiledPIDController _snapPID;
-    private final ProfiledPIDController _stabilizationPID;
-    private final ProfiledPIDController _visionPID;
+    private final PIDController _snapPID;
+    private final PIDController _stabilizationPID;
+    private final PIDController _visionPID;
 
     public SwerveHeadingController(double kDt) {
         _stabilizationPID =
-                new ProfiledPIDController(
+                new PIDController(
                         Constants.DriveTrain.STABILIZATION_kP,
                         Constants.DriveTrain.STABILIZATION_kI,
                         Constants.DriveTrain.STABILIZATION_kD,
-                        new TrapezoidProfile.Constraints(
-                                Constants.DriveTrain.PROFILE_CONSTRAINT_VEL,
-                                Constants.DriveTrain.PROFILE_CONSTRAINT_ACCEL),
                         kDt);
         _snapPID =
-                new ProfiledPIDController(
+                new PIDController(
                         Constants.DriveTrain.SNAP_kP,
                         Constants.DriveTrain.SNAP_kI,
                         Constants.DriveTrain.SNAP_kD,
-                        new TrapezoidProfile.Constraints(
-                                Constants.DriveTrain.PROFILE_CONSTRAINT_VEL,
-                                Constants.DriveTrain.PROFILE_CONSTRAINT_ACCEL),
                         kDt);
         _visionPID =
-                new ProfiledPIDController(
+                new PIDController(
                         Constants.DriveTrain.VISION_kP,
                         Constants.DriveTrain.VISION_kI,
                         Constants.DriveTrain.VISION_kD,
-                        new TrapezoidProfile.Constraints(
-                                Constants.DriveTrain.PROFILE_CONSTRAINT_VEL,
-                                Constants.DriveTrain.PROFILE_CONSTRAINT_ACCEL),
                         kDt);
         _stabilizationPID.enableContinuousInput(-Math.PI, Math.PI);
         _snapPID.enableContinuousInput(-Math.PI, Math.PI);

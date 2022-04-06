@@ -33,6 +33,8 @@ public class Drive extends OutliersCommand {
         if (_oi.snap()) {
             _driveTrain.setSnapHeading(new Rotation2d(Math.PI / 2.0));
             _driveTrain.drive(x, y, omega, true, false, true);
+        } else if (_oi.autoAim()) {
+            _driveTrain.drive(x, y, omega, true, true, false);
         } else {
             _driveTrain.drive(x, y, omega, true, false, false);
         }

@@ -50,6 +50,10 @@ public class OI extends OutliersProxy {
         return _driverAButton.get();
     }
 
+    public boolean autoAim() {
+        return _driverBButton.get();
+    }
+
     public double getDriveY() {
         //        yIn = getSpeedFromAxis(_leftJoystick, _leftJoystick.getYChannel());
         yIn = -getSpeedFromAxis(_driverGamepad, Gamepad.Axes.LEFT_Y.getNumber());

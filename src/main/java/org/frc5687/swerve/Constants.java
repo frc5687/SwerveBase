@@ -11,6 +11,7 @@ public class Constants {
     public static final double EPSILON = 0.00001;
 
     public static class DriveTrain {
+        public static final String CAN_BUS = "rio";
         public static final double kDt = 0.02;
         public static final double TRANSLATION_DEADBAND =
                 0.1; // Avoid unintentional joystick movement
@@ -102,16 +103,15 @@ public class Constants {
 
         // update rate of our modules 5ms.
         public static final double kDt = 0.005;
+        public static final int FALCON_VELOCITY_MEASUREMENT_WINDOW = 32;
+        public static final int TIMEOUT = 10;
 
         public static final double FALCON_FREE_SPEED =
                 Units.rotationsPerMinuteToRadiansPerSecond(6380);
-        public static final int TIMEOUT = 200;
         public static final double GEAR_RATIO_WHEEL = 6.46875;
         public static final double GEAR_RATIO_STEER = 9.2;
         public static final double FALCON_RATE = 600.0;
         public static final double WHEEL_RADIUS = 0.04615; // Meters with compression.
-        public static final double MAX_MODULE_SPEED_MPS =
-                (FALCON_FREE_SPEED / GEAR_RATIO_WHEEL) * WHEEL_RADIUS;
         public static final double TICKS_TO_ROTATIONS = 2048.0;
         public static final double VOLTAGE = 12.0;
         public static final double FEED_FORWARD = VOLTAGE / (FALCON_FREE_SPEED / GEAR_RATIO_WHEEL);
@@ -135,13 +135,19 @@ public class Constants {
         public static final double MODEL_AZIMUTH_ANG_VELOCITY_NOISE = 5.0; // radians per sec
         public static final double MODEL_WHEEL_ANG_VELOCITY_NOISE = 5.0; // radians per sec
         // Noise from sensors. Falcon With Gearbox causes us to have more uncertainty, so we
-        // increase
-        // the noise.
+        // increase the noise.
         public static final double SENSOR_AZIMUTH_ANGLE_NOISE = 0.01; // radians
         public static final double SENSOR_AZIMUTH_ANG_VELOCITY_NOISE = 0.1; // radians per sec
         public static final double SENSOR_WHEEL_ANG_VELOCITY_NOISE = 0.1; // radians per sec
         public static final double CONTROL_EFFORT = VOLTAGE;
 
-        public static final double MINIMUM_VELOCITY = 0.01; // meters per second
+        public static final double MAX_MODULE_SPEED_MPS =
+                (FALCON_FREE_SPEED / GEAR_RATIO_WHEEL) * WHEEL_RADIUS;
+        public static final double MAX_ANGULAR_VELOCITY = FALCON_FREE_SPEED / GEAR_RATIO_STEER;
+        public static final double MAX_ANGULAR_ACCELERATION = MAX_ANGULAR_VELOCITY * 10;
+
+        public static final double MAX_MODULE_ACCELERATION =
+                (FALCON_FREE_SPEED / GEAR_RATIO_WHEEL) * 1.5;
+        public static final double MAX_MODULE_JERK = MAX_MODULE_ACCELERATION * 10;
     }
 }

@@ -1,8 +1,11 @@
 /* Team 5687 (C)5687-2022 */
 package org.frc5687.swerve.subsystems;
 
+import static org.frc5687.swerve.Constants.DifferentialSwerveModule.*;
+
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 import edu.wpi.first.math.*;
 import edu.wpi.first.math.controller.LinearQuadraticRegulator;
 import edu.wpi.first.math.estimator.KalmanFilter;
@@ -13,6 +16,7 @@ import edu.wpi.first.math.numbers.*;
 import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.LinearSystemLoop;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import org.frc5687.swerve.Constants;
@@ -33,9 +37,13 @@ public class DiffSwerveModule {
     private Matrix<N3, N1> _reference; // same thing as a set point.
     private Matrix<N2, N1> _u;
 
+    private TrapezoidProfile.State _angleReference = new TrapezoidProfile.State();
+    private TrapezoidProfile.State _wheelVelocityReference = new TrapezoidProfile.State();
+    private final TrapezoidProfile.Constraints _profiledSteerConstraints;
+    private final TrapezoidProfile.Constraints _profiledWheelConstraints;
+
     private final double _encoderOffset;
     private final boolean _encoderInverted;
-
     private boolean _running;
 
     public DiffSwerveModule(
@@ -44,7 +52,8 @@ public class DiffSwerveModule {
             int rightMotorID,
             int encoderNum,
             double encoderOffset,
-            boolean encoderInverted) {
+            boolean encoderInverted,
+            String canBus) {
         // setup azimuth bore encoder.
         _boreEncoder = new DutyCycleEncoder(encoderNum);
         _boreEncoder.setDistancePerRotation(2.0 * Math.PI);
@@ -53,70 +62,21 @@ public class DiffSwerveModule {
 
         _reference = Matrix.mat(Nat.N3(), Nat.N1()).fill(0, 0, 0);
         _positionVector = positionVector;
-
         // setup both falcon motors.
-        _leftFalcon = new TalonFX(leftMotorID, "rio");
-        _rightFalcon = new TalonFX(rightMotorID, "rio");
-        _leftFalcon.configFactoryDefault();
-        _rightFalcon.configFactoryDefault();
-        _rightFalcon.setInverted(false);
-        _leftFalcon.setInverted(false);
-        _rightFalcon.setSensorPhase(false);
-        _leftFalcon.setSensorPhase(false);
-        // Model assumes the motors are in brake mode so do not change.
-        _rightFalcon.setNeutralMode(NeutralMode.Brake);
-        _leftFalcon.setNeutralMode(NeutralMode.Brake);
+        _leftFalcon = new TalonFX(leftMotorID, canBus);
+        _rightFalcon = new TalonFX(rightMotorID, canBus);
 
-        _rightFalcon.configSelectedFeedbackSensor(
-                FeedbackDevice.IntegratedSensor, 0, Constants.DifferentialSwerveModule.TIMEOUT);
-        _leftFalcon.configSelectedFeedbackSensor(
-                FeedbackDevice.IntegratedSensor, 0, Constants.DifferentialSwerveModule.TIMEOUT);
-        _rightFalcon.configForwardSoftLimitEnable(false);
-        _leftFalcon.configForwardSoftLimitEnable(false);
-
-        _leftFalcon.configVoltageCompSaturation(
-                Constants.DifferentialSwerveModule.VOLTAGE,
-                Constants.DifferentialSwerveModule.TIMEOUT);
-        _rightFalcon.configVoltageCompSaturation(
-                Constants.DifferentialSwerveModule.VOLTAGE,
-                Constants.DifferentialSwerveModule.TIMEOUT);
-        _leftFalcon.enableVoltageCompensation(true);
-        _rightFalcon.enableVoltageCompensation(true);
-        _rightFalcon.setStatusFramePeriod(
-                StatusFrame.Status_1_General, 5, Constants.DifferentialSwerveModule.TIMEOUT);
-        _leftFalcon.setStatusFramePeriod(
-                StatusFrame.Status_1_General, 5, Constants.DifferentialSwerveModule.TIMEOUT);
-        _rightFalcon.setStatusFramePeriod(
-                StatusFrame.Status_2_Feedback0, 20, Constants.DifferentialSwerveModule.TIMEOUT);
-        _leftFalcon.setStatusFramePeriod(
-                StatusFrame.Status_2_Feedback0, 20, Constants.DifferentialSwerveModule.TIMEOUT);
-        _rightFalcon.configSelectedFeedbackSensor(
-                FeedbackDevice.IntegratedSensor, 0, Constants.DifferentialSwerveModule.TIMEOUT);
-        _leftFalcon.configSelectedFeedbackSensor(
-                FeedbackDevice.IntegratedSensor, 0, Constants.DifferentialSwerveModule.TIMEOUT);
-        _rightFalcon.configForwardSoftLimitEnable(false);
-        _leftFalcon.configForwardSoftLimitEnable(false);
-        _rightFalcon.configSupplyCurrentLimit(
-                new SupplyCurrentLimitConfiguration(
-                        Constants.DifferentialSwerveModule.ENABLE_CURRENT_LIMIT,
-                        Constants.DifferentialSwerveModule.CURRENT_LIMIT,
-                        Constants.DifferentialSwerveModule.CURRENT_THRESHOLD,
-                        Constants.DifferentialSwerveModule.CURRENT_TRIGGER_TIME));
-        _leftFalcon.configSupplyCurrentLimit(
-                new SupplyCurrentLimitConfiguration(
-                        Constants.DifferentialSwerveModule.ENABLE_CURRENT_LIMIT,
-                        Constants.DifferentialSwerveModule.CURRENT_LIMIT,
-                        Constants.DifferentialSwerveModule.CURRENT_THRESHOLD,
-                        Constants.DifferentialSwerveModule.CURRENT_TRIGGER_TIME));
+        configureMotor(_leftFalcon);
+        configureMotor(_rightFalcon);
 
         // Creates a Linear System of our Differential Swerve Module.
         LinearSystem<N3, N2, N3> swerveModuleModel =
                 createDifferentialSwerveModule(
                         DCMotor.getFalcon500(2),
-                        Constants.DifferentialSwerveModule.INERTIA_STEER,
-                        Constants.DifferentialSwerveModule.INERTIA_WHEEL,
-                        Constants.DifferentialSwerveModule.GEAR_RATIO_STEER,
-                        Constants.DifferentialSwerveModule.GEAR_RATIO_WHEEL);
+                        INERTIA_STEER,
+                        INERTIA_WHEEL,
+                        GEAR_RATIO_STEER,
+                        GEAR_RATIO_WHEEL);
 
         // Creates a Kalman Filter as our Observer for our module. Works since system is linear.
         KalmanFilter<N3, N2, N3> swerveObserver =
@@ -126,47 +86,40 @@ public class DiffSwerveModule {
                         swerveModuleModel,
                         Matrix.mat(Nat.N3(), Nat.N1())
                                 .fill(
-                                        Constants.DifferentialSwerveModule
-                                                .MODEL_AZIMUTH_ANGLE_NOISE,
-                                        Constants.DifferentialSwerveModule
-                                                .MODEL_AZIMUTH_ANG_VELOCITY_NOISE,
-                                        Constants.DifferentialSwerveModule
-                                                .MODEL_WHEEL_ANG_VELOCITY_NOISE),
+                                        MODEL_AZIMUTH_ANGLE_NOISE,
+                                        MODEL_AZIMUTH_ANG_VELOCITY_NOISE,
+                                        MODEL_WHEEL_ANG_VELOCITY_NOISE),
                         Matrix.mat(Nat.N3(), Nat.N1())
                                 .fill(
-                                        Constants.DifferentialSwerveModule
-                                                .SENSOR_AZIMUTH_ANGLE_NOISE,
-                                        Constants.DifferentialSwerveModule
-                                                .SENSOR_AZIMUTH_ANG_VELOCITY_NOISE,
-                                        Constants.DifferentialSwerveModule
-                                                .SENSOR_WHEEL_ANG_VELOCITY_NOISE),
-                        Constants.DifferentialSwerveModule.kDt);
+                                        SENSOR_AZIMUTH_ANGLE_NOISE,
+                                        SENSOR_AZIMUTH_ANG_VELOCITY_NOISE,
+                                        SENSOR_WHEEL_ANG_VELOCITY_NOISE),
+                        kDt);
         // Creates an LQR controller for our Swerve Module.
         LinearQuadraticRegulator<N3, N2, N3> swerveController =
                 new LinearQuadraticRegulator<>(
                         swerveModuleModel,
                         // Q Vector/Matrix Maximum error tolerance
-                        VecBuilder.fill(
-                                Constants.DifferentialSwerveModule.Q_AZIMUTH,
-                                Constants.DifferentialSwerveModule.Q_AZIMUTH_ANG_VELOCITY,
-                                Constants.DifferentialSwerveModule.Q_WHEEL_ANG_VELOCITY),
+                        VecBuilder.fill(Q_AZIMUTH, Q_AZIMUTH_ANG_VELOCITY, Q_WHEEL_ANG_VELOCITY),
                         // R Vector/Matrix Maximum control effort.
-                        VecBuilder.fill(
-                                Constants.DifferentialSwerveModule.CONTROL_EFFORT,
-                                Constants.DifferentialSwerveModule.CONTROL_EFFORT),
-                        Constants.DifferentialSwerveModule.kDt);
+                        VecBuilder.fill(CONTROL_EFFORT, CONTROL_EFFORT),
+                        kDt);
 
         // Creates a LinearSystemLoop that contains the Model, Controller, Observer, Max Volts,
         // Update Rate.
         _swerveControlLoop =
                 new LinearSystemLoop<>(
-                        swerveModuleModel,
-                        swerveController,
-                        swerveObserver,
-                        12.0,
-                        Constants.DifferentialSwerveModule.kDt);
+                        swerveModuleModel, swerveController, swerveObserver, VOLTAGE, kDt);
 
-        // Initializes the vectors and matrices.
+        _profiledSteerConstraints =
+                new TrapezoidProfile.Constraints(
+                        Constants.DifferentialSwerveModule.MAX_ANGULAR_VELOCITY,
+                        Constants.DifferentialSwerveModule.MAX_ANGULAR_ACCELERATION);
+        _profiledWheelConstraints =
+                new TrapezoidProfile.Constraints(
+                        Constants.DifferentialSwerveModule.MAX_MODULE_ACCELERATION,
+                        Constants.DifferentialSwerveModule.MAX_MODULE_JERK);
+        //         Initializes the vectors and matrices.
         _swerveControlLoop.reset(VecBuilder.fill(0, 0, 0));
         _u = VecBuilder.fill(0, 0);
         // boolean for if we want the modules to be running as we set voltage in the periodic loop.
@@ -174,8 +127,67 @@ public class DiffSwerveModule {
     }
 
     /**
-     * wraps angle so that absolute encoder can be continues. (i.e) No issues when switching between
-     * -PI and PI as they are the same point but different values.
+     * configure falcon500 motor
+     *
+     * @param falcon motor
+     */
+    private void configureMotor(TalonFX falcon) {
+        falcon.configFactoryDefault();
+        falcon.setInverted(false);
+        falcon.setSensorPhase(false);
+        // Model assumes the motors are in brake mode so do not change.
+        falcon.setNeutralMode(NeutralMode.Brake);
+        falcon.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, TIMEOUT);
+        falcon.configForwardSoftLimitEnable(false);
+
+        falcon.configVoltageCompSaturation(VOLTAGE, TIMEOUT);
+
+        falcon.enableVoltageCompensation(true);
+        falcon.setStatusFramePeriod(StatusFrame.Status_1_General, 5, TIMEOUT);
+        falcon.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 5, TIMEOUT);
+        falcon.configVelocityMeasurementPeriod(SensorVelocityMeasPeriod.Period_5Ms, TIMEOUT);
+        falcon.configVelocityMeasurementWindow(FALCON_VELOCITY_MEASUREMENT_WINDOW, TIMEOUT);
+        falcon.configSupplyCurrentLimit(
+                new SupplyCurrentLimitConfiguration(
+                        ENABLE_CURRENT_LIMIT,
+                        CURRENT_LIMIT,
+                        CURRENT_THRESHOLD,
+                        CURRENT_TRIGGER_TIME));
+    }
+    /**
+     * Calculated the profiled reference with angle wrapping.
+     *
+     * @return Vector (r-x) vector with profiled values.
+     */
+    private Matrix<N3, N1> profiledReference() {
+        double angleMinimumGoalDistance =
+                MathUtil.inputModulus(_reference.get(0, 0) - getModuleAngle(), -Math.PI, Math.PI);
+        double angleMinimumSetpointDistance =
+                MathUtil.inputModulus(
+                        _angleReference.position - getModuleAngle(), -Math.PI, Math.PI);
+        _reference.set(0, 0, angleMinimumGoalDistance + getModuleAngle());
+        _angleReference.position = angleMinimumSetpointDistance + getModuleAngle();
+        var steerProfile =
+                new TrapezoidProfile(
+                        _profiledSteerConstraints,
+                        new TrapezoidProfile.State(_reference.get(0, 0), _reference.get(1, 0)),
+                        _angleReference);
+        _angleReference = steerProfile.calculate(Constants.DifferentialSwerveModule.kDt);
+
+        var wheelProfile =
+                new TrapezoidProfile(
+                        _profiledWheelConstraints,
+                        new TrapezoidProfile.State(_reference.get(2, 0), 0),
+                        _wheelVelocityReference);
+        _wheelVelocityReference = wheelProfile.calculate(Constants.DifferentialSwerveModule.kDt);
+        return VecBuilder.fill(
+                _angleReference.position - getModuleAngle(),
+                _angleReference.velocity - getAzimuthAngularVelocity(),
+                _wheelVelocityReference.position - getWheelAngularVelocity());
+    }
+    /**
+     * wraps angle so that absolute encoder can be continuous. (i.e) No issues when switching
+     * between -PI and PI as they are the same point but different values.
      *
      * @param reference is the Matrix that contains the reference wanted such as [Math.PI, 0, 100].
      * @param xHat is the predicted states of our system. [Azimuth Angle, Azimuth Angular Velocity,
@@ -218,19 +230,19 @@ public class DiffSwerveModule {
                         _swerveControlLoop
                                 .getController()
                                 .getK()
-                                .times(
-                                        wrapAngle(
-                                                _swerveControlLoop.getNextR(),
-                                                _swerveControlLoop.getXHat(),
-                                                -Math.PI,
-                                                Math.PI))
+                                .times(profiledReference())
+                                //                                        wrapAngle(
+                                //
+                                // _swerveControlLoop.getNextR(),
+                                //
+                                // _swerveControlLoop.getXHat(),
+                                //                                                -Math.PI,
+                                //                                                Math.PI))
                                 .plus(
                                         VecBuilder.fill(
-                                                Constants.DifferentialSwerveModule.FEED_FORWARD
-                                                        * _reference.get(2, 0),
-                                                -Constants.DifferentialSwerveModule.FEED_FORWARD
-                                                        * _reference.get(2, 0))));
-        _swerveControlLoop.getObserver().predict(_u, Constants.DifferentialSwerveModule.kDt);
+                                                FEED_FORWARD * _reference.get(2, 0),
+                                                -FEED_FORWARD * _reference.get(2, 0))));
+        _swerveControlLoop.getObserver().predict(_u, kDt);
     }
 
     public void start() {
@@ -246,25 +258,13 @@ public class DiffSwerveModule {
     }
 
     public void setRightFalconVoltage(double voltage) {
-        double limVoltage =
-                Helpers.limit(
-                        voltage,
-                        -Constants.DifferentialSwerveModule.VOLTAGE,
-                        Constants.DifferentialSwerveModule.VOLTAGE);
-        _rightFalcon.set(
-                TalonFXControlMode.PercentOutput,
-                limVoltage / Constants.DifferentialSwerveModule.VOLTAGE);
+        double limVoltage = Helpers.limit(voltage, -VOLTAGE, VOLTAGE);
+        _rightFalcon.set(TalonFXControlMode.PercentOutput, limVoltage / VOLTAGE);
     }
 
     public void setLeftFalconVoltage(double voltage) {
-        double limVoltage =
-                Helpers.limit(
-                        voltage,
-                        -Constants.DifferentialSwerveModule.VOLTAGE,
-                        Constants.DifferentialSwerveModule.VOLTAGE);
-        _leftFalcon.set(
-                TalonFXControlMode.PercentOutput,
-                limVoltage / Constants.DifferentialSwerveModule.VOLTAGE);
+        double limVoltage = Helpers.limit(voltage, -VOLTAGE, VOLTAGE);
+        _leftFalcon.set(TalonFXControlMode.PercentOutput, limVoltage / VOLTAGE);
     }
 
     public double getModuleAngle() {
@@ -276,39 +276,32 @@ public class DiffSwerveModule {
 
     public double getWheelAngularVelocity() {
         return Units.rotationsPerMinuteToRadiansPerSecond(
-                        getLeftFalconRPM() / Constants.DifferentialSwerveModule.GEAR_RATIO_WHEEL
-                                - getRightFalconRPM()
-                                        / Constants.DifferentialSwerveModule.GEAR_RATIO_WHEEL)
+                        getLeftFalconRPM() / GEAR_RATIO_WHEEL
+                                - getRightFalconRPM() / GEAR_RATIO_WHEEL)
                 / 2.0;
     }
 
     public double getWheelVelocity() {
-        return getWheelAngularVelocity()
-                * Constants.DifferentialSwerveModule.WHEEL_RADIUS; // Meters per sec.
+        return getWheelAngularVelocity() * WHEEL_RADIUS; // Meters per sec.
     }
 
     public double getPredictedWheelVelocity() {
-        return getPredictedWheelAngularVelocity() * Constants.DifferentialSwerveModule.WHEEL_RADIUS;
+        return getPredictedWheelAngularVelocity() * WHEEL_RADIUS;
     }
 
     public double getAzimuthAngularVelocity() {
         return Units.rotationsPerMinuteToRadiansPerSecond(
-                        getLeftFalconRPM() / Constants.DifferentialSwerveModule.GEAR_RATIO_STEER
-                                + getRightFalconRPM()
-                                        / Constants.DifferentialSwerveModule.GEAR_RATIO_STEER)
+                        getLeftFalconRPM() / GEAR_RATIO_STEER
+                                + getRightFalconRPM() / GEAR_RATIO_STEER)
                 / 2.0;
     }
 
     public double getRightFalconRPM() {
-        return _rightFalcon.getSelectedSensorVelocity()
-                / Constants.DifferentialSwerveModule.TICKS_TO_ROTATIONS
-                * Constants.DifferentialSwerveModule.FALCON_RATE;
+        return _rightFalcon.getSelectedSensorVelocity() / TICKS_TO_ROTATIONS * FALCON_RATE;
     }
 
     public double getLeftFalconRPM() {
-        return _leftFalcon.getSelectedSensorVelocity()
-                / Constants.DifferentialSwerveModule.TICKS_TO_ROTATIONS
-                * Constants.DifferentialSwerveModule.FALCON_RATE;
+        return _leftFalcon.getSelectedSensorVelocity() / TICKS_TO_ROTATIONS * FALCON_RATE;
     }
 
     public double getLeftVoltage() {
@@ -387,16 +380,12 @@ public class DiffSwerveModule {
             setReference(
                     VecBuilder.fill(
                             state.angle.getRadians(),
-                            _swerveControlLoop.getXHat(1),
-                            state.speedMetersPerSecond
-                                    / Constants.DifferentialSwerveModule.WHEEL_RADIUS));
+                            0,
+                            state.speedMetersPerSecond / WHEEL_RADIUS));
         } else {
             setReference(
                     VecBuilder.fill(
-                            getModuleAngle(),
-                            _swerveControlLoop.getXHat(1),
-                            state.speedMetersPerSecond
-                                    / Constants.DifferentialSwerveModule.WHEEL_RADIUS));
+                            getModuleAngle(), 0, state.speedMetersPerSecond / WHEEL_RADIUS));
         }
     }
 
@@ -406,15 +395,6 @@ public class DiffSwerveModule {
      * @param state azimuth angle in radians and velocity of wheel in meters per sec.
      */
     public void setIdealState(SwerveModuleState state) {
-        //        Rotation2d angleDifference = state.angle.minus(new Rotation2d(getModuleAngle()));
-        //        if (Math.abs(angleDifference.getRadians()) > (Math.PI / 2.0)) {
-        //            setModuleState(
-        //                    new SwerveModuleState(
-        //                            -state.speedMetersPerSecond,
-        //                            state.angle.rotateBy(new Rotation2d(Math.PI))));
-        //        } else {
-        //            setModuleState(state);
-        //        }
         setModuleState(SwerveModuleState.optimize(state, new Rotation2d(getModuleAngle())));
     }
 

@@ -1,0 +1,32 @@
+{
+  "HALProvider": {
+    "Other Devices": {
+      "DutyCycleEncoder[3]": {
+        "header": {
+          "open": true
+        }
+      },
+      "navX-Sensor[0]": {
+        "header": {
+          "open": true
+        }
+      }
+    }
+  },
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo"
+    }
+  },
+  "NetworkTables": {
+    "SmartDashboard": {
+      "DriveTrain": {
+        "open": true
+      },
+      "Robot": {
+        "open": true
+      },
+      "open": true
+    }
+  }
+}
