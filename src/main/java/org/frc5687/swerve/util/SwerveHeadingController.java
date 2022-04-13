@@ -14,6 +14,8 @@ public class SwerveHeadingController {
     private final PIDController _stabilizationPID;
     private final PIDController _visionPID;
 
+    private long _disableTime;
+
     public SwerveHeadingController(double kDt) {
         _stabilizationPID =
                 new PIDController(
@@ -36,7 +38,9 @@ public class SwerveHeadingController {
         _stabilizationPID.enableContinuousInput(-Math.PI, Math.PI);
         _snapPID.enableContinuousInput(-Math.PI, Math.PI);
         _visionPID.enableContinuousInput(-Math.PI, Math.PI);
+        _headingState = HeadingState.OFF;
         _targetHeading = new Rotation2d();
+        _disableTime = System.currentTimeMillis();
     }
 
     public HeadingState getHeadingState() {
@@ -45,6 +49,15 @@ public class SwerveHeadingController {
 
     public void setState(HeadingState state) {
         _headingState = state;
+    }
+
+    public void disable() {
+        setState(HeadingState.OFF);
+    }
+
+    public void temporaryDisable() {
+        _disableTime = System.currentTimeMillis() + Constants.DriveTrain.DISABLE_TIME;
+        setState(HeadingState.TEMPORARY_DISABLE);
     }
 
     public void setStabilizationHeading(Rotation2d heading) {
@@ -75,6 +88,12 @@ public class SwerveHeadingController {
         switch (_headingState) {
             case OFF:
                 break;
+            case TEMPORARY_DISABLE:
+                _targetHeading = heading;
+                if (System.currentTimeMillis() > _disableTime) {
+                    setState(HeadingState.STABILIZE);
+                }
+
             case STABILIZE:
                 correction =
                         _stabilizationPID.calculate(
@@ -94,9 +113,10 @@ public class SwerveHeadingController {
 
     public enum HeadingState {
         OFF(0),
-        STABILIZE(1),
-        SNAP(2),
-        VISION(3);
+        TEMPORARY_DISABLE(1),
+        STABILIZE(2),
+        SNAP(3),
+        VISION(4);
 
         private final int _value;
 

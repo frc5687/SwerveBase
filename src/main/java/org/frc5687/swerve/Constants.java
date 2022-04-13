@@ -8,15 +8,20 @@ public class Constants {
     public static final int TICKS_PER_UPDATE = 1;
     public static final double METRIC_FLUSH_PERIOD = 1.0;
     public static final double UPDATE_PERIOD = 0.02;
+    public static final double PERIODIC_PERIOD = 0.02;
     public static final double EPSILON = 1e-12;
 
     public static class DriveTrain {
         public static final String CAN_BUS = "DriveTrain";
-        public static final double kDt = 0.02;
+        public static final double kDt = 0.01; // 10 ms
         public static final double TRANSLATION_DEADBAND =
                 0.1; // Avoid unintentional joystick movement
         public static final double ROTATION_DEADBAND = 0.1; // Avoid unintentional joystick movement
-        public static final double POWER = 1.75; // Determines the curve of drive input
+        public static final double TRANSLATION_POWER = 1.75; // Determines the curve of drive input
+        public static final double ROTATION_POWER = 1.0; // Determines the curve of drive input
+        public static final long DISABLE_TIME = 200; // ms
+
+        public static final double LINEAR_VELOCITY_REFERENCE = 0.5;
 
         // Size of the robot chassis in meters
         public static final double WIDTH = 0.6223; // meters
@@ -70,6 +75,7 @@ public class Constants {
 
         // Maximum rates of motion
         public static final double MAX_MPS = 3.0; // Max speed of robot (m/s)
+        public static final double MAX_AUTO_MPS = 3.0; // Max speed of robot (m/s)
         public static final double MAX_MPS_DURING_CLIMB =
                 MAX_MPS / 4; // Max speed of robot (m/s) during climb
         public static final double MAX_ANG_VEL =
@@ -97,6 +103,8 @@ public class Constants {
         public static final double kP = 11.5;
         public static final double kI = 0.0;
         public static final double kD = 0.5;
+
+        public static final double POSITION_TOLERANCE = 0.01;
     }
 
     public static class DifferentialSwerveModule {

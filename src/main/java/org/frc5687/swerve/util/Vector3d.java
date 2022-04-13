@@ -27,4 +27,48 @@ public class Vector3d {
     public double magnitude() {
         return Math.sqrt((_x * _x) + (_y * _y) + (_z * _z));
     }
+
+    public double dot(Vector3d other) {
+        return (_x * other._x) + (_y * other._y) + (_z * other._z);
+    }
+
+    public Vector3d plus(Vector3d other) {
+        return new Vector3d(_x + other._x, _y + other._y, _z + other._z);
+    }
+
+    public Vector3d minus(Vector3d other) {
+        return new Vector3d(_x - other._x, _y - other._y, _z - other._z);
+    }
+
+    public Vector3d scale(double scalar) {
+        return new Vector3d(_x * scalar, _y * scalar, _z * scalar);
+    }
+
+    public double x() {
+        return _x;
+    }
+
+    public void setX(double x) {
+        _x = x;
+    }
+
+    public double y() {
+        return _y;
+    }
+
+    public void setY(double y) {
+        _y = y;
+    }
+
+    public double z() {
+        return _z;
+    }
+
+    public void setZ(double z) {
+        _z = z;
+    }
+
+    public String toString() {
+        return "X: " + _x + ", Y: " + _y + ", Z: " + _z;
+    }
 }
