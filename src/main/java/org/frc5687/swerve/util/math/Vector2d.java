@@ -1,8 +1,9 @@
 /* Team 5687 (C)2022 */
-package org.frc5687.swerve.util;
+package org.frc5687.swerve.util.math;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import org.frc5687.rapidreact.Constants;
+import org.frc5687.swerve.Constants;
+import org.frc5687.swerve.util.Helpers;
 
 public class Vector2d {
     protected static final Vector2d IDENTITY = new Vector2d();

@@ -8,12 +8,13 @@ public class Constants {
     public static final int TICKS_PER_UPDATE = 1;
     public static final double METRIC_FLUSH_PERIOD = 1.0;
     public static final double UPDATE_PERIOD = 0.02;
-    public static final double PERIODIC_PERIOD = 0.02;
+    public static final double CONTROL_PERIOD = 0.005;
+    public static final double DATA_PERIOD = 0.005;
     public static final double EPSILON = 1e-12;
 
     public static class DriveTrain {
         public static final String CAN_BUS = "DriveTrain";
-        public static final double kDt = 0.01; // 10 ms
+        public static final double kDt = 0.005; // 10 ms
         public static final double TRANSLATION_DEADBAND =
                 0.1; // Avoid unintentional joystick movement
         public static final double ROTATION_DEADBAND = 0.1; // Avoid unintentional joystick movement

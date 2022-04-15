@@ -129,8 +129,8 @@ public class DiffSwerveModule {
         falcon.configVoltageCompSaturation(VOLTAGE, TIMEOUT);
         falcon.enableVoltageCompensation(true);
         falcon.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 10, TIMEOUT);
-        falcon.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 10, TIMEOUT);
-        falcon.configVelocityMeasurementPeriod(SensorVelocityMeasPeriod.Period_10Ms, TIMEOUT);
+        falcon.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 5, TIMEOUT);
+        falcon.configVelocityMeasurementPeriod(SensorVelocityMeasPeriod.Period_5Ms, TIMEOUT);
         falcon.configVelocityMeasurementWindow(FALCON_VELOCITY_MEASUREMENT_WINDOW, TIMEOUT);
         falcon.configSupplyCurrentLimit(
                 new SupplyCurrentLimitConfiguration(
@@ -236,8 +236,8 @@ public class DiffSwerveModule {
 
     public double getWheelAngularVelocity() {
         return Units.rotationsPerMinuteToRadiansPerSecond(
-                getLeftFalconRPM() / GEAR_RATIO_WHEEL
-                        - getRightFalconRPM() / GEAR_RATIO_WHEEL)
+                        getLeftFalconRPM() / GEAR_RATIO_WHEEL
+                                - getRightFalconRPM() / GEAR_RATIO_WHEEL)
                 / 2.0;
     }
 
@@ -251,8 +251,8 @@ public class DiffSwerveModule {
 
     public double getAzimuthAngularVelocity() {
         return Units.rotationsPerMinuteToRadiansPerSecond(
-                getLeftFalconRPM() / GEAR_RATIO_STEER
-                        + getRightFalconRPM() / GEAR_RATIO_STEER)
+                        getLeftFalconRPM() / GEAR_RATIO_STEER
+                                + getRightFalconRPM() / GEAR_RATIO_STEER)
                 / 2.0;
     }
 

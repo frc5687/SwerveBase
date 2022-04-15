@@ -1,5 +1,5 @@
 /* Team 5687 (C)2022 */
-package org.frc5687.swerve.util;
+package org.frc5687.swerve.util.math;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 

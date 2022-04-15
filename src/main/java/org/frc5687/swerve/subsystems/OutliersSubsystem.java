@@ -54,21 +54,21 @@ public abstract class OutliersSubsystem extends SubsystemBase
     }
 
     public void metric(String name, String value) {
-            SmartDashboard.putString(getClass().getSimpleName() + "/" + name, value);
+        SmartDashboard.putString(getClass().getSimpleName() + "/" + name, value);
         if (_metricTracker != null) {
             _metricTracker.put(name, value);
         }
     }
 
     public void metric(String name, double value) {
-            SmartDashboard.putNumber(getClass().getSimpleName() + "/" + name, value);
+        SmartDashboard.putNumber(getClass().getSimpleName() + "/" + name, value);
         if (_metricTracker != null) {
             _metricTracker.put(name, value);
         }
     }
 
     public void metric(String name, boolean value) {
-            SmartDashboard.putBoolean(getClass().getSimpleName() + "/" + name, value);
+        SmartDashboard.putBoolean(getClass().getSimpleName() + "/" + name, value);
         if (_metricTracker != null) {
             _metricTracker.put(name, value);
         }

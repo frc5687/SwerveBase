@@ -3,7 +3,7 @@ package org.frc5687.swerve.subsystems;
 
 import static org.frc5687.swerve.Constants.DifferentialSwerveModule.MAX_MODULE_SPEED_MPS;
 import static org.frc5687.swerve.Constants.DriveTrain.*;
-import static org.frc5687.swerve.util.GeometryUtil.*;
+import static org.frc5687.swerve.util.math.GeometryUtil.*;
 
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.math.controller.HolonomicDriveController;
@@ -20,12 +20,13 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.constraint.SwerveDriveKinematicsConstraint;
-import edu.wpi.first.wpilibj.DriverStation;
 import java.util.Arrays;
 import java.util.List;
 import org.frc5687.swerve.Constants;
 import org.frc5687.swerve.RobotMap;
 import org.frc5687.swerve.util.*;
+import org.frc5687.swerve.util.math.Vector2d;
+import org.frc5687.swerve.util.math.Vector3d;
 
 public class DriveTrain extends OutliersSubsystem {
     // Order we define swerve modules in kinematics
@@ -44,6 +45,7 @@ public class DriveTrain extends OutliersSubsystem {
     private boolean _lockHeading;
 
     private AHRS _imu;
+    private Coprocessor _coprocessor;
     private HolonomicDriveController _poseController;
     private SwerveHeadingController _headingController;
 
@@ -52,15 +54,15 @@ public class DriveTrain extends OutliersSubsystem {
     private Rotation2d _trajectoryHeading;
     private Pose2d _goalPose;
 
-    private double _driveSpeed = Constants.DriveTrain.MAX_MPS;
+    private double _prevX;
+    private double _prevY;
+    private double _prevTheta;
 
-    private boolean _isMoving = false;
-    private boolean _climbing = false;
-
-    public DriveTrain(OutliersContainer container, AHRS imu) {
+    public DriveTrain(OutliersContainer container, AHRS imu, Coprocessor coprocessor) {
         super(container);
         try {
             _imu = imu;
+            _coprocessor = coprocessor;
             _northWest =
                     new DiffSwerveModule(
                             Constants.DriveTrain.NORTH_WEST,
@@ -107,6 +109,7 @@ public class DriveTrain extends OutliersSubsystem {
                             _southWest.getModulePosition(),
                             _southEast.getModulePosition(),
                             _northEast.getModulePosition());
+
             _odometry = new SwerveDriveOdometry(_kinematics, getHeading());
 
             _poseController =
@@ -132,7 +135,6 @@ public class DriveTrain extends OutliersSubsystem {
             _rotationInput = 0;
             _controlState = ControlState.NEUTRAL;
             _fieldRelative = true;
-            _isMoving = false;
             _lockHeading = false;
             _trajectoryGoal = new Trajectory.State();
             _trajectoryHeading = new Rotation2d();
@@ -171,7 +173,22 @@ public class DriveTrain extends OutliersSubsystem {
 
     @Override
     public void dataPeriodic(double timestamp) {
+
+        _prevX = _odometry.getPoseMeters().getX();
+        _prevY = _odometry.getPoseMeters().getY();
+        _prevTheta = _odometry.getPoseMeters().getRotation().getRadians();
+
         updateOdometry();
+
+        double xDt = _odometry.getPoseMeters().getX() - _prevX;
+        double yDt = _odometry.getPoseMeters().getY() - _prevY;
+        double thetaDt = _odometry.getPoseMeters().getRotation().getRadians() - _prevTheta;
+
+        _coprocessor.sendMessage(new Coprocessor.JetsonFrames.SendFrame(
+                new Coprocessor.JetsonFrames.Data(xDt),
+                new Coprocessor.JetsonFrames.Data(yDt),
+                new Coprocessor.JetsonFrames.Data(thetaDt)
+        ));
     }
 
     public void startModules() {
@@ -231,7 +248,7 @@ public class DriveTrain extends OutliersSubsystem {
         // scale rotation
         omega = Math.pow(Math.abs(omega), ROTATION_POWER) * Math.signum(omega);
 
-        translation = translation.scale(_driveSpeed);
+        translation = translation.scale(MAX_MPS);
         omega *= MAX_ANG_VEL;
 
         //        if (omega != 0 && _rotationInput == 0) {
@@ -257,21 +274,20 @@ public class DriveTrain extends OutliersSubsystem {
                 _kinematics.toSwerveModuleStates(
                         _fieldRelative
                                 ? ChassisSpeeds.fromFieldRelativeSpeeds(
-                                translationVector.x(),
-                                translationVector.y(),
-                                rotationalInput,
-                                getHeading())
+                                        translationVector.x(),
+                                        translationVector.y(),
+                                        rotationalInput,
+                                        getHeading())
                                 : new ChassisSpeeds(
-                                translationVector.x(),
-                                translationVector.y(),
-                                rotationalInput));
+                                        translationVector.x(),
+                                        translationVector.y(),
+                                        rotationalInput));
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, MAX_MODULE_SPEED_MPS);
         setModuleStates(swerveModuleStates);
     }
 
     public void updateSwerve(Trajectory.State goal, Rotation2d heading) {
-        ChassisSpeeds adjustedSpeeds =
-                _poseController.calculate(getOdometryPose(), goal, getHeading());
+        ChassisSpeeds adjustedSpeeds = _poseController.calculate(getOdometryPose(), goal, heading);
         SwerveModuleState[] moduleStates = _kinematics.toSwerveModuleStates(adjustedSpeeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, MAX_MODULE_SPEED_MPS);
         setModuleStates(moduleStates);
@@ -340,7 +356,7 @@ public class DriveTrain extends OutliersSubsystem {
 
     public TrajectoryConfig getConfig() {
         return new TrajectoryConfig(
-                Constants.DriveTrain.MAX_AUTO_MPS, Constants.DriveTrain.MAX_MPSS)
+                        Constants.DriveTrain.MAX_AUTO_MPS, Constants.DriveTrain.MAX_MPSS)
                 .setKinematics(_kinematics)
                 .addConstraint(getKinematicConstraint());
     }
@@ -378,7 +394,6 @@ public class DriveTrain extends OutliersSubsystem {
         }
         return time;
     }
-
 
     public boolean isAtPose(Pose2d pose) {
         double diffX = getOdometryPose().getX() - pose.getX();
@@ -425,7 +440,6 @@ public class DriveTrain extends OutliersSubsystem {
 
     @Override
     public void updateDashboard() {
-
         metric("Swerve State", _controlState.name());
         metric("Heading State", getCurrentHeadingState().name());
         metric("Odometry Pose", getOdometryPose().toString());

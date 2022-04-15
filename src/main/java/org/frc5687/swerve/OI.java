@@ -8,9 +8,9 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import org.frc5687.swerve.subsystems.DriveTrain;
-import org.frc5687.swerve.util.AxisButton;
-import org.frc5687.swerve.util.Gamepad;
 import org.frc5687.swerve.util.OutliersProxy;
+import org.frc5687.swerve.util.oi.AxisButton;
+import org.frc5687.swerve.util.oi.Gamepad;
 
 public class OI extends OutliersProxy {
     protected Gamepad _driverGamepad;
