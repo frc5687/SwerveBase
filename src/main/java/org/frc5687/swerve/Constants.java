@@ -14,18 +14,18 @@ public class Constants {
 
         public static final double WIDTH = 0.6223;
         public static final double LENGTH = 0.6223;
-        public static final Translation2d FRONT_LEFT_POSITION =
+        public static final Translation2d NORTH_WEST_POSITION =
                 new Translation2d(WIDTH / 2.0, LENGTH / 2.0);
-        public static final double FRONT_LEFT_ENCODER_OFFSET = -0.071; // radians
-        public static final Translation2d FRONT_RIGHT_POSITION =
+        public static final double NORTH_WEST_ENCODER_OFFSET = -0.071; // radians
+        public static final Translation2d NORTH_EAST_POSITION =
                 new Translation2d(WIDTH / 2.0, -LENGTH / 2.0);
-        public static final double FRONT_RIGHT_ENCODER_OFFSET = -1.01; // radians
-        public static final Translation2d BACK_LEFT_POSITION =
+        public static final double NORTH_EAST_ENCODER_OFFSET = -1.01; // radians
+        public static final Translation2d SOUTH_EAST_POSITION =
                 new Translation2d(-WIDTH / 2.0, LENGTH / 2.0);
-        public static final double BACK_RIGHT_ENCODER_OFFSET = -0.122; // radians
-        public static final Translation2d BACK_RIGHT_POSITION =
+        public static final double SOUTH_EAST_ENCODER_OFFSET = -0.122; // radians
+        public static final Translation2d SOUTH_WEST_POSITION =
                 new Translation2d(-WIDTH / 2.0, -LENGTH / 2.0);
-        public static final double BACK_LEFT_ENCODER_OFFSET = 0.585 + Math.PI; // radians
+        public static final double SOUTH_WEST_ENCODER_OFFSET = 0.585 + Math.PI; // radians
 
         public static final double DEADBAND = 0.1;
 
