@@ -1,5 +1,5 @@
-/* Team 5687 (C)2021 */
-package org.frc5687.swerve.util;
+/* Team 5687 (C)2021-2022 */
+package org.frc5687.lib.logging;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.io.BufferedWriter;

@@ -8,6 +8,9 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import org.frc5687.lib.logging.ILoggingSource;
+import org.frc5687.lib.logging.MetricTracker;
+import org.frc5687.lib.logging.RioLogger;
 import org.frc5687.swerve.util.*;
 
 /**
@@ -33,10 +36,6 @@ public class Robot extends OutliersRobot implements ILoggingSource {
 
     private Command _autoCommand;
 
-    private Timer _timer;
-    private double _prevTime;
-    private double _time;
-
     /**
      * This function is setRollerSpeed when the robot is first started up and should be used for any
      * initialization code.
@@ -52,12 +51,10 @@ public class Robot extends OutliersRobot implements ILoggingSource {
         info("Robot " + _name + " running in " + _identityMode.toString() + " mode");
 
         _robotContainer = new RobotContainer(this, _identityMode);
-        _timer = new Timer();
         _robotContainer.init();
 
         // Periodically flushes metrics (might be good to configure enable/disable via USB config
         // file)
-        _time = _timer.get();
         new Notifier(MetricTracker::flushAll).startPeriodic(Constants.METRIC_FLUSH_PERIOD);
     }
 
@@ -110,11 +107,8 @@ public class Robot extends OutliersRobot implements ILoggingSource {
     private void ourPeriodic() {
 
         // Example of starting a new row of metrics for all instrumented objects.
-        // MetricTracker.newMetricRowAll();
         MetricTracker.newMetricRowAll();
-        //        _robotContainer.periodic();
         CommandScheduler.getInstance().run();
-        update();
         updateDashboard();
     }
 
@@ -126,7 +120,6 @@ public class Robot extends OutliersRobot implements ILoggingSource {
 
     @Override
     public void disabledInit() {
-        // _limelight.disableLEDs();
         RioLogger.getInstance().forceSync();
         RioLogger.getInstance().close();
         _robotContainer.disabledInit();
@@ -196,6 +189,4 @@ public class Robot extends OutliersRobot implements ILoggingSource {
 
         }
     }
-
-    private void update() {}
 }
