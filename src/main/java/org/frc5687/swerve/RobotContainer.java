@@ -2,8 +2,6 @@
 package org.frc5687.swerve;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
-import com.kauailabs.navx.frc.AHRS;
-import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import org.frc5687.swerve.commands.Drive;
 import org.frc5687.swerve.commands.OutliersCommand;
