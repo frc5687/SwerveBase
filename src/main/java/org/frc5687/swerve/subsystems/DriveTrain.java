@@ -5,7 +5,7 @@ import static org.frc5687.swerve.Constants.DifferentialSwerveModule.*;
 import static org.frc5687.swerve.Constants.DriveTrain.*;
 import static org.frc5687.swerve.RobotMap.CAN.TALONFX.*;
 
-import com.kauailabs.navx.frc.AHRS;
+import com.ctre.phoenix.sensors.PigeonIMU;
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -34,13 +34,13 @@ public class DriveTrain extends OutliersSubsystem {
 
     private double _PIDAngle;
 
-    private AHRS _imu;
+    private PigeonIMU _imu;
     private OI _oi;
 
     private HolonomicDriveController _controller;
     private ProfiledPIDController _angleController;
 
-    public DriveTrain(OutliersContainer container, OI oi, AHRS imu) {
+    public DriveTrain(OutliersContainer container, OI oi, PigeonIMU imu) {
         super(container);
         try {
             _oi = oi;
@@ -140,6 +140,13 @@ public class DriveTrain extends OutliersSubsystem {
         metric("BR/Predicted Wheel Vel", _backRight.getPredictedWheelVelocity());
 
         metric("Odometry Pose", getOdometryPose().toString());
+
+        metric("Pigeon/Up Time", _imu.getUpTime());
+        metric("Pigeon/Yaw", _imu.getYaw());
+        metric("Pigeon/Roll", _imu.getRoll());
+        metric("Pigeon/Pitch", _imu.getPitch());
+        metric("Pigeon/ABS Compass head", _imu.getAbsoluteCompassHeading());
+        metric("Pigeon/Get Temp", _imu.getTemp());
     }
 
     public void setFrontRightModuleState(SwerveModuleState state) {
@@ -166,9 +173,12 @@ public class DriveTrain extends OutliersSubsystem {
     public Rotation2d getHeading() {
         return Rotation2d.fromDegrees(-getYaw());
     }
-
+    /**
+     * Pigeon had a different way of doing this, looking into it.
+     * 
+     */
     public void resetYaw() {
-        _imu.reset();
+        
     }
 
     /**

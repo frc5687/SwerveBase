@@ -21,6 +21,10 @@ public class RobotMap {
             public static final int FR_RIGHT_FALCON = 7;
             public static final int FR_LEFT_FALCON = 8;
         }
+
+        public static class PIGEON {
+            public static final int PIGEON = 0; 
+        }
     }
 
     /**
