@@ -31,7 +31,7 @@ public class DiffSwerveModule {
     private final OutliersTalon _leftFalcon;
     private final DutyCycleEncoder _boreEncoder;
     private final Translation2d _positionVector;
-    private final LinearSystemLoop<N3, N2, N3> _swerveControlLoop;
+    private final LinearSystemLoop<N3, N2, N3> _moduleControlLoop;
     private Matrix<N3, N1> _reference; // same thing as a set point.
     private Matrix<N2, N1> _u;
 
@@ -71,7 +71,7 @@ public class DiffSwerveModule {
                         GEAR_RATIO_WHEEL);
 
         // Creates a Kalman Filter as our Observer for our module. Works since system is linear.
-        KalmanFilter<N3, N2, N3> swerveObserver =
+        KalmanFilter<N3, N2, N3> moduleObserver =
                 new KalmanFilter<>(
                         Nat.N3(),
                         Nat.N3(),
@@ -88,7 +88,7 @@ public class DiffSwerveModule {
                                         SENSOR_WHEEL_ANG_VELOCITY_NOISE),
                         kDt);
         // Creates an LQR controller for our Swerve Module.
-        LinearQuadraticRegulator<N3, N2, N3> swerveController =
+        LinearQuadraticRegulator<N3, N2, N3> moduleController =
                 new LinearQuadraticRegulator<>(
                         swerveModuleModel,
                         // Q Vector/Matrix Maximum error tolerance
@@ -99,12 +99,12 @@ public class DiffSwerveModule {
 
         // Creates a LinearSystemLoop that contains the Model, Controller, Observer, Max Volts,
         // Update Rate.
-        _swerveControlLoop =
+        _moduleControlLoop =
                 new LinearSystemLoop<>(
-                        swerveModuleModel, swerveController, swerveObserver, VOLTAGE, kDt);
+                        swerveModuleModel, moduleController, moduleObserver, VOLTAGE, kDt);
 
         //         Initializes the vectors and matrices.
-        _swerveControlLoop.reset(VecBuilder.fill(0, 0, 0));
+        _moduleControlLoop.reset(VecBuilder.fill(0, 0, 0));
         _u = VecBuilder.fill(0, 0);
         // boolean for if we want the modules to be running as we set voltage in the periodic loop.
         _systemIO = new SystemIO();
@@ -137,9 +137,9 @@ public class DiffSwerveModule {
                 break;
             case STATE_CONTROL:
                 // sets the next reference / setpoint.
-                _swerveControlLoop.setNextR(_reference);
+                _moduleControlLoop.setNextR(_reference);
                 // updates the kalman filter with new data points.
-                _swerveControlLoop.correct(
+                _moduleControlLoop.correct(
                         VecBuilder.fill(
                                 getModuleAngle(),
                                 getAzimuthAngularVelocity(),
@@ -171,19 +171,19 @@ public class DiffSwerveModule {
         // creates our input of voltage to our motors of u = K(r-x) but need to wrap angle to be
         // continuous
         _u =
-                _swerveControlLoop.clampInput(
-                        _swerveControlLoop
+                _moduleControlLoop.clampInput(
+                        _moduleControlLoop
                                 .getController()
                                 .getK()
                                 .times( // profiledReference())
                                         wrapAngle(
-                                                _swerveControlLoop.getNextR(),
-                                                _swerveControlLoop.getXHat()))
+                                                _moduleControlLoop.getNextR(),
+                                                _moduleControlLoop.getXHat()))
                                 .plus(
-                                        _swerveControlLoop
+                                        _moduleControlLoop
                                                 .getFeedforward()
-                                                .calculate(_swerveControlLoop.getNextR())));
-        _swerveControlLoop.getObserver().predict(_u, kDt);
+                                                .calculate(_moduleControlLoop.getNextR())));
+        _moduleControlLoop.getObserver().predict(_u, kDt);
     }
 
     public void start() {
@@ -259,19 +259,19 @@ public class DiffSwerveModule {
     }
 
     public double getPredictedAzimuthAngularVelocity() {
-        return _swerveControlLoop.getObserver().getXhat(1);
+        return _moduleControlLoop.getObserver().getXhat(1);
     }
 
     public double getPredictedWheelAngularVelocity() {
-        return _swerveControlLoop.getXHat(2);
+        return _moduleControlLoop.getXHat(2);
     }
 
     public double getPredictedAzimuthAngle() {
-        return _swerveControlLoop.getXHat(0);
+        return _moduleControlLoop.getXHat(0);
     }
 
     public double getReferenceWheelAngularVelocity() {
-        return _swerveControlLoop.getNextR(2);
+        return _moduleControlLoop.getNextR(2);
     }
 
     public void setReference(Matrix<N3, N1> reference) {
@@ -301,15 +301,15 @@ public class DiffSwerveModule {
     }
 
     public double getReferenceModuleAngle() {
-        return _swerveControlLoop.getNextR(0);
+        return _moduleControlLoop.getNextR(0);
     }
 
     public double getReferenceModuleAngularVelocity() {
-        return _swerveControlLoop.getNextR(1);
+        return _moduleControlLoop.getNextR(1);
     }
 
     public double getReferenceWheelVelocity() {
-        return _swerveControlLoop.getNextR(2);
+        return _moduleControlLoop.getNextR(2);
     }
 
     public SwerveModuleState getState() {
