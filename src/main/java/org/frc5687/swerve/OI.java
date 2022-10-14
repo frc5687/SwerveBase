@@ -2,6 +2,7 @@
 package org.frc5687.swerve;
 
 import static org.frc5687.swerve.Constants.DriveTrain.*;
+import static org.frc5687.swerve.Constants.OI.*;
 import static org.frc5687.swerve.util.Helpers.*;
 
 import edu.wpi.first.wpilibj.Joystick;
@@ -58,22 +59,47 @@ public class OI extends OutliersProxy {
     public void initializeButtons(DriveTrain driveTrain) {}
 
     public double getDriveY() {
-        //        yIn = getSpeedFromAxis(_leftJoystick, _leftJoystick.getYChannel());
-        yIn = getSpeedFromAxis(_driverGamepad, Gamepad.Axes.LEFT_Y.getNumber());
-        yIn = applyDeadband(yIn, DEADBAND);
+        double yOut = 0; 
+        
+        if(USE_GAMEPAD) {
+            yIn = getSpeedFromAxis(_driverGamepad, Gamepad.Axes.LEFT_Y.getNumber());
+            yIn = applyDeadband(yIn, DEADBAND);
+    
+            yOut = yIn / (Math.sqrt(yIn * yIn + (xIn * xIn)) + Constants.EPSILON);
+            yOut = (yOut + (yIn * 2)) / 3.0;
+           
+        }
+        else if (!USE_GAMEPAD) {
+            yIn = getSpeedFromAxis(_leftJoystick, Gamepad.Axes.LEFT_Y.getNumber());
+            yIn = applyDeadband(yIn, DEADBAND);
 
-        double yOut = yIn / (Math.sqrt(yIn * yIn + (xIn * xIn)) + Constants.EPSILON);
-        yOut = (yOut + (yIn * 2)) / 3.0;
-        return yOut;
+            yOut = yIn / (Math.sqrt(yIn * yIn + (xIn * xIn)) + Constants.EPSILON);
+            yOut = (yOut + (yIn * 2)) / 3.0;
+        }
+        //        yIn = getSpeedFromAxis(_leftJoystick, _leftJoystick.getYChannel());
+       
+       return yOut;
     }
 
     public double getDriveX() {
+        double xOut = 0;
         //        xIn = -getSpeedFromAxis(_leftJoystick, _leftJoystick.getXChannel());
-        xIn = -getSpeedFromAxis(_driverGamepad, Gamepad.Axes.LEFT_X.getNumber());
-        xIn = applyDeadband(xIn, DEADBAND);
 
-        double xOut = xIn / (Math.sqrt(yIn * yIn + (xIn * xIn)) + Constants.EPSILON);
-        xOut = (xOut + (xIn * 2)) / 3.0;
+        if(USE_GAMEPAD){
+            xIn = -getSpeedFromAxis(_driverGamepad, Gamepad.Axes.LEFT_X.getNumber());
+            xIn = applyDeadband(xIn, DEADBAND);
+
+            xOut = xIn / (Math.sqrt(yIn * yIn + (xIn * xIn)) + Constants.EPSILON);
+            xOut = (xOut + (xIn * 2)) / 3.0;
+        }
+
+        else if(!USE_GAMEPAD){
+            xIn = -getSpeedFromAxis(_leftJoystick, Gamepad.Axes.LEFT_X.getNumber());
+            xIn = applyDeadband(xIn, DEADBAND);
+
+            xOut = xIn / (Math.sqrt(yIn * yIn + (xIn * xIn)) + Constants.EPSILON);
+            xOut = (xOut + (xIn * 2)) / 3.0;
+        }
         return xOut;
     }
 
