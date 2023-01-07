@@ -12,38 +12,89 @@ public class Constants {
 
     public static class DriveTrain {
 
-        public static final double WIDTH = 0.6223;
-        public static final double LENGTH = 0.6223;
-        public static final Translation2d NORTH_WEST_POSITION =
-                new Translation2d(WIDTH / 2.0, LENGTH / 2.0);
-        public static final double NORTH_WEST_ENCODER_OFFSET = -0.071; // radians
-        public static final Translation2d NORTH_EAST_POSITION =
-                new Translation2d(WIDTH / 2.0, -LENGTH / 2.0);
-        public static final double NORTH_EAST_ENCODER_OFFSET = -1.01; // radians
-        public static final Translation2d SOUTH_EAST_POSITION =
-                new Translation2d(-WIDTH / 2.0, LENGTH / 2.0);
-        public static final double SOUTH_EAST_ENCODER_OFFSET = -0.122; // radians
-        public static final Translation2d SOUTH_WEST_POSITION =
-                new Translation2d(-WIDTH / 2.0, -LENGTH / 2.0);
-        public static final double SOUTH_WEST_ENCODER_OFFSET = 0.585 + Math.PI; // radians
+        // Control
+        public static final double DEADBAND = 0.2; // Avoid unintentional joystick movement
 
-        public static final double DEADBAND = 0.1;
 
-        public static final double MAX_MPS = 3.5; // Max speed of robot (m/s) .
+        // Size of the robot chassis in meters
+        public static final double WIDTH = 0.6223; // meters
+        public static final double LENGTH = 0.6223; // meters
 
-        public static final double MAX_ANG_VEL =
-                Math.PI * 2.0; // Max rotation rate of robot (rads/s)
-        public static final double MAX_MPSS = 0.5; // Max acceleration of robot (m/s^2)
+        /**
+         * Swerve modules are on four corners of robot:
+         *
+         * NW  <- Width of robot ->  NE
+         *             / \
+         *              |
+         *        Length of robot
+         *              |
+         *             \ /
+         *  SW                       SE
+         */
 
-        public static final double ANGLE_kP = 3.5;
+        // Distance of swerve modules from center of robot
+        public static final double SWERVE_NS_POS = LENGTH / 2.0;
+        public static final double SWERVE_WE_POS = WIDTH / 2.0;
+
+        /**
+         *
+         * Coordinate system is wacky:
+         *
+         * (X, Y):
+         *   X is N or S, N is +
+         *   Y is W or E, W is +
+         *
+         *   NW (+,+)  NE (+,-)
+         *
+         *   SW (-,+)  SE (-,-)
+         *
+         * We go counter-counter clockwise starting at NW of chassis:
+         *
+         *  NW, SW, SE, NE
+         *
+         * Note: when robot is flipped over, this is clockwise.
+         *
+         */
+
+        // Position vectors for the swerve module kinematics
+        // i.e. location of each swerve module from center of robot
+        // see coordinate system above to understand signs of vector coordinates
+        public static final Translation2d NORTH_WEST = new Translation2d( SWERVE_NS_POS, SWERVE_WE_POS ); // +,+
+        public static final Translation2d SOUTH_WEST = new Translation2d( -SWERVE_NS_POS, SWERVE_WE_POS ); // -,+
+        public static final Translation2d SOUTH_EAST = new Translation2d( -SWERVE_NS_POS, -SWERVE_WE_POS ); // -,-
+        public static final Translation2d NORTH_EAST = new Translation2d( SWERVE_NS_POS, -SWERVE_WE_POS ); // +,-
+
+        // Should be 0, but can correct for hardware error in swerve module headings here.
+        public static final double NORTH_WEST_OFFSET = 0; // radians
+        public static final double SOUTH_WEST_OFFSET = 0; // radians
+        public static final double SOUTH_EAST_OFFSET = 0; // radians
+        public static final double NORTH_EAST_OFFSET = 0; // radians
+
+        // In case encoder is measuring rotation in the opposite direction we expect.
+        public static final boolean NORTH_WEST_ENCODER_INVERTED = true;
+        public static final boolean SOUTH_WEST_ENCODER_INVERTED = true;
+        public static final boolean SOUTH_EAST_ENCODER_INVERTED = true;
+        public static final boolean NORTH_EAST_ENCODER_INVERTED = true;
+
+        // Maximum rates of motion
+        public static final double MAX_MPS = 2.5; // Max speed of robot (m/s)
+        public static final double MAX_MPS_TURBO = 3.8; // Max speed of robot in turbo (m/s)
+        public static final double MAX_MPS_DURING_CLIMB = MAX_MPS / 4; // Max speed of robot (m/s) during climb
+        public static final double MAX_ANG_VEL = Math.PI * 1.5; // Max rotation rate of robot (rads/s)
+        public static final double MAX_ANG_VEL_AIM = 2 * Math.PI; // Max rotation rate of robot (rads/s)
+        public static final double MAX_MPSS = 2.5; // Max acceleration of robot (m/s^2)
+
+        // PID controller settings
+        public static final double ANGLE_kP = 2.3;
         public static final double ANGLE_kI = 0.0;
-        public static final double ANGLE_kD = 0.0;
+        public static final double ANGLE_kD = 0.6;
+        public static final double PROFILE_CONSTRAINT_VEL = MAX_ANG_VEL;
+        public static final double PROFILE_CONSTRAINT_ACCEL = Math.PI * 3.0;
 
-        public static final double kP = 10.5;
+        public static final double kP = 3.5;
         public static final double kI = 0.0;
-        public static final double kD = 0.5;
-        public static final double PROFILE_CONSTRAINT_VEL = 3.0 * Math.PI;
-        public static final double PROFILE_CONSTRAINT_ACCEL = Math.PI;
+        public static final double kD = 0.1;
+
     }
 
     public static class DifferentialSwerveModule {

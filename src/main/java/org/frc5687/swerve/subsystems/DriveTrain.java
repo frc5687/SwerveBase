@@ -3,7 +3,6 @@ package org.frc5687.swerve.subsystems;
 
 import static org.frc5687.swerve.Constants.DifferentialSwerveModule.*;
 import static org.frc5687.swerve.Constants.DriveTrain.*;
-import static org.frc5687.swerve.RobotMap.CAN.TALONFX.*;
 
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.math.controller.HolonomicDriveController;
@@ -11,19 +10,22 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.kinematics.*;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.constraint.SwerveDriveKinematicsConstraint;
+import org.frc5687.swerve.Constants;
 import org.frc5687.swerve.OI;
 import org.frc5687.swerve.RobotMap;
 import org.frc5687.swerve.util.OutliersContainer;
 
 public class DriveTrain extends OutliersSubsystem {
+
+    private static final int NORTH_WEST = 0;
+    private static final int SOUTH_WEST = 1;
+    private static final int SOUTH_EAST = 2;
+    private static final int NORTH_EAST = 3;
     private DiffSwerveModule _northEast;
     private DiffSwerveModule _northWest;
     private DiffSwerveModule _southEast;
@@ -42,68 +44,78 @@ public class DriveTrain extends OutliersSubsystem {
 
     public DriveTrain(OutliersContainer container, OI oi, AHRS imu) {
         super(container);
-        try {
-            _oi = oi;
-            _imu = imu;
+        _oi = oi;
+        _imu = imu;
+        _northWest =
+                new DiffSwerveModule(
+                        Constants.DriveTrain.NORTH_WEST,
+                        RobotMap.CAN.TALONFX.NORTH_WEST_OUTER,
+                        RobotMap.CAN.TALONFX.NORTH_WEST_INNER,
+                        RobotMap.DIO.NORTH_WEST,
+                        Constants.DriveTrain.NORTH_WEST_OFFSET,
+                        Constants.DriveTrain.NORTH_WEST_ENCODER_INVERTED);
+        _southWest =
+                new DiffSwerveModule(
+                        Constants.DriveTrain.SOUTH_WEST,
+                        RobotMap.CAN.TALONFX.SOUTH_WEST_OUTER,
+                        RobotMap.CAN.TALONFX.SOUTH_WEST_INNER,
+                        RobotMap.DIO.SOUTH_WEST,
+                        Constants.DriveTrain.SOUTH_WEST_OFFSET,
+                        Constants.DriveTrain.SOUTH_WEST_ENCODER_INVERTED);
+        _southEast =
+                new DiffSwerveModule(
+                        Constants.DriveTrain.SOUTH_EAST,
+                        RobotMap.CAN.TALONFX.SOUTH_EAST_INNER,
+                        RobotMap.CAN.TALONFX.SOUTH_EAST_OUTER,
+                        RobotMap.DIO.SOUTH_EAST,
+                        Constants.DriveTrain.SOUTH_EAST_OFFSET,
+                        Constants.DriveTrain.SOUTH_EAST_ENCODER_INVERTED);
+        _northEast =
+                new DiffSwerveModule(
+                        Constants.DriveTrain.NORTH_EAST,
+                        RobotMap.CAN.TALONFX.NORTH_EAST_INNER,
+                        RobotMap.CAN.TALONFX.NORTH_EAST_OUTER,
+                        RobotMap.DIO.NORTH_EAST,
+                        Constants.DriveTrain.NORTH_EAST_OFFSET,
+                        Constants.DriveTrain.NORTH_EAST_ENCODER_INVERTED);
+        // NB: it matters which order these are defined
+        _kinematics =
+                new SwerveDriveKinematics(
+                        _northWest.getModuleLocation(),
+                        _southWest.getModuleLocation(),
+                        _southEast.getModuleLocation(),
+                        _northEast.getModuleLocation()
+                );
+        _odometry = new SwerveDriveOdometry(
+                _kinematics,
+                getHeading(),
+                new SwerveModulePosition[]{
+                        _northWest.getModulePosition(),
+                        _southWest.getModulePosition(),
+                        _southEast.getModulePosition(),
+                        _northEast.getModulePosition()
+                },
+                new Pose2d(0, 0, getHeading())
+        );
 
-            _northEast =
-                    new DiffSwerveModule(
-                            NORTH_EAST_POSITION,
-                            NE_LEFT_FALCON,
-                            NE_RIGHT_FALCON,
-                            RobotMap.DIO.ENCODER_NE,
-                            NORTH_EAST_ENCODER_OFFSET);
-            _northWest =
-                    new DiffSwerveModule(
-                            NORTH_WEST_POSITION,
-                            NW_LEFT_FALCON,
-                            NW_RIGHT_FALCON,
-                            RobotMap.DIO.ENCODER_NW,
-                            NORTH_WEST_ENCODER_OFFSET);
-            _southEast =
-                    new DiffSwerveModule(
-                            SOUTH_EAST_POSITION,
-                            SE_LEFT_FALCON,
-                            SE_RIGHT_FALCON,
-                            RobotMap.DIO.ENCODER_SE,
-                            SOUTH_EAST_ENCODER_OFFSET);
-            _southWest =
-                    new DiffSwerveModule(
-                            SOUTH_WEST_POSITION,
-                            SW_RIGHT_FALCON,
-                            SW_LEFT_FALCON,
-                            RobotMap.DIO.ENCODER_SW,
-                            SOUTH_WEST_ENCODER_OFFSET);
-
-            _kinematics =
-                    new SwerveDriveKinematics(
-                            _northWest.getModulePosition(),
-                            _northEast.getModulePosition(),
-                            _southWest.getModulePosition(),
-                            _southEast.getModulePosition());
-            _odometry = new SwerveDriveOdometry(_kinematics, getHeading());
-
-            _controller =
-                    new HolonomicDriveController(
-                            new PIDController(kP, kI, kD),
-                            new PIDController(kP, kI, kD),
-                            new ProfiledPIDController(
-                                    kP,
-                                    kI,
-                                    kD,
-                                    new TrapezoidProfile.Constraints(
-                                            PROFILE_CONSTRAINT_VEL, PROFILE_CONSTRAINT_ACCEL)));
-            _angleController =
-                    new ProfiledPIDController(
-                            ANGLE_kP,
-                            ANGLE_kI,
-                            ANGLE_kD,
-                            new TrapezoidProfile.Constraints(
-                                    PROFILE_CONSTRAINT_VEL, PROFILE_CONSTRAINT_ACCEL));
-            _angleController.enableContinuousInput(-Math.PI / 2.0, Math.PI / 2.0);
-        } catch (Exception e) {
-            error(e.getMessage());
-        }
+        _controller =
+                new HolonomicDriveController(
+                        new PIDController(Constants.DriveTrain.kP, Constants.DriveTrain.kI, Constants.DriveTrain.kD),
+                        new PIDController(Constants.DriveTrain.kP, Constants.DriveTrain.kI, Constants.DriveTrain.kD),
+                        new ProfiledPIDController(
+                                Constants.DriveTrain.kP,
+                                Constants.DriveTrain.kI,
+                                Constants.DriveTrain.kD,
+                                new TrapezoidProfile.Constraints(
+                                        Constants.DriveTrain.PROFILE_CONSTRAINT_VEL, Constants.DriveTrain.PROFILE_CONSTRAINT_ACCEL)));
+        _angleController =
+                new ProfiledPIDController(
+                        Constants.DriveTrain.ANGLE_kP,
+                        Constants.DriveTrain.ANGLE_kI,
+                        Constants.DriveTrain.ANGLE_kD,
+                        new TrapezoidProfile.Constraints(
+                                Constants.DriveTrain.PROFILE_CONSTRAINT_VEL, Constants.DriveTrain.PROFILE_CONSTRAINT_ACCEL));
+        _angleController.enableContinuousInput(-Math.PI / 2.0, Math.PI / 2.0);
     }
 
     // use for modules as controller is running at 200Hz.
@@ -118,10 +130,12 @@ public class DriveTrain extends OutliersSubsystem {
     public void periodic() {
         _odometry.update(
                 getHeading(),
-                _northWest.getState(),
-                _northEast.getState(),
-                _southWest.getState(),
-                _southEast.getState());
+                new SwerveModulePosition[] {
+                _northWest.getModulePosition(),
+                _northEast.getModulePosition(),
+                _southWest.getModulePosition(),
+                _southEast.getModulePosition() }
+                );
     }
 
     @Override
@@ -199,10 +213,10 @@ public class DriveTrain extends OutliersSubsystem {
                                             vx, vy, omega, getHeading())
                                     : new ChassisSpeeds(vx, vy, omega));
             SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, MAX_MODULE_SPEED_MPS);
-            setNorthWestModuleState(swerveModuleStates[0]);
-            setNorthEastModuleState(swerveModuleStates[1]);
-            setSouthWestModuleState(swerveModuleStates[2]);
-            setSouthEastModuleState(swerveModuleStates[3]);
+            setNorthWestModuleState(swerveModuleStates[NORTH_WEST]);
+            setSouthWestModuleState(swerveModuleStates[SOUTH_WEST]);
+            setSouthEastModuleState(swerveModuleStates[SOUTH_EAST]);
+            setNorthEastModuleState(swerveModuleStates[NORTH_EAST]);
             _PIDAngle = getHeading().getRadians();
             _angleController.reset(_PIDAngle);
         } else {
@@ -215,10 +229,10 @@ public class DriveTrain extends OutliersSubsystem {
                                             getHeading().getRadians(), _PIDAngle),
                                     new Rotation2d(_PIDAngle)));
             SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, MAX_MODULE_SPEED_MPS);
-            setNorthWestModuleState(swerveModuleStates[0]);
-            setNorthEastModuleState(swerveModuleStates[1]);
-            setSouthWestModuleState(swerveModuleStates[2]);
-            setSouthEastModuleState(swerveModuleStates[3]);
+            setNorthWestModuleState(swerveModuleStates[NORTH_WEST]);
+            setSouthWestModuleState(swerveModuleStates[SOUTH_WEST]);
+            setSouthEastModuleState(swerveModuleStates[SOUTH_EAST]);
+            setNorthEastModuleState(swerveModuleStates[NORTH_EAST]);
         }
     }
 
@@ -237,10 +251,10 @@ public class DriveTrain extends OutliersSubsystem {
                 _controller.calculate(_odometry.getPoseMeters(), goal, heading);
         SwerveModuleState[] moduleStates = _kinematics.toSwerveModuleStates(adjustedSpeeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, MAX_MODULE_SPEED_MPS);
-        setNorthWestModuleState(moduleStates[0]);
-        setNorthEastModuleState(moduleStates[1]);
-        setSouthWestModuleState(moduleStates[2]);
-        setSouthEastModuleState(moduleStates[3]);
+        setNorthWestModuleState(moduleStates[NORTH_WEST]);
+        setSouthWestModuleState(moduleStates[SOUTH_WEST]);
+        setSouthEastModuleState(moduleStates[SOUTH_EAST]);
+        setNorthEastModuleState(moduleStates[NORTH_EAST]);
     }
 
     public Pose2d getOdometryPose() {
