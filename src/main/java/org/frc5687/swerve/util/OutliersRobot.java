@@ -1,6 +1,7 @@
 /* (C)2021 */
 package org.frc5687.swerve.util;
 
+import org.frc5687.lib.logging.ILoggingSource;
 import org.frc5687.swerve.Constants;
 
 import edu.wpi.first.wpilibj.TimedRobot;

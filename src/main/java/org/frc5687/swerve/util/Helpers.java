@@ -3,6 +3,9 @@ package org.frc5687.swerve.util;
 
 import edu.wpi.first.math.util.Units;
 
+import org.frc5687.lib.math.Vector2d;
+
+
 /** Created by Ben Bernard on 6/4/2018. */
 public class Helpers {
 
@@ -100,5 +103,42 @@ public class Helpers {
             angle += 2.0 * Math.PI;
         }
         return radians ? angle : Units.radiansToDegrees(angle);
+    }
+
+    /**
+     * Wraps the angle so that its always between 0 -> (2 * pi)
+     *
+     * @param angle that needs to be wrapped
+     * @param radians boolean to calculate radians vs degrees
+     */
+    public static double angleWrap(double angle, boolean radians) {
+        angle = radians ? angle : Units.degreesToRadians(angle);
+        angle = angle % (2.0 * Math.PI);
+        if (angle < 0) {
+            angle += (2.0 * Math.PI);
+        }
+        return radians ? angle : Units.radiansToDegrees(angle);
+    }
+
+    public static double joystickToAngle(double x, double y) {
+        return Units.radiansToDegrees(Math.atan2(y, x));
+    }
+
+    public static Vector2d axisToSegmentedUnitCircleRadians(double x, double y, int[] array) {
+        double angle = joystickToAngle(x, y);
+        angle = (angle + 360) % 360;
+        angle = angle / 360;
+        int segment = (int) (angle * array.length);
+        double power = Math.hypot(x, y);
+        if (power > 1) {
+            power = 1;
+        }
+        return new Vector2d(
+                power * Math.cos(Units.degreesToRadians(array[segment])),
+                power * Math.sin(Units.degreesToRadians(array[segment])));
+    }
+
+    public static boolean epsilonEquals(double a, double b, double epsilon) {
+        return (a - epsilon <= b) && (a + epsilon >= b);
     }
 }
