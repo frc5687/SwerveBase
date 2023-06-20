@@ -11,6 +11,7 @@ import java.io.FileReader;
 
 import org.frc5687.lib.logging.ILoggingSource;
 import org.frc5687.lib.logging.MetricTracker;
+import org.frc5687.lib.logging.RioLogger;
 import org.frc5687.swerve.util.*;
 
 /**
