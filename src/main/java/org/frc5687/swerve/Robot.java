@@ -61,7 +61,7 @@ public class Robot extends OutliersRobot implements ILoggingSource {
         // Periodically flushes metrics (might be good to configure enable/disable via USB config
         // file)
         _time = _timer.get();
-        new Notifier(MetricTracker::flushAll).startPeriodic(Constants.METRIC_FLUSH_PERIOD);
+        // new Notifier(MetricTracker::flushAll).startPeriodic(Constants.METRIC_FLUSH_PERIOD);
     }
 
     /**
