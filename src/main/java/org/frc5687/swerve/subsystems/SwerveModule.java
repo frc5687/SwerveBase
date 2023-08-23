@@ -12,8 +12,9 @@ import com.ctre.phoenix.sensors.CANCoderConfiguration;
 import com.ctre.phoenix.sensors.SensorTimeBase;
 import com.ctre.phoenixpro.BaseStatusSignalValue;
 import com.ctre.phoenixpro.StatusSignalValue;
+import com.ctre.phoenixpro.controls.PositionVoltage;
+import com.ctre.phoenixpro.controls.VelocityTorqueCurrentFOC;
 
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -29,18 +30,25 @@ public class SwerveModule {
     private final OutliersTalon _turningMotor;
     private final CANCoder _encoder;
 
-    private final ProfiledPIDController _pidController;
+   
     private Translation2d _positionVector;
 
     private SwerveModuleState _goal;
 
-private final StatusSignalValue<Double> _driveVelocityRotationsPerSec;
+    private final StatusSignalValue<Double> _driveVelocityRotationsPerSec;
     private final StatusSignalValue<Double> _drivePositionRotations;
     private final StatusSignalValue<Double> _turningVelocityRotationsPerSec;
     private final StatusSignalValue<Double> _turningPositionRotations;
 
     private final BaseStatusSignalValue[] _signals;
-;
+
+    private final VelocityTorqueCurrentFOC _velocityTorqueCurrentFOC;
+    private final PositionVoltage _positionVoltage;
+
+    private double _rotPerMet = 0.0;
+    private double _gearRatio;
+    private double _metPerRot;
+
 
     
     public SwerveModule(
@@ -49,13 +57,7 @@ private final StatusSignalValue<Double> _driveVelocityRotationsPerSec;
         int driveMotorID,
         int encoderPort
         ){
-            _pidController = new ProfiledPIDController(
-                Constants.SwerveModule.kP,
-                Constants.SwerveModule.kI,
-                Constants.SwerveModule.kD,
-                 null);
-
-
+           
             _driveMotor = new OutliersTalon(driveMotorID, config.canBus, "Drive");
             _turningMotor = new OutliersTalon(steeringMotorID, config.canBus, "Steer");
 
@@ -63,6 +65,9 @@ private final StatusSignalValue<Double> _driveVelocityRotationsPerSec;
             _turningMotor.configure(Constants.SwerveModule.CONFIG);
             _driveMotor.setTorqueCurrentFOCRate(1000);
             _turningMotor.setTorqueCurrentFOCRate(1000);
+
+            _velocityTorqueCurrentFOC = new VelocityTorqueCurrentFOC(0.0);
+            _positionVoltage = new PositionVoltage(0.0);
 
          
             _goal = new SwerveModuleState(0.0, getCanCoderAngle());
@@ -78,7 +83,9 @@ private final StatusSignalValue<Double> _driveVelocityRotationsPerSec;
             CANfig.magnetOffsetDegrees = Constants.SwerveModule.CAN_OFFSET;
             _encoder.configAllSettings(CANfig);
 
-           
+            _rotPerMet = (_gearRatio * _metPerRot);
+            _gearRatio = Constants.SwerveModule.GEAR_RATIO_DRIVE;
+            _metPerRot = 2 * Math.PI * Units.inchesToMeters(Constants.SwerveModule.WHEEL_RADIUS);
 
             _positionVector = config.position;
             
@@ -120,8 +127,10 @@ private final StatusSignalValue<Double> _driveVelocityRotationsPerSec;
             }
         }
         public void setModuleState(SwerveModuleState state){
-            _driveMotor.setPercentOutput(state.speedMetersPerSecond / Constants.SwerveModule.MAX_SPEED);
-            _turningMotor.setPercentOutput(_pidController.calculate(getCanCoderAngle().getDegrees(), state.angle.getDegrees()));
+            double speed = state.speedMetersPerSecond * _rotPerMet;
+            double position = state.angle.getDegrees();
+            _driveMotor.setControl(_velocityTorqueCurrentFOC.withVelocity(speed));
+            _turningMotor.setControl(_positionVoltage.withPosition(position));
 
         }
         public SwerveModuleState getState(){
