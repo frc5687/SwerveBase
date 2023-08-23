@@ -62,7 +62,7 @@ public class DriveTrain extends OutliersSubsystem {
     private static final int SOUTH_WEST_IDX = 1;
     private static final int SOUTH_EAST_IDX = 2;
     private static final int NORTH_EAST_IDX = 3;
-    private final DiffSwerveModule[] _modules;
+    private final SwerveModule[] _modules;
     private final SwerveDriveKinematics _kinematics;
     private final SwerveDriveOdometry _odometry;
     private final SwerveDrivePoseEstimator _poseEstimator;
@@ -121,28 +121,28 @@ public class DriveTrain extends OutliersSubsystem {
         _controlState = ControlState.NEUTRAL;
 
         // set up the modules
-        _modules = new DiffSwerveModule[4];
+        _modules = new SwerveModule[4];
         _modules[NORTH_WEST_IDX] =
-                new DiffSwerveModule(
-                        NORTH_WEST_CONFIG,
+                new SwerveModule(
+                        Constants.SwerveModule.NORTH_WEST_CONFIG,
                         RobotMap.CAN.TALONFX.NORTH_WEST_OUTER,
                         RobotMap.CAN.TALONFX.NORTH_WEST_INNER,
                         RobotMap.DIO.ENCODER_NW);
         _modules[SOUTH_WEST_IDX] =
-                new DiffSwerveModule(
-                        SOUTH_WEST_CONFIG,
+                new SwerveModule(
+                        Constants.SwerveModule.SOUTH_WEST_CONFIG,
                         RobotMap.CAN.TALONFX.SOUTH_WEST_OUTER,
                         RobotMap.CAN.TALONFX.SOUTH_WEST_INNER,
                         RobotMap.DIO.ENCODER_SW);
         _modules[SOUTH_EAST_IDX] =
-                new DiffSwerveModule(
-                        SOUTH_EAST_CONFIG,
+                new SwerveModule(
+                        Constants.SwerveModule.SOUTH_EAST_CONFIG,
                         RobotMap.CAN.TALONFX.SOUTH_EAST_INNER,
                         RobotMap.CAN.TALONFX.SOUTH_EAST_OUTER,
                         RobotMap.DIO.ENCODER_SE);
         _modules[NORTH_EAST_IDX] =
-                new DiffSwerveModule(
-                        NORTH_EAST_CONFIG,
+                new SwerveModule(
+                        Constants.SwerveModule.NORTH_EAST_CONFIG,
                         RobotMap.CAN.TALONFX.NORTH_EAST_INNER,
                         RobotMap.CAN.TALONFX.NORTH_EAST_OUTER,
                         RobotMap.DIO.ENCODER_NE);
@@ -275,13 +275,13 @@ public class DriveTrain extends OutliersSubsystem {
     }
 
     // DriveTrain periodic functions, these run constantly even if there is no command scheduled or the robot is disabled.
-    public void modulePeriodic() {
-        // use for modules as controller is running at 200Hz.
-        BaseStatusSignalValue.waitForAll(0.0, _moduleSignals);
-        for (DiffSwerveModule diffSwerveModule : _modules) {
-            diffSwerveModule.controlPeriodic();
-        }
-    }
+    // public void modulePeriodic() {
+    //     // use for modules as controller is running at 200Hz.
+    //     BaseStatusSignalValue.waitForAll(0.0, _moduleSignals);
+    //     for (SwerveModule SwerveModule : _modules) {
+    //         SwerveModule.controlPeriodic();
+    //     }
+    // }
 
     @Override
     public void periodic() {
@@ -339,8 +339,8 @@ public class DriveTrain extends OutliersSubsystem {
         _field.getObject(name).setTrajectory(t);
     }
     public void startModules() {
-        for (DiffSwerveModule diffSwerveModule : _modules) {
-            diffSwerveModule.start();
+        for (SwerveModule SwerveModule : _modules) {
+            //SwerveModule.start();
         }
     }
 
@@ -543,17 +543,17 @@ public class DriveTrain extends OutliersSubsystem {
     public boolean isTopSpeed() {
         return Math.abs(_modules[0].getWheelVelocity()) >= (Constants.DriveTrain.MAX_MPS - 0.2);
     }
-    public void characterizeModules(int module) {
-        _modules[module].characterizeModule();
-    }
-    public void setModulesToCharacterization() {
-        for (var module : _modules) {
-            module.setCharacterizationState();
-        }
-    }
-    public DiffSwerveModule.CharacterizeModule getCharacterizationState(int module) {
-        return _modules[module].getCharacterizationState();
-    }
+    // public void characterizeModules(int module) {
+    //     _modules[module].characterizeModule();
+    // }
+    // public void setModulesToCharacterization() {
+    //     for (var module : _modules) {
+    //         module.setCharacterizationState();
+    //     }
+    // }
+    // public DiffSwerveModule.CharacterizeModule getCharacterizationState(int module) {
+    //     return _modules[module].getCharacterizationState();
+    // }
 
     @Override
     public void updateDashboard() {

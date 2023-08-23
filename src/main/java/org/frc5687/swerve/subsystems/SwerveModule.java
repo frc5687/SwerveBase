@@ -16,9 +16,11 @@ import com.ctre.phoenixpro.StatusSignalValue;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
 public class SwerveModule {
@@ -28,7 +30,7 @@ public class SwerveModule {
     private final CANCoder _encoder;
     private final double _offset;
     private final ProfiledPIDController _pidController;
-
+    private Translation2d _positionVector;
     private double _absEncoderOffset;
     private double _encoderZero;
     private boolean _inverted;
@@ -83,6 +85,8 @@ private final StatusSignalValue<Double> _driveVelocityRotationsPerSec;
             _encoder.configAllSettings(CANfig);
 
             _offset = Constants.SwerveModule.CAN_OFFSET;
+
+            _positionVector = config.position;
             
             _drivePositionRotations = _driveMotor.getPosition();
             _driveVelocityRotationsPerSec = _driveMotor.getVelocity();
@@ -152,6 +156,51 @@ private final StatusSignalValue<Double> _driveVelocityRotationsPerSec;
         public double getWheelAngularVelocity(){
             return Units.rotationsPerMinuteToRadiansPerSecond(getDriveRPM() / Constants.SwerveModule.GEAR_RATIO_DRIVE);
         }
+        public Translation2d getModuleLocation() {
+            return _positionVector;
+        }
+        public SwerveModulePosition getModulePosition() {
+        return new SwerveModulePosition(getWheelDistance(), getCanCoderAngle());
+    }
+    public double getWheelDistance() {
+        return (getDistance())
+                * WHEEL_RADIUS;
+    }
+    public double getDistance(){
+        return _drivePositionRotations.getValue() * (Math.PI * 2.0);
+    }
+    public void resetEncoders() {
+        _driveMotor.setRotorPosition(0);
+        _turningMotor.setRotorPosition(0);
+    }
+     public void updateDashboard() {
+        //        SmartDashboard.putNumber(_name + "/leftVoltage", _leftFalcon.getMotorOutputVoltage());
+        //        SmartDashboard.putNumber(_name + "/rightVoltage",
+        // _rightFalcon.getMotorOutputVoltage());
+        //SmartDashboard.putNumber(_name + "/leftNextCurrent", getLeftNextCurrent());
+        //SmartDashboard.putNumber(_name + "/rightNextCurrent", getRightNextCurrent());
+        //        SmartDashboard.putNumber(_name + "/leftSupplyCurrent",
+        // _leftFalcon.getSupplyCurrent());
+        //        SmartDashboard.putNumber(_name + "/rightSupplyCurrent",
+        // _rightFalcon.getSupplyCurrent());
+        // SmartDashboard.putNumber(_name + "/leftStatorCurrent", getLeftCurrent());
+        // SmartDashboard.putNumber(_name + "/rightStatorCurrent", getRightCurrent());
+        // SmartDashboard.putNumber(_name + "/referenceAngleGoal", getReferenceModuleAngle());
+        // SmartDashboard.putNumber(_name + "/moduleAngle", getModuleAngle());
+        // SmartDashboard.putNumber(_name + "/moduleAngleABS", getABSEncoderAngle());
+
+        // SmartDashboard.putNumber(_name + "/moduleAngVel", getAzimuthAngularVelocity());
+
+        // SmartDashboard.putNumber(_name + "/velocityWheel", getWheelVelocity());
+        // SmartDashboard.putNumber(_name + "/referenceWheelVelocity", getReferenceWheelVelocity());
+        //
+        //        SmartDashboard.putString(_name + "/KMatrix",
+        // _moduleControlLoop.getController().getK().toString());
+        //
+        //        SmartDashboard.putNumber(_name + "/estimatedModuleAngle", getPredictedAzimuthAngle());
+        //        SmartDashboard.putString(_name + "/refernce", _reference.toString());
+    }
+
         
 
     public static class ModuleConfiguration {

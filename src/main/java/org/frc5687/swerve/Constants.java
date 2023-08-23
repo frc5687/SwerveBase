@@ -12,6 +12,8 @@ import edu.wpi.first.math.util.Units;
 import java.util.Arrays;
 import java.util.List;
 import org.frc5687.swerve.subsystems.DiffSwerveModule;
+import org.frc5687.swerve.subsystems.SwerveModule;
+import org.frc5687.swerve.subsystems.SwerveModule.ModuleConfiguration;
 import org.frc5687.lib.drivers.OutliersTalon;
 import org.frc5687.lib.swerve.SwerveSetpointGenerator.KinematicLimits;
 
@@ -39,6 +41,22 @@ public class Constants {
      * <p>Note: when robot is flipped over, this is clockwise.
      */
     public static class SwerveModule{
+
+           // Size of the robot chassis in meters
+        public static final double WIDTH = 0.4445; // meters
+        public static final double LENGTH = 0.4445; // meters
+        // Distance of swerve modules from center of robot
+        public static final double SWERVE_NS_POS = LENGTH / 2.0;
+        public static final double SWERVE_WE_POS = WIDTH / 2.0;
+
+        public static final double MAX_MPS = 4.2; // Max speed of robot (m/s)
+        public static final double SLOW_MPS = 2.0; // Slow speed of robot (m/s)
+        public static final double MAX_ANG_VEL = Math.PI; // Max rotation rate of robot (rads/s)
+        public static final double SLOW_ANG_VEL = Math.PI; // Max rotation rate of robot (rads/s)
+
+          public static final String CAN_BUS = "CANivore";
+        public static final int NUM_MODULES = 4;
+
         public static final Double CAN_OFFSET = 0.0;
         public static final double kDt = 0.005;
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
@@ -65,6 +83,55 @@ public class Constants {
             CONFIG.CURRENT_DEADBAND = 0.1; 
             
            
+        }
+
+        public static final 
+         public static final ModuleConfiguration NORTH_WEST_CONFIG =
+                new ModuleConfiguration();
+
+        static {
+            NORTH_WEST_CONFIG.moduleName = "North West";
+            NORTH_WEST_CONFIG.canBus = CAN_BUS;
+            NORTH_WEST_CONFIG.position = new Translation2d(SWERVE_NS_POS, SWERVE_WE_POS); // +,+
+
+            NORTH_WEST_CONFIG.encoderInverted = false;
+            NORTH_WEST_CONFIG.encoderOffset = -0.07617;
+        }
+
+        public static final ModuleConfiguration SOUTH_WEST_CONFIG =
+                new ModuleConfiguration();
+
+        static {
+            SOUTH_WEST_CONFIG.moduleName = "South West";
+            SOUTH_WEST_CONFIG.canBus = CAN_BUS;
+            SOUTH_WEST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, SWERVE_WE_POS); // -,+
+
+            SOUTH_WEST_CONFIG.encoderInverted = false;
+            SOUTH_WEST_CONFIG.encoderOffset = -0.1624;
+        }
+
+        public static final ModuleConfiguration SOUTH_EAST_CONFIG =
+                new ModuleConfiguration();
+
+        static {
+            SOUTH_EAST_CONFIG.moduleName = "South East";
+            SOUTH_EAST_CONFIG.canBus = CAN_BUS;
+            SOUTH_EAST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, -SWERVE_WE_POS); // -,-
+
+            SOUTH_EAST_CONFIG.encoderInverted = false;
+            SOUTH_EAST_CONFIG.encoderOffset = -0.05523;
+        }
+
+        public static final ModuleConfiguration NORTH_EAST_CONFIG =
+                new ModuleConfiguration();
+
+        static {
+            NORTH_EAST_CONFIG.moduleName = "North East";
+            NORTH_EAST_CONFIG.canBus = CAN_BUS;
+            NORTH_EAST_CONFIG.position = new Translation2d(SWERVE_NS_POS, -SWERVE_WE_POS); // +,-
+
+            NORTH_EAST_CONFIG.encoderInverted = false;
+            NORTH_EAST_CONFIG.encoderOffset = -0.0575;
         }
         
     }
@@ -128,53 +195,7 @@ public class Constants {
             POV_KINEMATIC_LIMITS.maxSteeringVelocity = 10; // rad/s
         }
 
-        public static final DiffSwerveModule.ModuleConfiguration NORTH_WEST_CONFIG =
-                new DiffSwerveModule.ModuleConfiguration();
-
-        static {
-            NORTH_WEST_CONFIG.moduleName = "North West";
-            NORTH_WEST_CONFIG.canBus = CAN_BUS;
-            NORTH_WEST_CONFIG.position = new Translation2d(SWERVE_NS_POS, SWERVE_WE_POS); // +,+
-
-            NORTH_WEST_CONFIG.encoderInverted = false;
-            NORTH_WEST_CONFIG.encoderOffset = -0.07617;
-        }
-
-        public static final DiffSwerveModule.ModuleConfiguration SOUTH_WEST_CONFIG =
-                new DiffSwerveModule.ModuleConfiguration();
-
-        static {
-            SOUTH_WEST_CONFIG.moduleName = "South West";
-            SOUTH_WEST_CONFIG.canBus = CAN_BUS;
-            SOUTH_WEST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, SWERVE_WE_POS); // -,+
-
-            SOUTH_WEST_CONFIG.encoderInverted = false;
-            SOUTH_WEST_CONFIG.encoderOffset = -0.1624;
-        }
-
-        public static final DiffSwerveModule.ModuleConfiguration SOUTH_EAST_CONFIG =
-                new DiffSwerveModule.ModuleConfiguration();
-
-        static {
-            SOUTH_EAST_CONFIG.moduleName = "South East";
-            SOUTH_EAST_CONFIG.canBus = CAN_BUS;
-            SOUTH_EAST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, -SWERVE_WE_POS); // -,-
-
-            SOUTH_EAST_CONFIG.encoderInverted = false;
-            SOUTH_EAST_CONFIG.encoderOffset = -0.05523;
-        }
-
-        public static final DiffSwerveModule.ModuleConfiguration NORTH_EAST_CONFIG =
-                new DiffSwerveModule.ModuleConfiguration();
-
-        static {
-            NORTH_EAST_CONFIG.moduleName = "North East";
-            NORTH_EAST_CONFIG.canBus = CAN_BUS;
-            NORTH_EAST_CONFIG.position = new Translation2d(SWERVE_NS_POS, -SWERVE_WE_POS); // +,-
-
-            NORTH_EAST_CONFIG.encoderInverted = false;
-            NORTH_EAST_CONFIG.encoderOffset = -0.0575;
-        }
+        
 
         public static final double TRANSLATION_DEADBAND = 0.05; // Avoid unintentional joystick movement
         public static final double ROTATION_DEADBAND = 0.05; // Avoid unintentional joystick movement
