@@ -38,6 +38,36 @@ public class Constants {
      *
      * <p>Note: when robot is flipped over, this is clockwise.
      */
+    public static class SwerveModule{
+        public static final Double CAN_OFFSET = 0.0;
+        public static final double kDt = 0.005;
+        public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
+        public static final double WHEEL_RADIUS = 0;
+        public static final double GEAR_RATIO_DRIVE = 0;
+        public static final double MAX_SPEED = 0;
+
+        public static final double kP = 0.0;
+        public static final double kI = 0.0;
+        public static final double kD = 0.0;
+
+        // this is the motor config for the swerve motors
+        static {
+            CONFIG.TIME_OUT = 0.1;
+
+            CONFIG.NEUTRAL_MODE = NeutralModeValue.Brake;
+            CONFIG.INVERTED = InvertedValue.CounterClockwise_Positive;
+
+            CONFIG.MAX_VOLTAGE = 12.0;
+
+            CONFIG.MAX_STATOR_CURRENT = 120;
+            CONFIG.MAX_CURRENT = 120;
+            CONFIG.ENABLE_STATOR_CURRENT_LIMIT = true;
+            CONFIG.CURRENT_DEADBAND = 0.1; 
+            
+           
+        }
+        
+    }
     public static class DriveTrain {
         public static final String CAN_BUS = "CANivore";
         public static final int NUM_MODULES = 4;

@@ -13,5 +13,14 @@
     "**/.settings": true,
     "**/.factorypath": true,
     "**/*~": true
-  }
+  },
+  
+  "java.configuration.runtimes": [
+  
+    {
+      "name": "JavaSE-20",
+      "path": "/Library/Java/JavaVirtualMachines/temurin-17.jdk",
+      "default": true
+    },
+  ]
 }
