@@ -4,7 +4,7 @@ import static org.frc5687.swerve.Constants.SwerveModule.*;
 
 import org.frc5687.lib.drivers.OutliersTalon;
 import org.frc5687.swerve.Constants;
-import org.frc5687.swerve.subsystems.DriveTrain.SystemIO;
+
 
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
@@ -20,7 +20,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 
 
 public class SwerveModule {
@@ -28,13 +28,10 @@ public class SwerveModule {
     private final OutliersTalon _driveMotor;
     private final OutliersTalon _turningMotor;
     private final CANCoder _encoder;
-    private final double _offset;
+
     private final ProfiledPIDController _pidController;
     private Translation2d _positionVector;
-    private double _absEncoderOffset;
-    private double _encoderZero;
-    private boolean _inverted;
-    private SystemIO _SystemIO;
+
     private SwerveModuleState _goal;
 
 private final StatusSignalValue<Double> _driveVelocityRotationsPerSec;
@@ -43,10 +40,7 @@ private final StatusSignalValue<Double> _driveVelocityRotationsPerSec;
     private final StatusSignalValue<Double> _turningPositionRotations;
 
     private final BaseStatusSignalValue[] _signals;
-    private double _prevAngle;
-    //private ControlState _controlState;
-
-    private boolean _hasZeroed;
+;
 
     
     public SwerveModule(
@@ -70,7 +64,7 @@ private final StatusSignalValue<Double> _driveVelocityRotationsPerSec;
             _driveMotor.setTorqueCurrentFOCRate(1000);
             _turningMotor.setTorqueCurrentFOCRate(1000);
 
-            _SystemIO = new SystemIO();
+         
             _goal = new SwerveModuleState(0.0, getCanCoderAngle());
 
 
@@ -84,7 +78,7 @@ private final StatusSignalValue<Double> _driveVelocityRotationsPerSec;
             CANfig.magnetOffsetDegrees = Constants.SwerveModule.CAN_OFFSET;
             _encoder.configAllSettings(CANfig);
 
-            _offset = Constants.SwerveModule.CAN_OFFSET;
+           
 
             _positionVector = config.position;
             
@@ -105,7 +99,7 @@ private final StatusSignalValue<Double> _driveVelocityRotationsPerSec;
            _signals[2] = _turningVelocityRotationsPerSec;
            _signals[3] = _turningPositionRotations;
            //_controlState = ControlState.OFF;
-           _hasZeroed = false;   
+         
         }
         // public ControlState getControlState() {
         //     return _controlState;
