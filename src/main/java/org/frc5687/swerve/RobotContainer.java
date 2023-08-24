@@ -59,7 +59,7 @@ public class RobotContainer extends OutliersContainer {
 
         // _visionProcessor.start();
         _robot.addPeriodic(this::controllerPeriodic, 0.005, 0.00);
-        _driveTrain.startModules();
+        //_driveTrain.startModules();
         startPeriodic();
         //        _driveTrain.plotTrajectory(TrajectoryGenerator.generateTrajectory(
         //                Constants.Auto.TrajectoryPoints.Node8.RED_NODE_EIGHT_TRAJECTORY_ONE,
