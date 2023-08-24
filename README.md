@@ -1,8 +1,8 @@
 # Repository containing the base of 5687 Swerve Drive.
 
 Includes / Will Include :
-  - [x] Differential Module State Space Model
-  - [x] LQR Control of Modules
+  - [x] Normal Module 
+  - [x] Drivetrain
   - [ ] Localization Pose Estimator
   - [ ] Trajectory Generation / Following
   - [ ] Maverick
