@@ -23,7 +23,9 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 
 
-
+// Swerve Module Code Created in the shadow of
+// the death of diffy swerve by Linus Krenkel
+// using VelocityFOC and PositionVoltage 
 public class SwerveModule {
 
     private final OutliersTalon _driveMotor;

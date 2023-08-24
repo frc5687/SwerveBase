@@ -85,8 +85,8 @@ public class DriveTrain extends OutliersSubsystem {
     private Mode _mode = Mode.NORMAL;
     private Pose2d _hoverGoal;
 
-    private Pose2d _wantedRestPose;
-    private boolean _wantsToSetPose = false;
+    // private Pose2d _wantedRestPose;
+    // private boolean _wantsToSetPose = false;
 
     public DriveTrain(
             OutliersContainer container,
@@ -329,11 +329,11 @@ public class DriveTrain extends OutliersSubsystem {
     public void plotTrajectory(Trajectory t, String name) {
         _field.getObject(name).setTrajectory(t);
     }
-    public void startModules() {
-        for (SwerveModule SwerveModule : _modules) {
-            //SwerveModule.start();
-        }
-    }
+    // public void startModules() {
+    //     for (SwerveModule SwerveModule : _modules) {
+    //         //SwerveModule.start();
+    //     }
+    // }
 
     public void readModules() {
         for (int module = 0; module < _modules.length; module++) {
@@ -514,10 +514,10 @@ public class DriveTrain extends OutliersSubsystem {
         _systemIO.estimatedPose = _poseEstimator.getEstimatedPosition();
     }
 
-    public void wantsToResetPose(Pose2d pose) {
-        _wantedRestPose = pose;
-        _wantsToSetPose = true;
-    }
+    // public void wantsToResetPose(Pose2d pose) {
+    //     _wantedRestPose = pose;
+    //     _wantsToSetPose = true;
+    // }
 
     public void moduleMetrics() {
         for (var module : _modules) {
