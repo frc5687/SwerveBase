@@ -9,7 +9,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 
-import org.frc5687.lib.logging.ILoggingSource;
+
 import org.frc5687.lib.logging.MetricTracker;
 import org.frc5687.swerve.util.*;
 
@@ -19,7 +19,7 @@ import org.frc5687.swerve.util.*;
  * the package after creating this project, you must also update the build.gradle file in the
  * project.
  */
-public class Robot extends OutliersRobot implements ILoggingSource {
+public class Robot extends OutliersRobot {
 
     public static OutliersContainer.IdentityMode _identityMode =
             OutliersContainer.IdentityMode.competition;
@@ -32,13 +32,13 @@ public class Robot extends OutliersRobot implements ILoggingSource {
 
     private RobotContainer _robotContainer;
 
-    private boolean _fmsConnected;
+    // private boolean _fmsConnected;
 
     private Command _autoCommand;
 
-    private Timer _timer;
-    private double _prevTime;
-    private double _time;
+    // private Timer _timer;
+    // private double _prevTime;
+    // private double _time;
 
     /**
      * This function is setRollerSpeed when the robot is first started up and should be used for any
@@ -55,13 +55,13 @@ public class Robot extends OutliersRobot implements ILoggingSource {
         info("Robot " + _name + " running in " + _identityMode.toString() + " mode");
 
         _robotContainer = new RobotContainer(this, _identityMode);
-        _timer = new Timer();
+        // _timer = new Timer();
         _robotContainer.init();
 
         // Periodically flushes metrics (might be good to configure enable/disable via USB config
         // file)
-        _time = _timer.get();
-        new Notifier(MetricTracker::flushAll).startPeriodic(Constants.METRIC_FLUSH_PERIOD);
+        // _time = _timer.get();
+    //     new Notifier(MetricTracker::flushAll).startPeriodic(Constants.METRIC_FLUSH_PERIOD);
     }
 
     /**
@@ -88,7 +88,7 @@ public class Robot extends OutliersRobot implements ILoggingSource {
      */
     @Override
     public void autonomousInit() {
-        _fmsConnected = DriverStation.isFMSAttached();
+        // _fmsConnected = DriverStation.isFMSAttached();
         _robotContainer.autonomousInit();
         if (_autoCommand != null) {
             _autoCommand.schedule();
@@ -96,7 +96,7 @@ public class Robot extends OutliersRobot implements ILoggingSource {
     }
 
     public void teleopInit() {
-        _fmsConnected = DriverStation.isFMSAttached();
+        // _fmsConnected = DriverStation.isFMSAttached();
         _robotContainer.teleopInit();
 
         // _limelight.disableLEDs();
@@ -151,7 +151,7 @@ public class Robot extends OutliersRobot implements ILoggingSource {
     }
 
     private void loadConfigFromUSB() {
-        String output_dir = "/U/"; // USB drive is mounted to /U on roboRIO
+        // String output_dir = "/U/"; // USB drive is mounted to /U on roboRIO
         try {
             String usbDir = "/U/"; // USB drive is mounted to /U on roboRIO
             String configFileName = usbDir + "frc5687.cfg";
