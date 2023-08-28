@@ -3,7 +3,7 @@ package org.frc5687.swerve.util;
 
 import org.frc5687.lib.logging.ILoggingSource;
 import org.frc5687.swerve.Constants;
-
+import org.frc5687.lib.logging.RioLogger;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 

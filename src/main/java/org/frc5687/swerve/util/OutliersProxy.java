@@ -2,7 +2,7 @@
 package org.frc5687.swerve.util;
 
 import org.frc5687.lib.logging.ILoggingSource;
-
+import org.frc5687.lib.logging.RioLogger;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public abstract class OutliersProxy implements ILoggingSource {
