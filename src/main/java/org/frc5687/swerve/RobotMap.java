@@ -13,14 +13,14 @@ public class RobotMap {
     public static class CAN {
 
         public static class TALONFX {
-            public static final int NORTH_WEST_OUTER = 1;
-            public static final int NORTH_WEST_INNER = 2;
-            public static final int NORTH_EAST_INNER = 8;
-            public static final int NORTH_EAST_OUTER = 7;
-            public static final int SOUTH_EAST_OUTER = 5;
-            public static final int SOUTH_EAST_INNER = 6;
-            public static final int SOUTH_WEST_INNER = 4;
-            public static final int SOUTH_WEST_OUTER = 3;
+            public static final int NORTH_WEST_OUTER = 30;
+            public static final int NORTH_WEST_INNER = 31;
+            public static final int NORTH_EAST_INNER = 5;
+            public static final int NORTH_EAST_OUTER = 6;
+            public static final int SOUTH_EAST_OUTER = 32;
+            public static final int SOUTH_EAST_INNER = 33;
+            public static final int SOUTH_WEST_INNER = 34;
+            public static final int SOUTH_WEST_OUTER = 35;
             public static final int ARM = 9;
             public static final int EXT_ARM = 12;
             public static final int CUBESHOOTER_WRIST = 15;
@@ -45,7 +45,14 @@ public class RobotMap {
      * There should be an entry here for each PWM port, preferrably in numerical order. Note that for
      * PWM only one device can connect to each port, so the numbers should be unique.
      */
-    public static class PWM {}
+    public static class PWM {
+        public static class Servo{
+            public static final int NE_SERVO = 0;
+            public static final int SE_SERVO = 1;
+            public static final int NW_SERVO = 2;
+            public static final int SW_SERVO = 3;
+        }
+    }
 
     /**
      * There should be an entry here for each PCM port, preferrably in numerical order. Note that for

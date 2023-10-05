@@ -57,85 +57,91 @@ public class Drive extends OutliersCommand {
             _driveTrain.setHeadingControllerState(SwerveHeadingController.HeadingState.OFF);
             _lockHeading = false;
         }
-        //  driveX and driveY are swapped due to coordinate system that WPILib uses.
-        Vector2d vec =
-                Helpers.axisToSegmentedUnitCircleRadians(
-                        _oi.getDriveY(), _oi.getDriveX(), segmentationArray);
-        double vx;
-        double vy;
-        double rot = _oi.getRotationX();
-        rot = Math.signum(rot) * rot * rot;
-        //  driveX and driveY are swapped due to coordinate system that WPILib uses
-        if (rot == 0 && _driveTrain.getHeadingControllerState() != HeadingState.SNAP) {
-            if (!_lockHeading) {
-                _driveTrain.temporaryDisabledHeadingController();
-            }
-            _lockHeading = true;
-        } else if (_driveTrain.getHeadingControllerState() != HeadingState.SNAP) {
-            _driveTrain.disableHeadingController();
-            _lockHeading = false;
+        if (_oi.shiftUp()){
+            _driveTrain.shiftUpModules();
         }
+        if (_oi.shiftDown()){
+            _driveTrain.shiftDownModules();
+        }
+        //  driveX and driveY are swapped due to coordinate system that WPILib uses.
+        // Vector2d vec =
+        //         Helpers.axisToSegmentedUnitCircleRadians(
+        //                 _oi.getDriveY(), _oi.getDriveX(), segmentationArray);
+        // double vx;
+        // double vy;
+        // double rot = _oi.getRotationX();
+        // rot = Math.signum(rot) * rot * rot;
+        // //  driveX and driveY are swapped due to coordinate system that WPILib uses
+        // if (rot == 0 && _driveTrain.getHeadingControllerState() != HeadingState.SNAP) {
+        //     if (!_lockHeading) {
+        //         _driveTrain.temporaryDisabledHeadingController();
+        //     }
+        //     _lockHeading = true;
+        // } else if (_driveTrain.getHeadingControllerState() != HeadingState.SNAP) {
+        //     _driveTrain.disableHeadingController();
+        //     _lockHeading = false;
+        // }
 
-        double controllerPower = _driveTrain.getRotationCorrection();
-        //        metric("Element Angle", elementAngle);
-        metric("Rot+Controller", (rot + controllerPower));
-        // if (_oi.autoAim()) {
-        //     _driveTrain.setMode(Mode.VISION);
-        //     _driveTrain.setKinematicLimits(Constants.DriveTrain.VISION_KINEMATIC_LIMITS);
-        //     vx = vec.x() * Constants.DriveTrain.VISION_KINEMATIC_LIMITS.maxDriveVelocity;
-        //     vy = vec.y() * Constants.DriveTrain.VISION_KINEMATIC_LIMITS.maxDriveVelocity;
-        //     rot = rot * Constants.DriveTrain.VISION_KINEMATIC_LIMITS.maxSteeringVelocity;
-        //     TrackedObjectInfo closestGameElement;
-        //     if (_endEffector.getConeMode()) {
-        //         closestGameElement = _driveTrain.getClosestCone();
-        //     } else {
-        //         closestGameElement = _driveTrain.getClosestCube();
-        //     }
-        //     double power = 0.0;
-        //     // settings
-        //     double coneDist = vx;
-        //     boolean targetInTolerance;
-        //     // double elementAngle = 0;
-        //     if (closestGameElement != null) {
-        //         metric("Closest Game Element", closestGameElement.toString());
-        //         coneDist = closestGameElement.getDistance();
-        //         targetInTolerance =
-        //                 (closestGameElement.getZ() > Units.inchesToMeters(30)
-        //                         && closestGameElement.getZ() < Units.inchesToMeters(65));
-        //         if (targetInTolerance) {
-        //             power = -_yCordinateElementController.calculate(closestGameElement.getY());
-        //         }
-        //         //   elementAngle = closestGameElement.getAzimuthAngle();
-        //     }
-        //     _driveTrain.setMaintainHeading(new Rotation2d(0));
+        // double controllerPower = _driveTrain.getRotationCorrection();
+        // //        metric("Element Angle", elementAngle);
+        // metric("Rot+Controller", (rot + controllerPower));
+        // // if (_oi.autoAim()) {
+        // //     _driveTrain.setMode(Mode.VISION);
+        // //     _driveTrain.setKinematicLimits(Constants.DriveTrain.VISION_KINEMATIC_LIMITS);
+        // //     vx = vec.x() * Constants.DriveTrain.VISION_KINEMATIC_LIMITS.maxDriveVelocity;
+        // //     vy = vec.y() * Constants.DriveTrain.VISION_KINEMATIC_LIMITS.maxDriveVelocity;
+        // //     rot = rot * Constants.DriveTrain.VISION_KINEMATIC_LIMITS.maxSteeringVelocity;
+        // //     TrackedObjectInfo closestGameElement;
+        // //     if (_endEffector.getConeMode()) {
+        // //         closestGameElement = _driveTrain.getClosestCone();
+        // //     } else {
+        // //         closestGameElement = _driveTrain.getClosestCube();
+        // //     }
+        // //     double power = 0.0;
+        // //     // settings
+        // //     double coneDist = vx;
+        // //     boolean targetInTolerance;
+        // //     // double elementAngle = 0;
+        // //     if (closestGameElement != null) {
+        // //         metric("Closest Game Element", closestGameElement.toString());
+        // //         coneDist = closestGameElement.getDistance();
+        // //         targetInTolerance =
+        // //                 (closestGameElement.getZ() > Units.inchesToMeters(30)
+        // //                         && closestGameElement.getZ() < Units.inchesToMeters(65));
+        // //         if (targetInTolerance) {
+        // //             power = -_yCordinateElementController.calculate(closestGameElement.getY());
+        // //         }
+        // //         //   elementAngle = closestGameElement.getAzimuthAngle();
+        // //     }
+        // //     _driveTrain.setMaintainHeading(new Rotation2d(0));
+        // //     _driveTrain.setVelocity(
+        // //             ChassisSpeeds.fromFieldRelativeSpeeds(
+        // //                     vx * coneDist / 2,
+        // //                     power,
+        // //                     _driveTrain.getRotationCorrection(),
+        // // //                     _driveTrain.getHeading()));
+        // /* } else */if (_oi.getSlowMode()) {
+        //     _driveTrain.setMode(Mode.SLOW);
+        //     _driveTrain.setKinematicLimits(Constants.DriveTrain.SLOW_KINEMATIC_LIMITS);
+        //     vx = vec.x() * Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveVelocity;
+        //     vy = vec.y() * Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveVelocity;
+        //     rot =
+        //             -rot
+        //                     * Constants.DriveTrain
+        //                             .SLOW_ANG_VEL; // negative added to flip rotation in slowmode, driver preference
         //     _driveTrain.setVelocity(
         //             ChassisSpeeds.fromFieldRelativeSpeeds(
-        //                     vx * coneDist / 2,
-        //                     power,
-        //                     _driveTrain.getRotationCorrection(),
-        // //                     _driveTrain.getHeading()));
-        /* } else */if (_oi.getSlowMode()) {
-            _driveTrain.setMode(Mode.SLOW);
-            _driveTrain.setKinematicLimits(Constants.DriveTrain.SLOW_KINEMATIC_LIMITS);
-            vx = vec.x() * Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveVelocity;
-            vy = vec.y() * Constants.DriveTrain.SLOW_KINEMATIC_LIMITS.maxDriveVelocity;
-            rot =
-                    -rot
-                            * Constants.DriveTrain
-                                    .SLOW_ANG_VEL; // negative added to flip rotation in slowmode, driver preference
-            _driveTrain.setVelocity(
-                    ChassisSpeeds.fromFieldRelativeSpeeds(
-                            vx, vy, rot + controllerPower, _driveTrain.getHeading()));
-        } else {
-            _driveTrain.setMode(Mode.NORMAL);
-            _driveTrain.setKinematicLimits(Constants.DriveTrain.KINEMATIC_LIMITS);
-            vx = vec.x() * Constants.DriveTrain.MAX_MPS;
-            vy = vec.y() * Constants.DriveTrain.MAX_MPS;
-            rot = rot * Constants.DriveTrain.MAX_ANG_VEL;
-            _driveTrain.setVelocity(
-                    ChassisSpeeds.fromFieldRelativeSpeeds(
-                            vx, vy, rot + controllerPower, _driveTrain.getHeading()));
-        }
+        //                     vx, vy, rot + controllerPower, _driveTrain.getHeading()));
+        // } else {
+        //     _driveTrain.setMode(Mode.NORMAL);
+        //     _driveTrain.setKinematicLimits(Constants.DriveTrain.KINEMATIC_LIMITS);
+        //     vx = vec.x() * Constants.DriveTrain.MAX_MPS;
+        //     vy = vec.y() * Constants.DriveTrain.MAX_MPS;
+        //     rot = rot * Constants.DriveTrain.MAX_ANG_VEL;
+        //     _driveTrain.setVelocity(
+        //             ChassisSpeeds.fromFieldRelativeSpeeds(
+        //                     vx, vy, rot + controllerPower, _driveTrain.getHeading()));
+        // }
     }
 
     @Override

@@ -6,6 +6,7 @@ import com.ctre.phoenixpro.configs.FeedbackConfigs;
 import com.ctre.phoenixpro.configs.MotionMagicConfigs;
 import com.ctre.phoenixpro.configs.MotorOutputConfigs;
 import com.ctre.phoenixpro.configs.Slot0Configs;
+import com.ctre.phoenixpro.configs.Slot1Configs;
 import com.ctre.phoenixpro.configs.TalonFXConfiguration;
 import com.ctre.phoenixpro.configs.TalonFXConfigurator;
 import com.ctre.phoenixpro.configs.TorqueCurrentConfigs;
@@ -17,8 +18,10 @@ import com.ctre.phoenixpro.signals.InvertedValue;
 import com.ctre.phoenixpro.signals.NeutralModeValue;
 
 /**
- * TalonFX wrapper class that uses 254's LazyTalonFX that reduces CAN bus / CPU overhead by skipping
- * duplicate set commands. (By default the Talon flushes the Tx buffer on every set call).
+ * TalonFX wrapper class that uses 254's LazyTalonFX that reduces CAN bus / CPU
+ * overhead by skipping
+ * duplicate set commands. (By default the Talon flushes the Tx buffer on every
+ * set call).
  */
 public class OutliersTalon extends TalonFX {
     // private final String _name;
@@ -26,6 +29,7 @@ public class OutliersTalon extends TalonFX {
     private TalonFXConfiguration _configuration = new TalonFXConfiguration();
 
     private Slot0Configs _slot0Configs = new Slot0Configs();
+    private Slot1Configs _slot1Configs = new Slot1Configs();
     private MotorOutputConfigs _motorConfigs = new MotorOutputConfigs();
     private TorqueCurrentConfigs _torqueCurrentConfigs = new TorqueCurrentConfigs();
     private final VoltageConfigs _voltageConfigs = new VoltageConfigs();
@@ -38,8 +42,7 @@ public class OutliersTalon extends TalonFX {
     private final VoltageOut _voltageOut = new VoltageOut(0.0);
     private final MotionMagicVoltage _motionMagicVoltage = new MotionMagicVoltage(0.0);
     private final VelocityVoltage _velocityVoltage = new VelocityVoltage(0.0, true, 0, 0, false);
-    private final VelocityTorqueCurrentFOC _velocityTorqueCurrentFOC = new VelocityTorqueCurrentFOC(0.0);
-    private final PositionVoltage _positionVoltage = new PositionVoltage(0.0);
+
     public OutliersTalon(int port, String canBus, String name) {
         super(port, canBus);
         _configurator = this.getConfigurator();
@@ -81,16 +84,6 @@ public class OutliersTalon extends TalonFX {
             this.setControl(_torqueCurrentFOC.withOutput(current));
         }
     }
-    public void setVelocityTorqueCurrantFOC(double Velocity){
-        if (_velocityTorqueCurrentFOC.Velocity != Velocity){
-            this.setControl(_velocityTorqueCurrentFOC.withVelocity(Velocity));
-        }
-    }
-    public void setPositionVoltage(double position){
-        if (_positionVoltage.Position != position){
-            this.setControl(_positionVoltage.withPosition(position));
-        }
-    }
 
     public void configure(Configuration config) {
         _motorConfigs.Inverted = config.INVERTED;
@@ -128,13 +121,18 @@ public class OutliersTalon extends TalonFX {
         _slot0Configs.kV = config.kF;
         _slot0Configs.kP = config.kP;
         _slot0Configs.kI = config.kI;
-        _slot0Configs.kD = config.kD;
+        _slot0Configs.kD = config.kD; // Defaults to config 0
+        _slot1Configs.kV = config.kF1;
+        _slot1Configs.kP = config.kP1;
+        _slot1Configs.kI = config.kI1;
+        _slot1Configs.kD = config.kD1;
 
         _motionMagicConfigs.MotionMagicCruiseVelocity = config.CRUISE_VELOCITY;
         _motionMagicConfigs.MotionMagicAcceleration = config.ACCELERATION;
         _motionMagicConfigs.MotionMagicJerk = config.JERK;
 
         _configurator.apply(_slot0Configs, config.TIME_OUT);
+        _configurator.apply(_slot1Configs, config.TIME_OUT);
         _configurator.apply(_motionMagicConfigs);
     }
 
@@ -186,6 +184,11 @@ public class OutliersTalon extends TalonFX {
         public int CRUISE_VELOCITY = 0; // RPS
         public int ACCELERATION = 0; // RPS / Second
         public int JERK = 0; // RPS / Second / Second
+
+        public double kP1 = 0.0;
+        public double kI1 = 0.0;
+        public double kD1 = 0.0;
+        public double kF1 = 0.0;
     }
 
     public static class Configuration {

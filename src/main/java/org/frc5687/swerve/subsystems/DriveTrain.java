@@ -115,27 +115,31 @@ public class DriveTrain extends OutliersSubsystem {
         _modules = new SwerveModule[4];
         _modules[NORTH_WEST_IDX] =
                 new SwerveModule(
-                        Constants.SwerveModule.NORTH_WEST_CONFIG,
+                        Constants.DriveTrain.NORTH_WEST_CONFIG,
                         RobotMap.CAN.TALONFX.NORTH_WEST_OUTER,
                         RobotMap.CAN.TALONFX.NORTH_WEST_INNER,
+                        RobotMap.PWM.Servo.NW_SERVO,
                         RobotMap.DIO.ENCODER_NW);
         _modules[SOUTH_WEST_IDX] =
                 new SwerveModule(
-                        Constants.SwerveModule.SOUTH_WEST_CONFIG,
+                        Constants.DriveTrain.SOUTH_WEST_CONFIG,
                         RobotMap.CAN.TALONFX.SOUTH_WEST_OUTER,
                         RobotMap.CAN.TALONFX.SOUTH_WEST_INNER,
+                        RobotMap.PWM.Servo.SW_SERVO,
                         RobotMap.DIO.ENCODER_SW);
         _modules[SOUTH_EAST_IDX] =
                 new SwerveModule(
-                        Constants.SwerveModule.SOUTH_EAST_CONFIG,
+                        Constants.DriveTrain.SOUTH_EAST_CONFIG,
                         RobotMap.CAN.TALONFX.SOUTH_EAST_INNER,
                         RobotMap.CAN.TALONFX.SOUTH_EAST_OUTER,
+                        RobotMap.PWM.Servo.SE_SERVO,
                         RobotMap.DIO.ENCODER_SE);
         _modules[NORTH_EAST_IDX] =
                 new SwerveModule(
-                        Constants.SwerveModule.NORTH_EAST_CONFIG,
+                        Constants.DriveTrain.NORTH_EAST_CONFIG,
                         RobotMap.CAN.TALONFX.NORTH_EAST_INNER,
-                        RobotMap.CAN.TALONFX.NORTH_EAST_OUTER,
+                        RobotMap.CAN.TALONFX.NORTH_EAST_OUTER, 
+                        RobotMap.PWM.Servo.NE_SERVO,
                         RobotMap.DIO.ENCODER_NE);
 
         // This should set the Pigeon to 0.
@@ -350,6 +354,17 @@ public class DriveTrain extends OutliersSubsystem {
     public void setModuleStates(SwerveModuleState[] states) {
         for (int module = 0; module < _modules.length; module++) {
             _modules[module].setIdealState(states[module]);
+        }
+    }
+
+    public void shiftUpModules(){
+        for (var module : _modules) {
+            module.shiftUp();
+        }
+    }
+    public void shiftDownModules(){
+        for (var module : _modules) {
+            module.shiftDown();
         }
     }
 

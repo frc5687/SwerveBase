@@ -49,10 +49,10 @@ public class OI extends OutliersProxy {
     public void initializeButtons(
             DriveTrain drivetrain
             ) {
-        _povButtonLeft.whileTrue(new DriveWithSpeeds(drivetrain, 0, 1));
-        _povButtonRight.whileTrue(new DriveWithSpeeds(drivetrain, 0, -1));
-        _povButtonUp.whileTrue(new DriveWithSpeeds(drivetrain, 1, 0));
-        _povButtonDown.whileTrue(new DriveWithSpeeds(drivetrain, -1, 0));
+        // _povButtonLeft.whileTrue(new DriveWithSpeeds(drivetrain, 0, 1));
+        // _povButtonRight.whileTrue(new DriveWithSpeeds(drivetrain, 0, -1));
+        // _povButtonUp.whileTrue(new DriveWithSpeeds(drivetrain, 1, 0));
+        // _povButtonDown.whileTrue(new DriveWithSpeeds(drivetrain, -1, 0));
 
 
         _driverGamepad
@@ -61,13 +61,21 @@ public class OI extends OutliersProxy {
 //        _driverGamepad
 //                .getYButton()
 //                .onTrue(new CharacterizeModule(drivetrain));
-        _driverGamepad.getAButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Units.degreesToRadians(180))));
+        // _driverGamepad.getAButton().onTrue(new SnapTo(drivetrain, new Rotation2d(Units.degreesToRadians(180))));
     }
 
     public boolean getSlowMode() {
         return _driverGamepad.getLeftBumper().getAsBoolean();
     }
 
+    public boolean shiftUp(){
+        return _driverGamepad.getAButton().getAsBoolean();
+    }
+
+    public boolean shiftDown(){
+        return _driverGamepad.getBButton().getAsBoolean();
+    }
+    
     public boolean zeroIMU() {
         return _driverGamepad.getStartButton().getAsBoolean();
     }

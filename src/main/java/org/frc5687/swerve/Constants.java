@@ -55,7 +55,9 @@ public class Constants {
         public static final double kDt = 0.005;
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
         public static final double WHEEL_RADIUS = 0;
-        public static final double GEAR_RATIO_DRIVE = 0;
+        public static final double GEAR_RATIO_DRIVE_HIGH = 0;
+        public static final double GEAR_RATIO_DRIVE_LOW = 0;
+        public static final double GEAR_RATIO_STEER = 0;
         public static final double MAX_SPEED = 0;
 
         public static final double kP = 0.0;
@@ -79,53 +81,40 @@ public class Constants {
            
         }
 
-        
-         public static final ModuleConfiguration NORTH_WEST_CONFIG =
-                new ModuleConfiguration();
+
+        public static final OutliersTalon.ClosedLoopConfiguration DRIVE_CONTROLLER_CONFIG =
+                new OutliersTalon.ClosedLoopConfiguration();
 
         static {
-            NORTH_WEST_CONFIG.moduleName = "North West";
-            NORTH_WEST_CONFIG.canBus = CAN_BUS;
-            NORTH_WEST_CONFIG.position = new Translation2d(SWERVE_NS_POS, SWERVE_WE_POS); // +,+
+            DRIVE_CONTROLLER_CONFIG.SLOT = 0;
 
-            NORTH_WEST_CONFIG.encoderInverted = false;
-            NORTH_WEST_CONFIG.encoderOffset = -0.07617;
+            DRIVE_CONTROLLER_CONFIG.kP = 0.0;
+            DRIVE_CONTROLLER_CONFIG.kI = 0;
+            DRIVE_CONTROLLER_CONFIG.kD = 0.0;
+            DRIVE_CONTROLLER_CONFIG.kF = 0.0;
+            DRIVE_CONTROLLER_CONFIG.kP1 = 0.0;
+            DRIVE_CONTROLLER_CONFIG.kI1 = 0;
+            DRIVE_CONTROLLER_CONFIG.kD1 = 0.0;
+            DRIVE_CONTROLLER_CONFIG.kF1 = 0.0;
+
+            DRIVE_CONTROLLER_CONFIG.CRUISE_VELOCITY = 0;
+            DRIVE_CONTROLLER_CONFIG.ACCELERATION = 0;
+            DRIVE_CONTROLLER_CONFIG.JERK = 0;
         }
-
-        public static final ModuleConfiguration SOUTH_WEST_CONFIG =
-                new ModuleConfiguration();
-
-        static {
-            SOUTH_WEST_CONFIG.moduleName = "South West";
-            SOUTH_WEST_CONFIG.canBus = CAN_BUS;
-            SOUTH_WEST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, SWERVE_WE_POS); // -,+
-
-            SOUTH_WEST_CONFIG.encoderInverted = false;
-            SOUTH_WEST_CONFIG.encoderOffset = -0.1624;
-        }
-
-        public static final ModuleConfiguration SOUTH_EAST_CONFIG =
-                new ModuleConfiguration();
+        public static final OutliersTalon.ClosedLoopConfiguration STEER_CONTROLLER_CONFIG =
+                new OutliersTalon.ClosedLoopConfiguration();
 
         static {
-            SOUTH_EAST_CONFIG.moduleName = "South East";
-            SOUTH_EAST_CONFIG.canBus = CAN_BUS;
-            SOUTH_EAST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, -SWERVE_WE_POS); // -,-
+            STEER_CONTROLLER_CONFIG.SLOT = 0;
 
-            SOUTH_EAST_CONFIG.encoderInverted = false;
-            SOUTH_EAST_CONFIG.encoderOffset = -0.05523;
-        }
+            STEER_CONTROLLER_CONFIG.kP = 0.0;
+            STEER_CONTROLLER_CONFIG.kI = 0;
+            STEER_CONTROLLER_CONFIG.kD = 0.0;
+            STEER_CONTROLLER_CONFIG.kF = 0.0;
 
-        public static final ModuleConfiguration NORTH_EAST_CONFIG =
-                new ModuleConfiguration();
-
-        static {
-            NORTH_EAST_CONFIG.moduleName = "North East";
-            NORTH_EAST_CONFIG.canBus = CAN_BUS;
-            NORTH_EAST_CONFIG.position = new Translation2d(SWERVE_NS_POS, -SWERVE_WE_POS); // +,-
-
-            NORTH_EAST_CONFIG.encoderInverted = false;
-            NORTH_EAST_CONFIG.encoderOffset = -0.0575;
+            STEER_CONTROLLER_CONFIG.CRUISE_VELOCITY = 0;
+            STEER_CONTROLLER_CONFIG.ACCELERATION = 0;
+            STEER_CONTROLLER_CONFIG.JERK = 0;
         }
         
     }
@@ -188,6 +177,59 @@ public class Constants {
             POV_KINEMATIC_LIMITS.maxDriveAcceleration = 10; // m/s^2
             POV_KINEMATIC_LIMITS.maxSteeringVelocity = 10; // rad/s
         }
+
+        public static final ModuleConfiguration NORTH_WEST_CONFIG =
+                new ModuleConfiguration();
+
+        static {
+            NORTH_WEST_CONFIG.moduleName = "North West";
+            NORTH_WEST_CONFIG.canBus = CAN_BUS;
+            NORTH_WEST_CONFIG.position = new Translation2d(SWERVE_NS_POS, SWERVE_WE_POS); // +,+
+
+            NORTH_WEST_CONFIG.encoderInverted = false;
+            NORTH_WEST_CONFIG.encoderOffset = -0.07617;
+        }
+
+        public static final ModuleConfiguration SOUTH_WEST_CONFIG =
+                new ModuleConfiguration();
+
+        static {
+            SOUTH_WEST_CONFIG.moduleName = "South West";
+            SOUTH_WEST_CONFIG.canBus = CAN_BUS;
+            SOUTH_WEST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, SWERVE_WE_POS); // -,+
+
+            SOUTH_WEST_CONFIG.encoderInverted = false;
+            SOUTH_WEST_CONFIG.encoderOffset = -0.1624;
+        }
+
+        public static final ModuleConfiguration SOUTH_EAST_CONFIG =
+                new ModuleConfiguration();
+
+        static {
+            SOUTH_EAST_CONFIG.moduleName = "South East";
+            SOUTH_EAST_CONFIG.canBus = CAN_BUS;
+            SOUTH_EAST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, -SWERVE_WE_POS); // -,-
+
+            SOUTH_EAST_CONFIG.encoderInverted = false;
+            SOUTH_EAST_CONFIG.encoderOffset = -0.05523;
+        }
+
+        public static final ModuleConfiguration NORTH_EAST_CONFIG =
+                new ModuleConfiguration();
+
+        static {
+            NORTH_EAST_CONFIG.moduleName = "North East";
+            NORTH_EAST_CONFIG.canBus = CAN_BUS;
+            NORTH_EAST_CONFIG.position = new Translation2d(SWERVE_NS_POS, -SWERVE_WE_POS); // +,-
+
+            NORTH_EAST_CONFIG.encoderInverted = false;
+            NORTH_EAST_CONFIG.encoderOffset = -0.0575;
+
+            NORTH_EAST_CONFIG.servoShiftUpAngle = 70;
+            NORTH_EAST_CONFIG.servoShiftDownAngle = 0;
+        }
+        
+    
 
         
 
