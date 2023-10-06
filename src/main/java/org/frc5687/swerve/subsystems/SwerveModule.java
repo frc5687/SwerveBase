@@ -130,7 +130,7 @@ public class SwerveModule {
 
     public void setIdealState(SwerveModuleState state) {
         if (state.speedMetersPerSecond < 0.1) {
-            StopAll();
+            stopAll();
         } else {
             state = SwerveModuleState.optimize(state, getCanCoderAngle());
             _goal = state;
@@ -165,23 +165,23 @@ public class SwerveModule {
     }
 
     public void shiftUp() {
-        _shiftMotor.setAngle(Units.degreesToRadians(_shiftUpAngle));
+        _shiftMotor.setAngle(_shiftUpAngle);
         _positionVoltage = _positionVoltage.withSlot(1);
         _isLowGear = false;
     }
 
     public void shiftDown() {
-        _shiftMotor.setAngle(Units.degreesToRadians(_shiftDownAngle));
-        _positionVoltage =_positionVoltage.withSlot(0);
+        _shiftMotor.setAngle(_shiftDownAngle);
+        _positionVoltage = _positionVoltage.withSlot(0);
         _isLowGear = true;
     }
 
-    public void StopAll() {
+    public void stopAll() {
         _driveMotor.stopMotor();
         _steeringMotor.stopMotor();
     }
 
-    public double getEncoderAngledouble() {
+    public double getEncoderAngleDouble() {
         return _encoder.getAbsolutePosition();
     }
 
@@ -276,8 +276,8 @@ public class SwerveModule {
 
         public String canBus = "CANivore";
 
-        public double servoShiftUpAngle = 0;
-        public double servoShiftDownAngle = 0;
+        public double servoShiftUpAngle = 0; // degrees
+        public double servoShiftDownAngle = 180; //degrees
     }
 
     // public enum ControlState {
