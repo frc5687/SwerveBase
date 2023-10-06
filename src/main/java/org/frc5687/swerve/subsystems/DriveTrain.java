@@ -119,28 +119,28 @@ public class DriveTrain extends OutliersSubsystem {
                         RobotMap.CAN.TALONFX.NORTH_WEST_OUTER,
                         RobotMap.CAN.TALONFX.NORTH_WEST_INNER,
                         RobotMap.PWM.Servo.NW_SERVO,
-                        RobotMap.DIO.ENCODER_NW);
+                        RobotMap.CAN.CANCODER.ENCODER_NW);
         _modules[SOUTH_WEST_IDX] =
                 new SwerveModule(
                         Constants.DriveTrain.SOUTH_WEST_CONFIG,
                         RobotMap.CAN.TALONFX.SOUTH_WEST_OUTER,
                         RobotMap.CAN.TALONFX.SOUTH_WEST_INNER,
                         RobotMap.PWM.Servo.SW_SERVO,
-                        RobotMap.DIO.ENCODER_SW);
+                        RobotMap.CAN.CANCODER.ENCODER_SW);
         _modules[SOUTH_EAST_IDX] =
                 new SwerveModule(
                         Constants.DriveTrain.SOUTH_EAST_CONFIG,
                         RobotMap.CAN.TALONFX.SOUTH_EAST_INNER,
                         RobotMap.CAN.TALONFX.SOUTH_EAST_OUTER,
                         RobotMap.PWM.Servo.SE_SERVO,
-                        RobotMap.DIO.ENCODER_SE);
+                        RobotMap.CAN.CANCODER.ENCODER_SE);
         _modules[NORTH_EAST_IDX] =
                 new SwerveModule(
                         Constants.DriveTrain.NORTH_EAST_CONFIG,
                         RobotMap.CAN.TALONFX.NORTH_EAST_INNER,
                         RobotMap.CAN.TALONFX.NORTH_EAST_OUTER, 
                         RobotMap.PWM.Servo.NE_SERVO,
-                        RobotMap.DIO.ENCODER_NE);
+                        RobotMap.CAN.CANCODER.ENCODER_NE);
 
         // This should set the Pigeon to 0.
         _imu.getYaw().setUpdateFrequency(200);

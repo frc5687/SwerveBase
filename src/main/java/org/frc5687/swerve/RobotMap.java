@@ -27,6 +27,13 @@ public class RobotMap {
             public static final int CUBESHOOTER_SHOOTER = 14;
         }
 
+        public static class CANCODER {
+        public static final int ENCODER_NE = 0;
+        public static final int ENCODER_NW = 1; 
+        public static final int ENCODER_SE = 2; 
+        public static final int ENCODER_SW = 3; 
+        }
+
         public static class PIGEON {
             public static final int PIGEON = 0;
         }

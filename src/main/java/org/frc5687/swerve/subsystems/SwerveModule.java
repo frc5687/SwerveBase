@@ -186,7 +186,11 @@ public class SwerveModule {
     }
 
     public Rotation2d getCanCoderAngle() {
-        return Rotation2d.fromDegrees(_encoder.getAbsolutePosition());
+        if (_encoder == null){
+            return Rotation2d.fromDegrees(0);
+        } else {
+            return Rotation2d.fromDegrees(_encoder.getAbsolutePosition());
+        }
     }
 
     public double getDriveRPM() {
@@ -270,7 +274,7 @@ public class SwerveModule {
         public double encoderOffset = 0.0;
         public boolean encoderInverted = false;
 
-        public String canBus = "rio";
+        public String canBus = "CANivore";
 
         public double servoShiftUpAngle = 0;
         public double servoShiftDownAngle = 0;

@@ -13,7 +13,7 @@ tasks.withType(JavaCompile) {
 sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
 
-def ROBOT_MAIN_CLASS = "org.frc5687.chargedup.Main"
+def ROBOT_MAIN_CLASS = "org.frc5687.swerve.Main"
 def TEAM_IP = "10.56.87.2"
 // Define my targets (RoboRIO) and artifacts (deployable files)
 // This is added by GradleRIO's backing project DeployUtils.
