@@ -224,9 +224,6 @@ public class Constants {
 
             NORTH_EAST_CONFIG.encoderInverted = false;
             NORTH_EAST_CONFIG.encoderOffset = -0.0575;
-
-            NORTH_EAST_CONFIG.servoShiftUpAngle = 70;
-            NORTH_EAST_CONFIG.servoShiftDownAngle = 0;
         }
         
     
