@@ -23,6 +23,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Servo;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 // Swerve Module Code Created in the shadow of
 // the death of diffy swerve by Linus Krenkel
@@ -257,10 +258,10 @@ public class SwerveModule {
         // SmartDashboard.putNumber(_name + "/velocityWheel", getWheelVelocity());
         // SmartDashboard.putNumber(_name + "/referenceWheelVelocity",
         // getReferenceWheelVelocity());
-        //
+        
         // SmartDashboard.putString(_name + "/KMatrix",
         // _moduleControlLoop.getController().getK().toString());
-        //
+        
         // SmartDashboard.putNumber(_name + "/estimatedModuleAngle",
         // getPredictedAzimuthAngle());
         // SmartDashboard.putString(_name + "/refernce", _reference.toString());

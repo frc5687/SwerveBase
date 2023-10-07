@@ -63,15 +63,15 @@ public class Drive extends OutliersCommand {
         if (_oi.shiftDown()){
             _driveTrain.shiftDownModules();
         }
-        //  driveX and driveY are swapped due to coordinate system that WPILib uses.
-        // Vector2d vec =
-        //         Helpers.axisToSegmentedUnitCircleRadians(
-        //                 _oi.getDriveY(), _oi.getDriveX(), segmentationArray);
-        // double vx;
-        // double vy;
-        // double rot = _oi.getRotationX();
-        // rot = Math.signum(rot) * rot * rot;
-        // //  driveX and driveY are swapped due to coordinate system that WPILib uses
+        // driveX and driveY are swapped due to coordinate system that WPILib uses.
+        Vector2d vec =
+                Helpers.axisToSegmentedUnitCircleRadians(
+                        _oi.getDriveY(), _oi.getDriveX(), segmentationArray);
+        double vx;
+        double vy;
+        double rot = _oi.getRotationX();
+        rot = Math.signum(rot) * rot * rot;
+        //  driveX and driveY are swapped due to coordinate system that WPILib uses
         // if (rot == 0 && _driveTrain.getHeadingControllerState() != HeadingState.SNAP) {
         //     if (!_lockHeading) {
         //         _driveTrain.temporaryDisabledHeadingController();
@@ -82,7 +82,7 @@ public class Drive extends OutliersCommand {
         //     _lockHeading = false;
         // }
 
-        // double controllerPower = _driveTrain.getRotationCorrection();
+        double controllerPower = _driveTrain.getRotationCorrection();
         // //        metric("Element Angle", elementAngle);
         // metric("Rot+Controller", (rot + controllerPower));
         // // if (_oi.autoAim()) {
@@ -133,14 +133,14 @@ public class Drive extends OutliersCommand {
         //             ChassisSpeeds.fromFieldRelativeSpeeds(
         //                     vx, vy, rot + controllerPower, _driveTrain.getHeading()));
         // } else {
-        //     _driveTrain.setMode(Mode.NORMAL);
-        //     _driveTrain.setKinematicLimits(Constants.DriveTrain.KINEMATIC_LIMITS);
-        //     vx = vec.x() * Constants.DriveTrain.MAX_MPS;
-        //     vy = vec.y() * Constants.DriveTrain.MAX_MPS;
-        //     rot = rot * Constants.DriveTrain.MAX_ANG_VEL;
-        //     _driveTrain.setVelocity(
-        //             ChassisSpeeds.fromFieldRelativeSpeeds(
-        //                     vx, vy, rot + controllerPower, _driveTrain.getHeading()));
+        _driveTrain.setMode(Mode.NORMAL);
+        _driveTrain.setKinematicLimits(Constants.DriveTrain.KINEMATIC_LIMITS);
+        vx = vec.x() * Constants.DriveTrain.MAX_MPS;
+        vy = vec.y() * Constants.DriveTrain.MAX_MPS;
+        rot = rot * Constants.DriveTrain.MAX_ANG_VEL;
+        _driveTrain.setVelocity(
+                ChassisSpeeds.fromFieldRelativeSpeeds(
+                        vx, vy, rot + controllerPower, _driveTrain.getHeading()));
         // }
     }
 

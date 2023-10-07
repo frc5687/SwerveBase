@@ -51,7 +51,7 @@ public class Constants {
           public static final String CAN_BUS = "CANivore";
         public static final int NUM_MODULES = 4;
 
-        public static final Double CAN_OFFSET = 0.0;
+        public static final double CAN_OFFSET = 0.0;
         public static final double kDt = 0.005;
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
         public static final double WHEEL_RADIUS = 0;

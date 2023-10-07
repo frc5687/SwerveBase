@@ -116,29 +116,29 @@ public class DriveTrain extends OutliersSubsystem {
         _modules[NORTH_WEST_IDX] =
                 new SwerveModule(
                         Constants.DriveTrain.NORTH_WEST_CONFIG,
-                        RobotMap.CAN.TALONFX.NORTH_WEST_OUTER,
-                        RobotMap.CAN.TALONFX.NORTH_WEST_INNER,
+                        RobotMap.CAN.TALONFX.NORTH_WEST_ROTATION,
+                        RobotMap.CAN.TALONFX.NORTH_WEST_TRANSLATION,
                         RobotMap.PWM.Servo.NW_SERVO,
                         RobotMap.CAN.CANCODER.ENCODER_NW);
         _modules[SOUTH_WEST_IDX] =
                 new SwerveModule(
                         Constants.DriveTrain.SOUTH_WEST_CONFIG,
-                        RobotMap.CAN.TALONFX.SOUTH_WEST_OUTER,
-                        RobotMap.CAN.TALONFX.SOUTH_WEST_INNER,
+                        RobotMap.CAN.TALONFX.SOUTH_WEST_ROTATION,
+                        RobotMap.CAN.TALONFX.SOUTH_WEST_TRANSLATION,
                         RobotMap.PWM.Servo.SW_SERVO,
                         RobotMap.CAN.CANCODER.ENCODER_SW);
         _modules[SOUTH_EAST_IDX] =
                 new SwerveModule(
                         Constants.DriveTrain.SOUTH_EAST_CONFIG,
-                        RobotMap.CAN.TALONFX.SOUTH_EAST_INNER,
-                        RobotMap.CAN.TALONFX.SOUTH_EAST_OUTER,
+                        RobotMap.CAN.TALONFX.SOUTH_EAST_ROTATION,
+                        RobotMap.CAN.TALONFX.SOUTH_EAST_TRANSLATION,
                         RobotMap.PWM.Servo.SE_SERVO,
                         RobotMap.CAN.CANCODER.ENCODER_SE);
         _modules[NORTH_EAST_IDX] =
                 new SwerveModule(
                         Constants.DriveTrain.NORTH_EAST_CONFIG,
-                        RobotMap.CAN.TALONFX.NORTH_EAST_INNER,
-                        RobotMap.CAN.TALONFX.NORTH_EAST_OUTER, 
+                        RobotMap.CAN.TALONFX.NORTH_EAST_ROTATION,
+                        RobotMap.CAN.TALONFX.NORTH_EAST_TRANSLATION, 
                         RobotMap.PWM.Servo.NE_SERVO,
                         RobotMap.CAN.CANCODER.ENCODER_NE);
 
