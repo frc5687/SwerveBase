@@ -116,7 +116,7 @@ public class SwerveModule {
         _signals[2] = _steeringVelocityRotationsPerSec;
         _signals[3] = _steeringPositionRotations;
         // _controlState = ControlState.OFF;
-
+        System.out.println("Module has been constructed!!");
     }
 
     // public ControlState getControlState() {
@@ -167,12 +167,15 @@ public class SwerveModule {
 
     public void shiftUp() {
         _shiftMotor.setAngle(_shiftUpAngle);
+        // _shiftMotor.set(1);
         _positionVoltage = _positionVoltage.withSlot(1);
         _isLowGear = false;
+        System.out.println("SHIFTING UP GOSH DARN IT!!!!! >:(");
     }
 
     public void shiftDown() {
         _shiftMotor.setAngle(_shiftDownAngle);
+        // _shiftMotor.set(0);
         _positionVoltage = _positionVoltage.withSlot(0);
         _isLowGear = true;
     }
@@ -277,8 +280,8 @@ public class SwerveModule {
 
         public String canBus = "CANivore";
 
-        public double servoShiftUpAngle = 0; // degrees
-        public double servoShiftDownAngle = 180; //degrees
+        public double servoShiftUpAngle = 65; // degrees
+        public double servoShiftDownAngle = 42; //degrees
     }
 
     // public enum ControlState {
