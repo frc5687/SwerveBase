@@ -85,7 +85,8 @@ public class DriveTrajectory extends OutliersCommand {
         if (interrupted
                 || Math.abs(trajectory.getEndState().velocityMetersPerSecond) < 0.1) {
             _driveTrain.setVelocity(new ChassisSpeeds(0, 0, 0));
-            _driveTrain.setKinematicLimits(Constants.DriveTrain.KINEMATIC_LIMITS);
+            _driveTrain.setKinematicLimits(_driveTrain.isLowGear() ? Constants.DriveTrain.LOW_KINEMATIC_LIMITS :
+         Constants.DriveTrain.HIGH_KINEMATIC_LIMITS);
         }
     }
 

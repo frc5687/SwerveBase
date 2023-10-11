@@ -13,8 +13,10 @@ import com.ctre.phoenix.sensors.CANCoderConfiguration;
 import com.ctre.phoenix.sensors.SensorTimeBase;
 import com.ctre.phoenixpro.BaseStatusSignalValue;
 import com.ctre.phoenixpro.StatusSignalValue;
+import com.ctre.phoenixpro.configs.FeedbackConfigs;
 import com.ctre.phoenixpro.controls.PositionVoltage;
 import com.ctre.phoenixpro.controls.VelocityTorqueCurrentFOC;
+import com.ctre.phoenixpro.signals.FeedbackSensorSourceValue;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -43,13 +45,13 @@ public class SwerveModule {
 
     private final StatusSignalValue<Double> _driveVelocityRotationsPerSec;
     private final StatusSignalValue<Double> _drivePositionRotations;
-    private final StatusSignalValue<Double> _steeringVelocityRotationsPerSec;
-    private final StatusSignalValue<Double> _steeringPositionRotations;
+    private final StatusSignal<Double> _steeringVelocityRotationsPerSec;
+    private final StatusSignal<Double> _steeringPositionRotations;
 
     private final BaseStatusSignalValue[] _signals;
 
-    private final VelocityTorqueCurrentFOC _velocityTorqueCurrentFOC;
-    private PositionVoltage _positionVoltage;
+    private VelocityTorqueCurrentFOC _velocityTorqueCurrentFOC;
+    private final PositionVoltage _positionVoltage;
 
     private double _rotPerMet = 0.0;
     private double _gearRatio;
@@ -90,9 +92,14 @@ public class SwerveModule {
         CANfig.magnetOffsetDegrees = Constants.SwerveModule.CAN_OFFSET;
         _encoder.configAllSettings(CANfig);
 
+        FeedbackConfigs feedback = new FeedbackConfigs();
+        feedback.FeedbackRemoteSensorID = encoderPort;
+        feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
+        feedback.RotorToSensorRatio = Constants.SwerveModule.GEAR_RATIO_STEER;
+        _steeringMotor.configureFeedback(feedback);
 
 
-        _metPerRot = 2 * Math.PI * Units.inchesToMeters(Constants.SwerveModule.WHEEL_RADIUS);
+        _metPerRot = 2 * Math.PI * Constants.SwerveModule.WHEEL_RADIUS;
 
         _shiftDownAngle = config.servoShiftDownAngle;
         _shiftUpAngle = config.servoShiftUpAngle;
@@ -101,8 +108,8 @@ public class SwerveModule {
 
         _drivePositionRotations = _driveMotor.getPosition();
         _driveVelocityRotationsPerSec = _driveMotor.getVelocity();
-        _steeringPositionRotations = _steeringMotor.getPosition();
-        _steeringVelocityRotationsPerSec = _steeringMotor.getVelocity();
+        _steeringPositionRotations = _encoder.getPosition();
+        _steeringVelocityRotationsPerSec = _encoder.getVelocity();
 
         _driveVelocityRotationsPerSec.setUpdateFrequency(1 / kDt);
         _drivePositionRotations.setUpdateFrequency(1 / kDt);
@@ -141,12 +148,14 @@ public class SwerveModule {
 
     public void setModuleState(SwerveModuleState state) {
         double speed = state.speedMetersPerSecond
-                * (_metPerRot * (_isLowGear ? Constants.SwerveModule.GEAR_RATIO_DRIVE_LOW
-                        : Constants.SwerveModule.GEAR_RATIO_DRIVE_HIGH));
-        double position = state.angle.getDegrees();
+                * ((_isLowGear ? Constants.SwerveModule.GEAR_RATIO_DRIVE_LOW
+                        : Constants.SwerveModule.GEAR_RATIO_DRIVE_HIGH)/_metPerRot);
+        double position = state.angle.getRotations();
         _driveMotor.setControl(_velocityTorqueCurrentFOC.withVelocity(speed));
         _steeringMotor.setControl(_positionVoltage.withPosition(position));
-
+        SmartDashboard.putNumber("/wantedSpeed", speed);
+        SmartDashboard.putNumber("/wantedPositon", position);
+        SmartDashboard.putNumber("/stateSpeedMPS", state.speedMetersPerSecond);
     }
 
     public SwerveModuleState getState() {
@@ -168,7 +177,7 @@ public class SwerveModule {
     public void shiftUp() {
         _shiftMotor.setAngle(_shiftUpAngle);
         // _shiftMotor.set(1);
-        _positionVoltage = _positionVoltage.withSlot(1);
+        _velocityTorqueCurrentFOC = _velocityTorqueCurrentFOC.withSlot(1);
         _isLowGear = false;
         System.out.println("SHIFTING UP GOSH DARN IT!!!!! >:(");
     }
@@ -176,7 +185,7 @@ public class SwerveModule {
     public void shiftDown() {
         _shiftMotor.setAngle(_shiftDownAngle);
         // _shiftMotor.set(0);
-        _positionVoltage = _positionVoltage.withSlot(0);
+        _velocityTorqueCurrentFOC = _velocityTorqueCurrentFOC.withSlot(0);
         _isLowGear = true;
     }
 
@@ -186,7 +195,7 @@ public class SwerveModule {
     }
 
     public double getEncoderAngleDouble() {
-        return _encoder.getAbsolutePosition();
+        return Units.degreesToRadians(_encoder.getAbsolutePosition());
     }
 
     public Rotation2d getCanCoderAngle() {
@@ -239,7 +248,11 @@ public class SwerveModule {
 
     public void updateDashboard() {
         SmartDashboard.putNumber("/driveVoltage", _driveMotor.getSupplyVoltage().getValue());
-        SmartDashboard.putNumber("/moduleAngle", _encoder.getAbsolutePosition());
+        SmartDashboard.putNumber("/moduleAngle", getEncoderAngleDouble());
+        SmartDashboard.putNumber("/wheelVelocity", getWheelVelocity());
+        SmartDashboard.putNumber("/driveRPM", getDriveRPM());
+        SmartDashboard.putNumber("/wheelAngularVelocity", getWheelAngularVelocity());
+        SmartDashboard.putNumber("/slotID", _positionVoltage.Slot);
         // SmartDashboard.putNumber("/driveVoltage",
         // _driveMotor.getMotorOutputVoltage());
         // SmartDashboard.putNumber(_name + "/steerVoltage",

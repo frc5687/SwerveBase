@@ -54,7 +54,7 @@ public class Constants {
         public static final double CAN_OFFSET = 0.0;
         public static final double kDt = 0.005;
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
-        public static final double WHEEL_RADIUS = 1.75;
+        public static final double WHEEL_RADIUS = 0.04445;
         public static final double GEAR_RATIO_DRIVE_HIGH = 4.9;
         public static final double GEAR_RATIO_DRIVE_LOW = 9.6;
         public static final double GEAR_RATIO_STEER = 3;
@@ -88,7 +88,7 @@ public class Constants {
         static {
             DRIVE_CONTROLLER_CONFIG.SLOT = 0;
 
-            DRIVE_CONTROLLER_CONFIG.kP = 5.0;
+            DRIVE_CONTROLLER_CONFIG.kP = 0.0; //23.0
             DRIVE_CONTROLLER_CONFIG.kI = 0;
             DRIVE_CONTROLLER_CONFIG.kD = 0.0;
             DRIVE_CONTROLLER_CONFIG.kF = 0.0;
@@ -107,7 +107,7 @@ public class Constants {
         static {
             STEER_CONTROLLER_CONFIG.SLOT = 0;
 
-            STEER_CONTROLLER_CONFIG.kP = 0.0;
+            STEER_CONTROLLER_CONFIG.kP = 5.0;
             STEER_CONTROLLER_CONFIG.kI = 0;
             STEER_CONTROLLER_CONFIG.kD = 0.0;
             STEER_CONTROLLER_CONFIG.kF = 0.0;
@@ -130,16 +130,25 @@ public class Constants {
         public static final double SWERVE_WE_POS = WIDTH / 2.0;
 
         public static final double MAX_MPS = 4.2; // Max speed of robot (m/s)
+        public static final double MAX_LOW_GEAR_MPS = 3.5;
+        public static final double MAX_HIGH_GEAR_MPS = 6.85;
         public static final double SLOW_MPS = 2.0; // Slow speed of robot (m/s)
         public static final double MAX_ANG_VEL = Math.PI; // Max rotation rate of robot (rads/s)
         public static final double SLOW_ANG_VEL = Math.PI; // Max rotation rate of robot (rads/s)
 
-        public static final KinematicLimits KINEMATIC_LIMITS = new KinematicLimits();
+        public static final KinematicLimits HIGH_KINEMATIC_LIMITS = new KinematicLimits();
 
         static {
-            KINEMATIC_LIMITS.maxDriveVelocity = 5.3; // m/s
-            KINEMATIC_LIMITS.maxDriveAcceleration = 25; // m/s^2
-            KINEMATIC_LIMITS.maxSteeringVelocity = 25; // rad/s
+            HIGH_KINEMATIC_LIMITS.maxDriveVelocity = MAX_HIGH_GEAR_MPS; // m/s
+            HIGH_KINEMATIC_LIMITS.maxDriveAcceleration = 25; // m/s^2
+            HIGH_KINEMATIC_LIMITS.maxSteeringVelocity = 25; // rad/s
+        }
+        public static final KinematicLimits LOW_KINEMATIC_LIMITS = new KinematicLimits();
+
+        static {
+            LOW_KINEMATIC_LIMITS.maxDriveVelocity = MAX_LOW_GEAR_MPS; // m/s
+            LOW_KINEMATIC_LIMITS.maxDriveAcceleration = 25; // m/s^2
+            LOW_KINEMATIC_LIMITS.maxSteeringVelocity = 25; // rad/s
         }
         public static final KinematicLimits DRIVE_POSE_KINEMATIC_LIMITS = new KinematicLimits();
         static {

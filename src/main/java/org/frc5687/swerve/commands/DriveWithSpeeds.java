@@ -22,7 +22,8 @@ public class DriveWithSpeeds extends OutliersCommand{
     public void execute() {
         super.execute();    
         _driveTrain.setMode(Mode.NORMAL);
-        _driveTrain.setKinematicLimits(Constants.DriveTrain.KINEMATIC_LIMITS);
+        _driveTrain.setKinematicLimits(_driveTrain.isLowGear() ? Constants.DriveTrain.LOW_KINEMATIC_LIMITS :
+         Constants.DriveTrain.HIGH_KINEMATIC_LIMITS);
         _driveTrain.setVelocity(
             ChassisSpeeds.fromFieldRelativeSpeeds(
                 _vx, _vy, 0, _driveTrain.getHeading()

@@ -133,10 +133,12 @@ public class Drive extends OutliersCommand {
         //             ChassisSpeeds.fromFieldRelativeSpeeds(
         //                     vx, vy, rot + controllerPower, _driveTrain.getHeading()));
         // } else {
+        double maxMPS = _driveTrain.isLowGear() ? Constants.DriveTrain.MAX_LOW_GEAR_MPS : Constants.DriveTrain.MAX_HIGH_GEAR_MPS; 
         _driveTrain.setMode(Mode.NORMAL);
-        _driveTrain.setKinematicLimits(Constants.DriveTrain.KINEMATIC_LIMITS);
-        vx = vec.x() * Constants.DriveTrain.MAX_MPS;
-        vy = vec.y() * Constants.DriveTrain.MAX_MPS;
+        _driveTrain.setKinematicLimits(_driveTrain.isLowGear() ? Constants.DriveTrain.LOW_KINEMATIC_LIMITS :
+         Constants.DriveTrain.HIGH_KINEMATIC_LIMITS);
+        vx = vec.x() * maxMPS;
+        vy = vec.y() * maxMPS;
         rot = rot * Constants.DriveTrain.MAX_ANG_VEL;
         _driveTrain.setVelocity(
                 ChassisSpeeds.fromFieldRelativeSpeeds(

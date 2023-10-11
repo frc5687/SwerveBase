@@ -69,11 +69,11 @@ public class DriveTrain extends OutliersSubsystem {
     private final Pigeon2 _imu;
     private double _yawOffset;
 
-
+    private boolean _isLowGear;
 
     // Setpoint generator for swerve.
     private final SwerveSetpointGenerator _swerveSetpointGenerator;
-    private KinematicLimits _kinematicLimits = KINEMATIC_LIMITS;
+    private KinematicLimits _kinematicLimits = LOW_KINEMATIC_LIMITS;
 
     private final SystemIO _systemIO;
 
@@ -149,7 +149,8 @@ public class DriveTrain extends OutliersSubsystem {
         readIMU();
 
         _controlState = ControlState.MANUAL;
-
+        
+        _isLowGear = true;
         _kinematics =
                 new SwerveDriveKinematics(
                         _modules[NORTH_WEST_IDX].getModuleLocation(),
@@ -281,6 +282,7 @@ public class DriveTrain extends OutliersSubsystem {
     @Override
     public void periodic() {
         super.periodic();
+        BaseStatusSignalValue.waitForAll(0.0, _moduleSignals);
         readIMU();
         readModules();
         updateDesiredStates();
@@ -361,11 +363,17 @@ public class DriveTrain extends OutliersSubsystem {
         for (var module : _modules) {
             module.shiftUp();
         }
+        _isLowGear = false;
     }
     public void shiftDownModules(){
         for (var module : _modules) {
             module.shiftDown();
         }
+        _isLowGear = true;
+    }
+
+    public boolean isLowGear(){
+        return _isLowGear;
     }
 
     public void setSetpointFromMeasuredModules() {
