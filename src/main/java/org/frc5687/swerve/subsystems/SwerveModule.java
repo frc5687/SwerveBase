@@ -76,7 +76,7 @@ public class SwerveModule {
         _isLowGear = true;
 
         _velocityTorqueCurrentFOC = new VelocityTorqueCurrentFOC(0.0);
-        _positionVoltage = new PositionVoltage(0.0);
+        _positionVoltage = new PositionVoltage(0.0, true, 0, 0, false);
 
         _goal = new SwerveModuleState(0.0, getCanCoderAngle());
 

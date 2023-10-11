@@ -54,11 +54,11 @@ public class Constants {
         public static final double CAN_OFFSET = 0.0;
         public static final double kDt = 0.005;
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
-        public static final double WHEEL_RADIUS = 0;
-        public static final double GEAR_RATIO_DRIVE_HIGH = 4.3;
-        public static final double GEAR_RATIO_DRIVE_LOW = 2.3;
+        public static final double WHEEL_RADIUS = 1.75;
+        public static final double GEAR_RATIO_DRIVE_HIGH = 4.9;
+        public static final double GEAR_RATIO_DRIVE_LOW = 9.6;
         public static final double GEAR_RATIO_STEER = 3;
-        public static final double MAX_SPEED = 0;
+        // public static final double MAX_SPEED = 0;
 
         public static final double kP = 5.0;
         public static final double kI = 0.0;
@@ -97,9 +97,9 @@ public class Constants {
             DRIVE_CONTROLLER_CONFIG.kD1 = 0.0;
             DRIVE_CONTROLLER_CONFIG.kF1 = 0.0;
 
-            DRIVE_CONTROLLER_CONFIG.CRUISE_VELOCITY = 50;
-            DRIVE_CONTROLLER_CONFIG.ACCELERATION = 10;
-            DRIVE_CONTROLLER_CONFIG.JERK = 20;
+            DRIVE_CONTROLLER_CONFIG.CRUISE_VELOCITY = 100;
+            DRIVE_CONTROLLER_CONFIG.ACCELERATION = 50;
+            DRIVE_CONTROLLER_CONFIG.JERK = 100;
         }
         public static final OutliersTalon.ClosedLoopConfiguration STEER_CONTROLLER_CONFIG =
                 new OutliersTalon.ClosedLoopConfiguration();
