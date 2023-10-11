@@ -238,9 +238,11 @@ public class SwerveModule {
     }
 
     public void updateDashboard() {
-        // SmartDashboard.putNumber(_name + "/leftVoltage",
-        // _leftFalcon.getMotorOutputVoltage());
-        // SmartDashboard.putNumber(_name + "/rightVoltage",
+        SmartDashboard.putNumber("/driveVoltage", _driveMotor.getSupplyVoltage().getValue());
+        SmartDashboard.putNumber("/moduleAngle", _encoder.getAbsolutePosition());
+        // SmartDashboard.putNumber("/driveVoltage",
+        // _driveMotor.getMotorOutputVoltage());
+        // SmartDashboard.putNumber(_name + "/steerVoltage",
         // _rightFalcon.getMotorOutputVoltage());
         // SmartDashboard.putNumber(_name + "/leftNextCurrent", getLeftNextCurrent());
         // SmartDashboard.putNumber(_name + "/rightNextCurrent", getRightNextCurrent());

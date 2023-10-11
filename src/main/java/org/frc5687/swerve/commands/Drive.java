@@ -47,7 +47,7 @@ public class Drive extends OutliersCommand {
     public void initialize() {
         //_driveTrain.startModules();
         //        _headingController.setGoal(_driveTrain.getHeading().getRadians());
-        //        _driveTrain.setControlState(DriveTrain.ControlState.MANUAL);
+               _driveTrain.setControlState(DriveTrain.ControlState.MANUAL);
     }
 
     @Override
