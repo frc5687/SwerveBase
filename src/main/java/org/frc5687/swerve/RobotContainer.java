@@ -2,8 +2,8 @@
 /* Team 5687 (C)2021-2022 */
 package org.frc5687.swerve;
 
-import com.ctre.phoenixpro.configs.Pigeon2Configuration;
-import com.ctre.phoenixpro.hardware.Pigeon2;
+import com.ctre.phoenix6.configs.Pigeon2Configuration;
+import com.ctre.phoenix6.hardware.Pigeon2;
 
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 

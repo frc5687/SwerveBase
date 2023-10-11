@@ -7,16 +7,17 @@ import org.frc5687.lib.drivers.OutliersTalon;
 import org.frc5687.lib.drivers.OutliersTalon.ClosedLoopConfiguration;
 import org.frc5687.swerve.Constants;
 
-import com.ctre.phoenix.sensors.AbsoluteSensorRange;
-import com.ctre.phoenix.sensors.CANCoder;
-import com.ctre.phoenix.sensors.CANCoderConfiguration;
-import com.ctre.phoenix.sensors.SensorTimeBase;
-import com.ctre.phoenixpro.BaseStatusSignalValue;
-import com.ctre.phoenixpro.StatusSignalValue;
-import com.ctre.phoenixpro.configs.FeedbackConfigs;
-import com.ctre.phoenixpro.controls.PositionVoltage;
-import com.ctre.phoenixpro.controls.VelocityTorqueCurrentFOC;
-import com.ctre.phoenixpro.signals.FeedbackSensorSourceValue;
+// import com.ctre.phoenix.sensors.AbsoluteSensorRange;
+import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.FeedbackConfigs;
+// import com.ctre.phoenix.sensors.SensorTimeBase;
+import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
+import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -35,7 +36,7 @@ public class SwerveModule {
     private final OutliersTalon _driveMotor;
     private final OutliersTalon _steeringMotor;
     private final Servo _shiftMotor;
-    private final CANCoder _encoder;
+    private final CANcoder _encoder;
 
     private boolean _isLowGear;
 
@@ -43,12 +44,12 @@ public class SwerveModule {
 
     private SwerveModuleState _goal;
 
-    private final StatusSignalValue<Double> _driveVelocityRotationsPerSec;
-    private final StatusSignalValue<Double> _drivePositionRotations;
+    private final StatusSignal<Double> _driveVelocityRotationsPerSec;
+    private final StatusSignal<Double> _drivePositionRotations;
     private final StatusSignal<Double> _steeringVelocityRotationsPerSec;
     private final StatusSignal<Double> _steeringPositionRotations;
 
-    private final BaseStatusSignalValue[] _signals;
+    private final BaseStatusSignal[] _signals;
 
     private VelocityTorqueCurrentFOC _velocityTorqueCurrentFOC;
     private final PositionVoltage _positionVoltage;
@@ -82,15 +83,11 @@ public class SwerveModule {
 
         _goal = new SwerveModuleState(0.0, getCanCoderAngle());
 
-        _encoder = new CANCoder(encoderPort, config.canBus);
-        CANCoderConfiguration CANfig = new CANCoderConfiguration();
+        _encoder = new CANcoder(encoderPort, config.canBus);
+        CANcoderConfiguration CANfig = new CANcoderConfiguration();
         // set units of the CANCoder to radians, with velocity being radians per second
-        CANfig.sensorCoefficient = 2 * Math.PI / 4096.0;
-        CANfig.unitString = "rad";
-        CANfig.absoluteSensorRange = AbsoluteSensorRange.Signed_PlusMinus180;
-        CANfig.sensorTimeBase = SensorTimeBase.PerSecond;
-        CANfig.magnetOffsetDegrees = Constants.SwerveModule.CAN_OFFSET;
-        _encoder.configAllSettings(CANfig);
+        CANfig.MagnetSensor.MagnetOffset = Constants.SwerveModule.CAN_OFFSET;
+        _encoder.getConfigurator().apply(CANfig);
 
         FeedbackConfigs feedback = new FeedbackConfigs();
         feedback.FeedbackRemoteSensorID = encoderPort;
@@ -117,7 +114,7 @@ public class SwerveModule {
         _steeringVelocityRotationsPerSec.setUpdateFrequency(1 / kDt);
         _steeringPositionRotations.setUpdateFrequency(1 / kDt);
 
-        _signals = new BaseStatusSignalValue[4];
+        _signals = new BaseStatusSignal[4];
         _signals[0] = _driveVelocityRotationsPerSec;
         _signals[1] = _drivePositionRotations;
         _signals[2] = _steeringVelocityRotationsPerSec;
@@ -132,7 +129,7 @@ public class SwerveModule {
     // public void setControlState(ControlState state) {
     // _controlState = state;
     // }
-    public BaseStatusSignalValue[] getSignals() {
+    public BaseStatusSignal[] getSignals() {
         return _signals;
     }
 
@@ -195,14 +192,14 @@ public class SwerveModule {
     }
 
     public double getEncoderAngleDouble() {
-        return Units.degreesToRadians(_encoder.getAbsolutePosition());
+        return Units.degreesToRadians(_encoder.getAbsolutePosition().getValue());
     }
 
     public Rotation2d getCanCoderAngle() {
         if (_encoder == null){
             return Rotation2d.fromDegrees(0);
         } else {
-            return Rotation2d.fromDegrees(_encoder.getAbsolutePosition());
+            return Rotation2d.fromDegrees(_encoder.getAbsolutePosition().getValue());
         }
     }
 

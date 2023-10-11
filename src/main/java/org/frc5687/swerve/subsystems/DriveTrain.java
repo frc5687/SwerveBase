@@ -8,8 +8,8 @@ package org.frc5687.swerve.subsystems;
 
 import static org.frc5687.swerve.Constants.DriveTrain.*;
 
-import com.ctre.phoenixpro.BaseStatusSignalValue;
-import com.ctre.phoenixpro.hardware.Pigeon2;
+import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
@@ -58,7 +58,7 @@ public class DriveTrain extends OutliersSubsystem {
     private final SwerveDriveOdometry _odometry;
     private final SwerveDrivePoseEstimator _poseEstimator;
     // module sensor readings we would like to read all at once over CAN
-    private final BaseStatusSignalValue[] _moduleSignals;
+    private final BaseStatusSignal[] _moduleSignals;
     // controllers [Heading, Pose, Trajectory]
     private ControlState _controlState;
     private final SwerveHeadingController _headingController;
@@ -223,7 +223,7 @@ public class DriveTrain extends OutliersSubsystem {
         );
 
         // module CAN bus sensor outputs (position, velocity of each motor) all of them are called once per loop at the start.
-        _moduleSignals = new BaseStatusSignalValue[NUM_MODULES * 4];
+        _moduleSignals = new BaseStatusSignal[NUM_MODULES * 4];
         for (int i = 0; i < NUM_MODULES; ++i) {
             var signals = _modules[i].getSignals();
             _moduleSignals[(i * 4)] = signals[0];
@@ -282,7 +282,7 @@ public class DriveTrain extends OutliersSubsystem {
     @Override
     public void periodic() {
         super.periodic();
-        BaseStatusSignalValue.waitForAll(0.0, _moduleSignals);
+        BaseStatusSignal.waitForAll(0.0, _moduleSignals);
         readIMU();
         readModules();
         updateDesiredStates();
