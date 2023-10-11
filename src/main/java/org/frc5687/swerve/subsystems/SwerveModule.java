@@ -86,6 +86,7 @@ public class SwerveModule {
         _encoder = new CANcoder(encoderPort, config.canBus);
         CANcoderConfiguration CANfig = new CANcoderConfiguration();
         // set units of the CANCoder to radians, with velocity being radians per second
+        CANfig.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
         CANfig.MagnetSensor.MagnetOffset = Constants.SwerveModule.CAN_OFFSET;
         _encoder.getConfigurator().apply(CANfig);
 
@@ -192,7 +193,7 @@ public class SwerveModule {
     }
 
     public double getEncoderAngleDouble() {
-        return Units.degreesToRadians(_encoder.getAbsolutePosition().getValue());
+        return Units.rotationsToRadians(_encoder.getAbsolutePosition().getValue());
     }
 
     public Rotation2d getCanCoderAngle() {
