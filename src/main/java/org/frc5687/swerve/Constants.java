@@ -57,7 +57,7 @@ public class Constants {
         public static final double WHEEL_RADIUS = 0.04445;
         public static final double GEAR_RATIO_DRIVE_HIGH = 4.9;
         public static final double GEAR_RATIO_DRIVE_LOW = 9.6;
-        public static final double GEAR_RATIO_STEER = 3;
+        public static final double GEAR_RATIO_STEER = 1.3;
         // public static final double MAX_SPEED = 0;
 
         public static final double kP = 5.0;
@@ -107,7 +107,7 @@ public class Constants {
         static {
             STEER_CONTROLLER_CONFIG.SLOT = 0;
 
-            STEER_CONTROLLER_CONFIG.kP = 5.0;
+            STEER_CONTROLLER_CONFIG.kP = 0.03;
             STEER_CONTROLLER_CONFIG.kI = 0;
             STEER_CONTROLLER_CONFIG.kD = 0.0;
             STEER_CONTROLLER_CONFIG.kF = 0.0;

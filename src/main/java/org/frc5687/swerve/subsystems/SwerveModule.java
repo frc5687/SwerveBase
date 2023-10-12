@@ -79,7 +79,7 @@ public class SwerveModule {
         _isLowGear = true;
 
         _velocityTorqueCurrentFOC = new VelocityTorqueCurrentFOC(0.0);
-        _positionVoltage = new PositionVoltage(0.0, true, 0, 0, false);
+        _positionVoltage = new PositionVoltage(0.0);
 
         _goal = new SwerveModuleState(0.0, getCanCoderAngle());
 
@@ -193,7 +193,7 @@ public class SwerveModule {
     }
 
     public double getEncoderAngleDouble() {
-        return Units.rotationsToRadians(_encoder.getAbsolutePosition().getValue());
+        return _encoder.getAbsolutePosition().getValue();
     }
 
     public Rotation2d getCanCoderAngle() {
