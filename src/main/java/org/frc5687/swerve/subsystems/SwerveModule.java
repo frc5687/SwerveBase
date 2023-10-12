@@ -200,7 +200,7 @@ public class SwerveModule {
         if (_encoder == null){
             return Rotation2d.fromDegrees(0);
         } else {
-            return Rotation2d.fromDegrees(_encoder.getAbsolutePosition().getValue());
+            return Rotation2d.fromRotations(_encoder.getAbsolutePosition().getValue());
         }
     }
 
