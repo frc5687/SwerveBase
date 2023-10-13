@@ -36,7 +36,7 @@ public class RobotMap {
         }
 
         public static class PIGEON {
-            public static final int PIGEON = 0;
+            public static final int PIGEON = 20;
         }
 
         public static class CANDLE {

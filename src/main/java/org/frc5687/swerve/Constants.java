@@ -78,7 +78,6 @@ public class Constants {
             CONFIG.ENABLE_STATOR_CURRENT_LIMIT = true;
             CONFIG.CURRENT_DEADBAND = 0.1; 
             
-           
         }
 
 
@@ -107,7 +106,7 @@ public class Constants {
         static {
             STEER_CONTROLLER_CONFIG.SLOT = 0;
 
-            STEER_CONTROLLER_CONFIG.kP = 0.03;
+            STEER_CONTROLLER_CONFIG.kP = 3.3;
             STEER_CONTROLLER_CONFIG.kI = 0;
             STEER_CONTROLLER_CONFIG.kD = 0.0;
             STEER_CONTROLLER_CONFIG.kF = 0.0;
@@ -115,6 +114,8 @@ public class Constants {
             STEER_CONTROLLER_CONFIG.CRUISE_VELOCITY = 0;
             STEER_CONTROLLER_CONFIG.ACCELERATION = 0;
             STEER_CONTROLLER_CONFIG.JERK = 0;
+
+            STEER_CONTROLLER_CONFIG.IS_CONTINUOUS = true;
         }
         
     }

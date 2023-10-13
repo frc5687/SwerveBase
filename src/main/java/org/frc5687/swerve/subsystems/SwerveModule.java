@@ -54,6 +54,9 @@ public class SwerveModule {
     private VelocityTorqueCurrentFOC _velocityTorqueCurrentFOC;
     private final PositionVoltage _positionVoltage;
 
+    private SwerveModulePosition _internalState = new SwerveModulePosition();
+
+
     private double _rotPerMet = 0.0;
     private double _gearRatio;
     private double _metPerRot;
@@ -81,12 +84,13 @@ public class SwerveModule {
         _velocityTorqueCurrentFOC = new VelocityTorqueCurrentFOC(0.0);
         _positionVoltage = new PositionVoltage(0.0);
 
+
         _goal = new SwerveModuleState(0.0, getCanCoderAngle());
 
         _encoder = new CANcoder(encoderPort, config.canBus);
         CANcoderConfiguration CANfig = new CANcoderConfiguration();
         // set units of the CANCoder to radians, with velocity being radians per second
-        CANfig.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Unsigned_0To1;
+        CANfig.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
         CANfig.MagnetSensor.MagnetOffset = Constants.SwerveModule.CAN_OFFSET;
         _encoder.getConfigurator().apply(CANfig);
 
@@ -98,6 +102,7 @@ public class SwerveModule {
 
 
         _metPerRot = 2 * Math.PI * Constants.SwerveModule.WHEEL_RADIUS;
+        _rotPerMet = 1/_metPerRot;
 
         _shiftDownAngle = config.servoShiftDownAngle;
         _shiftUpAngle = config.servoShiftUpAngle;
@@ -124,6 +129,29 @@ public class SwerveModule {
         System.out.println("Module has been constructed!!");
     }
 
+    public SwerveModulePosition getPosition(boolean refresh) {
+        if (refresh) {
+            /* Refresh all signals */
+            _drivePositionRotations.refresh();
+            _driveVelocityRotationsPerSec.refresh();
+            _steeringPositionRotations.refresh();
+            _steeringVelocityRotationsPerSec.refresh();
+        }
+
+        /* Now latency-compensate our signals */
+        double drive_rot =
+            BaseStatusSignal.getLatencyCompensatedValue(_drivePositionRotations, _driveVelocityRotationsPerSec);
+        double angle_rot =
+            BaseStatusSignal.getLatencyCompensatedValue(_steeringPositionRotations, _steeringVelocityRotationsPerSec);
+
+        /* And push them into a SwerveModuleState object to return */
+        _internalState.distanceMeters = drive_rot / _rotPerMet;
+        /* Angle is already in terms of steer rotations */
+        _internalState.angle = Rotation2d.fromRotations(angle_rot);
+
+        return _internalState;
+    }
+
     // public ControlState getControlState() {
     // return _controlState;
     // }
@@ -135,8 +163,9 @@ public class SwerveModule {
     }
 
     public void setIdealState(SwerveModuleState state) {
-        if (state.speedMetersPerSecond < 0.1) {
+        if (Math.abs(state.speedMetersPerSecond) < 0.1) {
             stopAll();
+            // System.out.println("speedMPS < 0.1");
         } else {
             state = SwerveModuleState.optimize(state, getCanCoderAngle());
             _goal = state;
@@ -145,10 +174,11 @@ public class SwerveModule {
     }
 
     public void setModuleState(SwerveModuleState state) {
-        double speed = state.speedMetersPerSecond
+        var optimized = SwerveModuleState.optimize(state, _internalState.angle);
+        double speed = optimized.speedMetersPerSecond
                 * ((_isLowGear ? Constants.SwerveModule.GEAR_RATIO_DRIVE_LOW
                         : Constants.SwerveModule.GEAR_RATIO_DRIVE_HIGH)/_metPerRot);
-        double position = state.angle.getRotations();
+        double position = optimized.angle.getRotations();
         _driveMotor.setControl(_velocityTorqueCurrentFOC.withVelocity(speed));
         _steeringMotor.setControl(_positionVoltage.withPosition(position));
         SmartDashboard.putNumber("/wantedSpeed", speed);
@@ -190,6 +220,10 @@ public class SwerveModule {
     public void stopAll() {
         _driveMotor.stopMotor();
         _steeringMotor.stopMotor();
+    }
+
+    public boolean isReal(){
+        return _encoder != null;
     }
 
     public double getEncoderAngleDouble() {

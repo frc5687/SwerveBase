@@ -123,6 +123,7 @@ public class OutliersTalon extends TalonFX {
 
     public void configureFeedback(FeedbackConfigs config) {
         _configurator.apply(config, 100);
+        System.out.println("FEEDBACK CONFIGURED!!");
     }
 
     public void configureClosedLoop(ClosedLoopConfiguration config) {
@@ -226,7 +227,7 @@ public class OutliersTalon extends TalonFX {
         public boolean ENABLE_SUPPLY_CURRENT_LIMIT = false;
 
         // feedback
-        public int SENSOR_ID = 0;
+        public int SENSOR_ID = 5;
         public FeedbackSensorSourceValue FEEDBACK_SENSOR = FeedbackSensorSourceValue.RotorSensor;
         public double SENSOR_TO_MECHANISM_RATIO = 1.0;
     }

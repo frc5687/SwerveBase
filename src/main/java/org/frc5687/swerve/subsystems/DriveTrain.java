@@ -344,7 +344,7 @@ public class DriveTrain extends OutliersSubsystem {
     public void readModules() {
         for (int module = 0; module < _modules.length; module++) {
             _systemIO.measuredStates[module] = _modules[module].getState();
-            _systemIO.measuredPositions[module] = _modules[module].getModulePosition();
+            _systemIO.measuredPositions[module] = _modules[module].getPosition(true);
         }
     }
     public void resetModuleEncoders() {
