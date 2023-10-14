@@ -54,10 +54,12 @@ public class Constants {
         public static final double CAN_OFFSET = 0.0;
         public static final double kDt = 0.005;
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
+        public static final OutliersTalon.Configuration STEER_CONFIG = new OutliersTalon.Configuration();
+
         public static final double WHEEL_RADIUS = 0.04445;
         public static final double GEAR_RATIO_DRIVE_HIGH = 4.9;
         public static final double GEAR_RATIO_DRIVE_LOW = 9.6;
-        public static final double GEAR_RATIO_STEER = 1.3;
+        public static final double GEAR_RATIO_STEER = 22.3;
         // public static final double MAX_SPEED = 0;
 
         public static final double kP = 5.0;
@@ -77,9 +79,21 @@ public class Constants {
             CONFIG.MAX_CURRENT = 120;
             CONFIG.ENABLE_STATOR_CURRENT_LIMIT = true;
             CONFIG.CURRENT_DEADBAND = 0.1; 
-            
         }
 
+        static {
+            STEER_CONFIG.TIME_OUT = 0.1;
+
+            STEER_CONFIG.NEUTRAL_MODE = NeutralModeValue.Brake;
+            STEER_CONFIG.INVERTED = InvertedValue.Clockwise_Positive;
+
+            STEER_CONFIG.MAX_VOLTAGE = 12.0;
+
+            STEER_CONFIG.MAX_STATOR_CURRENT = 120;
+            STEER_CONFIG.MAX_CURRENT = 120;
+            STEER_CONFIG.ENABLE_STATOR_CURRENT_LIMIT = true;
+            STEER_CONFIG.CURRENT_DEADBAND = 0.1; 
+        }
 
         public static final OutliersTalon.ClosedLoopConfiguration DRIVE_CONTROLLER_CONFIG =
                 new OutliersTalon.ClosedLoopConfiguration();
@@ -87,7 +101,7 @@ public class Constants {
         static {
             DRIVE_CONTROLLER_CONFIG.SLOT = 0;
 
-            DRIVE_CONTROLLER_CONFIG.kP = 0.0; //23.0
+            DRIVE_CONTROLLER_CONFIG.kP = 23.0; //23.0
             DRIVE_CONTROLLER_CONFIG.kI = 0;
             DRIVE_CONTROLLER_CONFIG.kD = 0.0;
             DRIVE_CONTROLLER_CONFIG.kF = 0.0;
@@ -105,15 +119,14 @@ public class Constants {
 
         static {
             STEER_CONTROLLER_CONFIG.SLOT = 0;
-
-            STEER_CONTROLLER_CONFIG.kP = 3.3;
+            STEER_CONTROLLER_CONFIG.kP = 70;
             STEER_CONTROLLER_CONFIG.kI = 0;
-            STEER_CONTROLLER_CONFIG.kD = 0.0;
+            STEER_CONTROLLER_CONFIG.kD = 0.7;
             STEER_CONTROLLER_CONFIG.kF = 0.0;
 
-            STEER_CONTROLLER_CONFIG.CRUISE_VELOCITY = 0;
-            STEER_CONTROLLER_CONFIG.ACCELERATION = 0;
-            STEER_CONTROLLER_CONFIG.JERK = 0;
+            STEER_CONTROLLER_CONFIG.CRUISE_VELOCITY = 1000;
+            STEER_CONTROLLER_CONFIG.ACCELERATION = 4000;
+            STEER_CONTROLLER_CONFIG.JERK = 10000;
 
             STEER_CONTROLLER_CONFIG.IS_CONTINUOUS = true;
         }

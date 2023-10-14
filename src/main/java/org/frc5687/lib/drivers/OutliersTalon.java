@@ -44,6 +44,9 @@ public class OutliersTalon extends TalonFX {
     private final TorqueCurrentFOC _torqueCurrentFOC = new TorqueCurrentFOC(0.0);
     private final VoltageOut _voltageOut = new VoltageOut(0.0);
     private final MotionMagicVoltage _motionMagicVoltage = new MotionMagicVoltage(0.0);
+    private final PositionVoltage _positionVoltage = new PositionVoltage(0.0);
+    private final PositionDutyCycle _positionDutyCycle = new PositionDutyCycle(0.0);
+
     private final VelocityVoltage _velocityVoltage = new VelocityVoltage(0.0, true, 0, 0, false);
 
     public OutliersTalon(int port, String canBus, String name) {
@@ -69,6 +72,18 @@ public class OutliersTalon extends TalonFX {
     public void setMotionMagic(double position) {
         if (_motionMagicVoltage.Position != position) {
             this.setControl(_motionMagicVoltage.withPosition(position).withSlot(0));
+        }
+    }
+
+    public void setPositionVoltage(double position) {
+        if (_positionVoltage.Position != position) {
+            this.setControl(_positionVoltage.withPosition(position).withSlot(0));
+        }
+    }
+
+    public void setPositionDutyCycle(double position) {
+        if (_positionDutyCycle.Position != position) {
+            this.setControl(_positionDutyCycle.withPosition(position).withSlot(0));
         }
     }
 

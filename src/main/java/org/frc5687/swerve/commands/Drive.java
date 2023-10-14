@@ -82,7 +82,7 @@ public class Drive extends OutliersCommand {
         //     _lockHeading = false;
         // }
 
-        double controllerPower = _driveTrain.getRotationCorrection();
+        double controllerPower = 0; //_driveTrain.getRotationCorrection()
         // //        metric("Element Angle", elementAngle);
         // metric("Rot+Controller", (rot + controllerPower));
         // // if (_oi.autoAim()) {
@@ -140,9 +140,10 @@ public class Drive extends OutliersCommand {
         vx = vec.x() * maxMPS;
         vy = vec.y() * maxMPS;
         rot = rot * Constants.DriveTrain.MAX_ANG_VEL;
-        _driveTrain.setVelocity(
-                ChassisSpeeds.fromFieldRelativeSpeeds(
-                        vx, vy, rot + controllerPower, _driveTrain.getHeading()));
+        // _driveTrain.setVelocity(
+        //         ChassisSpeeds.fromFieldRelativeSpeeds(
+        //                 vx, vy, rot + controllerPower, _driveTrain.getHeading()));
+        _driveTrain.driveFieldCentric(ChassisSpeeds.fromFieldRelativeSpeeds(vx, vy, rot + controllerPower, _driveTrain.getHeading()));
         // }
     }
 

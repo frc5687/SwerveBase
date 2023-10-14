@@ -110,7 +110,7 @@ public class DriveTrain extends OutliersSubsystem {
         readIMU();
 
         _controlState = ControlState.NEUTRAL;
-
+        
         // set up the modules
         _modules = new SwerveModule[4];
         _modules[NORTH_WEST_IDX] =
@@ -428,6 +428,14 @@ public class DriveTrain extends OutliersSubsystem {
                         //                        _systemIO.desiredChassisSpeeds,
                         updatedChassisSpeeds,
                         Constants.UPDATE_PERIOD);
+    }
+
+    public void driveFieldCentric(ChassisSpeeds speeds) {
+        var roboCentric = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getHeading());
+        var swerveStates = _kinematics.toSwerveModuleStates(roboCentric);
+        for (int i = 0; i < _modules.length; ++i) {
+            _modules[i].setModuleState(swerveStates[i]);
+        }
     }
 
     public void setVelocity(ChassisSpeeds chassisSpeeds) {

@@ -52,7 +52,7 @@ public class SwerveModule {
     private final BaseStatusSignal[] _signals;
 
     private VelocityTorqueCurrentFOC _velocityTorqueCurrentFOC;
-    private final PositionVoltage _positionVoltage;
+    // private final PositionVoltage _positionVoltage;
 
     private SwerveModulePosition _internalState = new SwerveModulePosition();
 
@@ -76,14 +76,13 @@ public class SwerveModule {
         _shiftMotor = new Servo(shiftMotorID);
 
         _driveMotor.configure(Constants.SwerveModule.CONFIG);
-        _steeringMotor.configure(Constants.SwerveModule.CONFIG);
+        _steeringMotor.configure(Constants.SwerveModule.STEER_CONFIG);
         _driveMotor.configureClosedLoop(Constants.SwerveModule.DRIVE_CONTROLLER_CONFIG);
         _steeringMotor.configureClosedLoop(Constants.SwerveModule.STEER_CONTROLLER_CONFIG);
         _isLowGear = true;
 
         _velocityTorqueCurrentFOC = new VelocityTorqueCurrentFOC(0.0);
-        _positionVoltage = new PositionVoltage(0.0);
-
+        // _positionVoltage = new PositionVoltage(0.0);
 
         _goal = new SwerveModuleState(0.0, getCanCoderAngle());
 
@@ -163,6 +162,10 @@ public class SwerveModule {
     }
 
     public void setIdealState(SwerveModuleState state) {
+        SmartDashboard.putNumber("/inputVelocityMPS", state.speedMetersPerSecond);
+        SmartDashboard.putNumber("/wantedAngleRotations", state.angle.getRotations());
+        SmartDashboard.putNumber("/currentAngleRotations", getCanCoderAngle().getRotations());
+
         if (Math.abs(state.speedMetersPerSecond) < 0.1) {
             stopAll();
             // System.out.println("speedMPS < 0.1");
@@ -174,13 +177,14 @@ public class SwerveModule {
     }
 
     public void setModuleState(SwerveModuleState state) {
-        var optimized = SwerveModuleState.optimize(state, _internalState.angle);
-        double speed = optimized.speedMetersPerSecond
+        // SwerveModuleState optimized = SwerveModuleState.optimize(state, _internalState.angle);
+
+        double speed = state.speedMetersPerSecond
                 * ((_isLowGear ? Constants.SwerveModule.GEAR_RATIO_DRIVE_LOW
                         : Constants.SwerveModule.GEAR_RATIO_DRIVE_HIGH)/_metPerRot);
-        double position = optimized.angle.getRotations();
+        double position = state.angle.getRotations();
         _driveMotor.setControl(_velocityTorqueCurrentFOC.withVelocity(speed));
-        _steeringMotor.setControl(_positionVoltage.withPosition(position));
+        _steeringMotor.setPositionVoltage(position);
         SmartDashboard.putNumber("/wantedSpeed", speed);
         SmartDashboard.putNumber("/wantedPositon", position);
         SmartDashboard.putNumber("/stateSpeedMPS", state.speedMetersPerSecond);
@@ -284,17 +288,12 @@ public class SwerveModule {
         SmartDashboard.putNumber("/wheelVelocity", getWheelVelocity());
         SmartDashboard.putNumber("/driveRPM", getDriveRPM());
         SmartDashboard.putNumber("/wheelAngularVelocity", getWheelAngularVelocity());
-        SmartDashboard.putNumber("/slotID", _positionVoltage.Slot);
-        // SmartDashboard.putNumber("/driveVoltage",
-        // _driveMotor.getMotorOutputVoltage());
-        // SmartDashboard.putNumber(_name + "/steerVoltage",
-        // _rightFalcon.getMotorOutputVoltage());
+        SmartDashboard.putNumber("/driveVoltage", _driveMotor.getSupplyVoltage().getValue());
+        SmartDashboard.putNumber("/steerVoltage", _steeringMotor.getSupplyVoltage().getValue());
         // SmartDashboard.putNumber(_name + "/leftNextCurrent", getLeftNextCurrent());
         // SmartDashboard.putNumber(_name + "/rightNextCurrent", getRightNextCurrent());
-        // SmartDashboard.putNumber(_name + "/leftSupplyCurrent",
-        // _leftFalcon.getSupplyCurrent());
-        // SmartDashboard.putNumber(_name + "/rightSupplyCurrent",
-        // _rightFalcon.getSupplyCurrent());
+        SmartDashboard.putNumber("/driveSupplyCurrent", _driveMotor.getSupplyCurrent().getValue());
+        SmartDashboard.putNumber("/steerSupplyCurrent", _steeringMotor.getSupplyCurrent().getValue());
         // SmartDashboard.putNumber(_name + "/leftStatorCurrent", getLeftCurrent());
         // SmartDashboard.putNumber(_name + "/rightStatorCurrent", getRightCurrent());
         // SmartDashboard.putNumber(_name + "/referenceAngleGoal",
@@ -327,8 +326,8 @@ public class SwerveModule {
 
         public String canBus = "CANivore";
 
-        public double servoShiftUpAngle = 65; // degrees
-        public double servoShiftDownAngle = 42; //degrees
+        public double servoShiftUpAngle = 90; // degrees
+        public double servoShiftDownAngle = 72; //degrees
     }
 
     // public enum ControlState {

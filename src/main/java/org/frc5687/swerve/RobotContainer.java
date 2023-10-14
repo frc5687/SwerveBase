@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 import org.frc5687.swerve.commands.Drive;
 import org.frc5687.swerve.commands.OutliersCommand;
+import org.frc5687.swerve.commands.TestModule;
 import org.frc5687.swerve.subsystems.*;
 import org.frc5687.swerve.util.*;
 // import org.frc5687.lib.vision.VisionProcessor;
@@ -20,6 +21,7 @@ public class RobotContainer extends OutliersContainer {
     private Pigeon2 _imu;
     private Robot _robot;
     private DriveTrain _driveTrain;
+    private TestyModule _module;
     // private PhotonProcessor _photonProcessor;
     // private Trajectories _trajectories;
 
@@ -50,15 +52,23 @@ public class RobotContainer extends OutliersContainer {
         var pigeonConfig = new Pigeon2Configuration();
         _imu.getConfigurator().apply(pigeonConfig);
 
-        _driveTrain = new DriveTrain(this, _imu);
+        // _driveTrain = new DriveTrain(this, _imu);
+        _module = new TestyModule(this, new SwerveModule(
+            Constants.DriveTrain.NORTH_EAST_CONFIG,
+            RobotMap.CAN.TALONFX.NORTH_EAST_ROTATION,
+            RobotMap.CAN.TALONFX.NORTH_EAST_TRANSLATION, 
+            RobotMap.PWM.Servo.NE_SERVO,
+            RobotMap.CAN.CANCODER.ENCODER_NE));
         //         This is for auto temporarily, need to fix for both in future.
 
-        setDefaultCommand(_driveTrain, new Drive(_driveTrain, _oi));
+        // setDefaultCommand(_driveTrain, new Drive(_driveTrain, _oi));
 
         _oi.initializeButtons(_driveTrain);
 
+        setDefaultCommand(_module, new TestModule(_module, _oi));
+
         // _visionProcessor.start();
-        _robot.addPeriodic(this::controllerPeriodic, 0.005, 0.00);
+        // _robot.addPeriodic(this::controllerPeriodic, 0.005, 0.00);
         //_driveTrain.startModules();
         startPeriodic();
         //        _driveTrain.plotTrajectory(TrajectoryGenerator.generateTrajectory(
@@ -73,7 +83,9 @@ public class RobotContainer extends OutliersContainer {
         // _driveTrain.getConfig()));
     }
 
-    public void periodic() {}
+    public void periodic() {
+        _module.updateDashboard();
+    }
 
     public void disabledPeriodic() {}
 
