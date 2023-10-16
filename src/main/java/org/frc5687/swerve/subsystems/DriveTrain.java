@@ -85,6 +85,9 @@ public class DriveTrain extends OutliersSubsystem {
     private Mode _mode = Mode.NORMAL;
     private Pose2d _hoverGoal;
 
+     private boolean _shiftLockout = false;
+     private long _shiftTime = 0;
+
     // private Pose2d _wantedRestPose;
     // private boolean _wantsToSetPose = false;
 
@@ -650,6 +653,41 @@ public class DriveTrain extends OutliersSubsystem {
     public void setHoverGoal(Pose2d pose) {
         _hoverGoal = pose;
     }
+    public ChassisSpeeds getMeasuredChassisSpeeds(){
+           return _kinematics.toChassisSpeeds(_systemIO.measuredStates);
+    }
+    public void autoShifter(){
+        double speed = Math.hypot( getMeasuredChassisSpeeds().vxMetersPerSecond, getMeasuredChassisSpeeds().vyMetersPerSecond);
+        double direction = Math.atan2(getMeasuredChassisSpeeds().vyMetersPerSecond, getMeasuredChassisSpeeds().vxMetersPerSecond);
+       
+        double LockoutTime = 1000;
+        if (speed < Constants.DriveTrain.MAX_LOW_GEAR_MPS){
+            if (_shiftLockout = false){
+                _shiftTime = System.currentTimeMillis();
+                _shiftLockout = true;
+            }
+            if (_shiftTime + LockoutTime > System.currentTimeMillis()){
+                shiftUpModules();
+                _shiftLockout = false;
+            }}
+        if (speed > Constants.DriveTrain.MAX_HIGH_GEAR_MPS){
+            if (_shiftLockout = false){
+                _shiftTime = System.currentTimeMillis();
+                _shiftLockout = true;
+            }
+            if (_shiftTime + LockoutTime > System.currentTimeMillis()){
+                shiftDownModules();
+                _shiftLockout = false;
+            }}
+       
+        
+            
+            
+        
+    
+    }
+
+    
 
 
 //    /* Vision Stuff */

@@ -31,8 +31,10 @@ public class OI extends OutliersProxy {
     protected Trigger _povButtonUp;
     protected Trigger _povButtonDown;
     
-    public OI() {
+   
     
+    public OI() {
+        
         _driverGamepad = new Gamepad(0);
         _povButtonLeft = new Trigger(() -> _driverGamepad.getPOV() == 270);
         _povButtonRight = new Trigger(() -> _driverGamepad.getPOV() == 90);
@@ -74,6 +76,9 @@ public class OI extends OutliersProxy {
 
     public boolean shiftDown(){
         return _driverGamepad.getBButton().getAsBoolean();
+    }
+    public boolean shiftOverride(){
+        return _driverGamepad.getStartButton().getAsBoolean();
     }
     
     public boolean zeroIMU() {
