@@ -179,9 +179,9 @@ public class SwerveModule {
     public void setModuleState(SwerveModuleState state) {
         // SwerveModuleState optimized = SwerveModuleState.optimize(state, _internalState.angle);
 
-        double speed = state.speedMetersPerSecond * _metPerRot;
-                // * (_isLowGear ? Constants.SwerveModule.GEAR_RATIO_DRIVE_LOW
-                //         : Constants.SwerveModule.GEAR_RATIO_DRIVE_HIGH) * _rotPerMet;
+        double speed = state.speedMetersPerSecond * 
+                (_isLowGear ? Constants.SwerveModule.GEAR_RATIO_DRIVE_LOW
+                        : Constants.SwerveModule.GEAR_RATIO_DRIVE_HIGH) * _rotPerMet;
         double position = state.angle.getRotations();
         _driveMotor.setControl(_velocityTorqueCurrentFOC.withVelocity(speed)); // jitters
         // _driveMotor.setPercentOutput(0.5); // works without jitter
