@@ -17,7 +17,7 @@ public class TestyModule extends OutliersSubsystem {
     }
 
     public void testModule(double x, double y){
-        _module.setIdealState(new SwerveModuleState(0.5, new Rotation2d(x, y)));
+        _module.setIdealState(new SwerveModuleState(1, new Rotation2d(x, y)));
     }
 
     public void shiftUp(){

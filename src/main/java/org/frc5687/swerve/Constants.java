@@ -101,9 +101,9 @@ public class Constants {
         static {
             DRIVE_CONTROLLER_CONFIG.SLOT = 0;
 
-            DRIVE_CONTROLLER_CONFIG.kP = 23.0; //23.0
-            DRIVE_CONTROLLER_CONFIG.kI = 0;
-            DRIVE_CONTROLLER_CONFIG.kD = 0.0;
+            DRIVE_CONTROLLER_CONFIG.kP = 5;//11.0 //23.0
+            DRIVE_CONTROLLER_CONFIG.kI = 0.0;
+            DRIVE_CONTROLLER_CONFIG.kD = 0.22;
             DRIVE_CONTROLLER_CONFIG.kF = 0.0;
             DRIVE_CONTROLLER_CONFIG.kP1 = 0.0;
             DRIVE_CONTROLLER_CONFIG.kI1 = 0;
@@ -119,9 +119,9 @@ public class Constants {
 
         static {
             STEER_CONTROLLER_CONFIG.SLOT = 0;
-            STEER_CONTROLLER_CONFIG.kP = 70;
+            STEER_CONTROLLER_CONFIG.kP = 0; //70
             STEER_CONTROLLER_CONFIG.kI = 0;
-            STEER_CONTROLLER_CONFIG.kD = 0.7;
+            STEER_CONTROLLER_CONFIG.kD = 0.0; //0.7
             STEER_CONTROLLER_CONFIG.kF = 0.0;
 
             STEER_CONTROLLER_CONFIG.CRUISE_VELOCITY = 1000;

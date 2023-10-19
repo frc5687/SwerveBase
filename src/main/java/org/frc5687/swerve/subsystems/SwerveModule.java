@@ -179,13 +179,16 @@ public class SwerveModule {
     public void setModuleState(SwerveModuleState state) {
         // SwerveModuleState optimized = SwerveModuleState.optimize(state, _internalState.angle);
 
-        double speed = state.speedMetersPerSecond
-                * ((_isLowGear ? Constants.SwerveModule.GEAR_RATIO_DRIVE_LOW
-                        : Constants.SwerveModule.GEAR_RATIO_DRIVE_HIGH)/_metPerRot);
+        double speed = state.speedMetersPerSecond * _metPerRot;
+                // * (_isLowGear ? Constants.SwerveModule.GEAR_RATIO_DRIVE_LOW
+                //         : Constants.SwerveModule.GEAR_RATIO_DRIVE_HIGH) * _rotPerMet;
         double position = state.angle.getRotations();
-        _driveMotor.setControl(_velocityTorqueCurrentFOC.withVelocity(speed));
+        _driveMotor.setControl(_velocityTorqueCurrentFOC.withVelocity(speed)); // jitters
+        // _driveMotor.setPercentOutput(0.5); // works without jitter
         _steeringMotor.setPositionVoltage(position);
         SmartDashboard.putNumber("/wantedSpeed", speed);
+        SmartDashboard.putNumber("/actualSpeed", _driveMotor.getVelocity().getValue());
+        SmartDashboard.putNumber("/percentError", Math.abs((_driveMotor.getVelocity().getValue())/speed-1.)*100.0);
         SmartDashboard.putNumber("/wantedPositon", position);
         SmartDashboard.putNumber("/stateSpeedMPS", state.speedMetersPerSecond);
     }
@@ -206,7 +209,7 @@ public class SwerveModule {
         return (getDriveMotorVoltage() + getSteeringMotorVoltage());
     }
 
-    public void shiftUp() {
+    public void  shiftUp() {
         _shiftMotor.setAngle(_shiftUpAngle);
         // _shiftMotor.set(1);
         _velocityTorqueCurrentFOC = _velocityTorqueCurrentFOC.withSlot(1);
@@ -290,6 +293,7 @@ public class SwerveModule {
         SmartDashboard.putNumber("/wheelAngularVelocity", getWheelAngularVelocity());
         SmartDashboard.putNumber("/driveVoltage", _driveMotor.getSupplyVoltage().getValue());
         SmartDashboard.putNumber("/steerVoltage", _steeringMotor.getSupplyVoltage().getValue());
+        SmartDashboard.putBoolean("/isLowGear", _isLowGear);
         // SmartDashboard.putNumber(_name + "/leftNextCurrent", getLeftNextCurrent());
         // SmartDashboard.putNumber(_name + "/rightNextCurrent", getRightNextCurrent());
         SmartDashboard.putNumber("/driveSupplyCurrent", _driveMotor.getSupplyCurrent().getValue());
