@@ -54,11 +54,11 @@ public class RobotContainer extends OutliersContainer {
 
         // _driveTrain = new DriveTrain(this, _imu);
         _module = new TestyModule(this, new SwerveModule(
-            Constants.DriveTrain.NORTH_EAST_CONFIG,
-            RobotMap.CAN.TALONFX.NORTH_EAST_ROTATION,
-            RobotMap.CAN.TALONFX.NORTH_EAST_TRANSLATION, 
-            RobotMap.PWM.Servo.NE_SERVO,
-            RobotMap.CAN.CANCODER.ENCODER_NE));
+            Constants.DriveTrain.SOUTH_EAST_CONFIG,
+            RobotMap.CAN.TALONFX.SOUTH_EAST_ROTATION,
+            RobotMap.CAN.TALONFX.SOUTH_EAST_TRANSLATION, 
+            RobotMap.PWM.Servo.SE_SERVO,
+            RobotMap.CAN.CANCODER.ENCODER_SE));
         //         This is for auto temporarily, need to fix for both in future.
 
         // setDefaultCommand(_driveTrain, new Drive(_driveTrain, _oi));

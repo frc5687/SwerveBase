@@ -566,6 +566,7 @@ public class DriveTrain extends OutliersSubsystem {
     // }
 
     public boolean isTopSpeed() {
+        // this could be flawed because MAX_MPS doesn't take into account gearing. see constants/drivetrain
         return Math.abs(_modules[0].getWheelVelocity()) >= (Constants.DriveTrain.MAX_MPS - 0.2);
     }
     // public void characterizeModules(int module) {

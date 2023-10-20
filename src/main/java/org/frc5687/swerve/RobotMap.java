@@ -17,8 +17,8 @@ public class RobotMap {
             public static final int NORTH_WEST_TRANSLATION = 31;
             public static final int NORTH_EAST_ROTATION = 7;
             public static final int NORTH_EAST_TRANSLATION = 8;
-            public static final int SOUTH_EAST_ROTATION = 33;
-            public static final int SOUTH_EAST_TRANSLATION = 32;
+            public static final int SOUTH_EAST_ROTATION = 3;
+            public static final int SOUTH_EAST_TRANSLATION = 4;
             public static final int SOUTH_WEST_ROTATION = 35;
             public static final int SOUTH_WEST_TRANSLATION = 34;
             

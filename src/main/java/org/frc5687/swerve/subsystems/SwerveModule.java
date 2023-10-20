@@ -57,7 +57,7 @@ public class SwerveModule {
     private SwerveModulePosition _internalState = new SwerveModulePosition();
 
 
-    private double _rotPerMet = 0.0;
+    private double _rotPerMet;
     private double _gearRatio;
     private double _metPerRot;
 
@@ -81,7 +81,7 @@ public class SwerveModule {
         _steeringMotor.configureClosedLoop(Constants.SwerveModule.STEER_CONTROLLER_CONFIG);
         _isLowGear = true;
 
-        _velocityTorqueCurrentFOC = new VelocityTorqueCurrentFOC(0.0);
+        _velocityTorqueCurrentFOC = new VelocityTorqueCurrentFOC(0.0, 0.0, 0, true);
         // _positionVoltage = new PositionVoltage(0.0);
 
         _goal = new SwerveModuleState(0.0, getCanCoderAngle());
@@ -179,17 +179,16 @@ public class SwerveModule {
     public void setModuleState(SwerveModuleState state) {
         // SwerveModuleState optimized = SwerveModuleState.optimize(state, _internalState.angle);
 
-        double speed = state.speedMetersPerSecond * _metPerRot;
-                // * (_isLowGear ? Constants.SwerveModule.GEAR_RATIO_DRIVE_LOW
-                //         : Constants.SwerveModule.GEAR_RATIO_DRIVE_HIGH) * _rotPerMet;
+        double speed = state.speedMetersPerSecond 
+                * (_isLowGear ? Constants.SwerveModule.GEAR_RATIO_DRIVE_LOW
+                        : Constants.SwerveModule.GEAR_RATIO_DRIVE_HIGH) * _rotPerMet;
         double position = state.angle.getRotations();
         _driveMotor.setControl(_velocityTorqueCurrentFOC.withVelocity(speed)); // jitters
         // _driveMotor.setPercentOutput(0.5); // works without jitter
         _steeringMotor.setPositionVoltage(position);
         SmartDashboard.putNumber("/wantedSpeed", speed);
         SmartDashboard.putNumber("/actualSpeed", _driveMotor.getVelocity().getValue());
-        SmartDashboard.putNumber("/percentError", Math.abs((_driveMotor.getVelocity().getValue())/speed-1.)*100.0);
-        SmartDashboard.putNumber("/wantedPositon", position);
+        SmartDashboard.putNumber("/wantedPosition", position);
         SmartDashboard.putNumber("/stateSpeedMPS", state.speedMetersPerSecond);
     }
 
@@ -209,7 +208,7 @@ public class SwerveModule {
         return (getDriveMotorVoltage() + getSteeringMotorVoltage());
     }
 
-    public void  shiftUp() {
+    public void shiftUp() {
         _shiftMotor.setAngle(_shiftUpAngle);
         // _shiftMotor.set(1);
         _velocityTorqueCurrentFOC = _velocityTorqueCurrentFOC.withSlot(1);

@@ -101,27 +101,29 @@ public class Constants {
         static {
             DRIVE_CONTROLLER_CONFIG.SLOT = 0;
 
-            DRIVE_CONTROLLER_CONFIG.kP = 5;//11.0 //23.0
+            // use these PID values when shifted down
+            DRIVE_CONTROLLER_CONFIG.kP = 11.0;//11.0 //23.0
             DRIVE_CONTROLLER_CONFIG.kI = 0.0;
-            DRIVE_CONTROLLER_CONFIG.kD = 0.22;
+            DRIVE_CONTROLLER_CONFIG.kD = 0.02;
             DRIVE_CONTROLLER_CONFIG.kF = 0.0;
-            DRIVE_CONTROLLER_CONFIG.kP1 = 0.0;
+            // use these PID values when shifted up
+            DRIVE_CONTROLLER_CONFIG.kP1 = 11.0;
             DRIVE_CONTROLLER_CONFIG.kI1 = 0;
-            DRIVE_CONTROLLER_CONFIG.kD1 = 0.0;
+            DRIVE_CONTROLLER_CONFIG.kD1 = 0.02;
             DRIVE_CONTROLLER_CONFIG.kF1 = 0.0;
 
-            DRIVE_CONTROLLER_CONFIG.CRUISE_VELOCITY = 100;
-            DRIVE_CONTROLLER_CONFIG.ACCELERATION = 50;
-            DRIVE_CONTROLLER_CONFIG.JERK = 100;
+            DRIVE_CONTROLLER_CONFIG.CRUISE_VELOCITY = 1000;
+            DRIVE_CONTROLLER_CONFIG.ACCELERATION = 500;
+            DRIVE_CONTROLLER_CONFIG.JERK = 1000;
         }
         public static final OutliersTalon.ClosedLoopConfiguration STEER_CONTROLLER_CONFIG =
                 new OutliersTalon.ClosedLoopConfiguration();
 
         static {
             STEER_CONTROLLER_CONFIG.SLOT = 0;
-            STEER_CONTROLLER_CONFIG.kP = 0; //70
+            STEER_CONTROLLER_CONFIG.kP = 70; //70
             STEER_CONTROLLER_CONFIG.kI = 0;
-            STEER_CONTROLLER_CONFIG.kD = 0.0; //0.7
+            STEER_CONTROLLER_CONFIG.kD = 0.7; //0.7
             STEER_CONTROLLER_CONFIG.kF = 0.0;
 
             STEER_CONTROLLER_CONFIG.CRUISE_VELOCITY = 1000;
