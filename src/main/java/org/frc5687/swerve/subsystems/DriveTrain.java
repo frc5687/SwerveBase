@@ -49,10 +49,10 @@ import org.frc5687.lib.swerve.SwerveSetpointGenerator.KinematicLimits;
 public class DriveTrain extends OutliersSubsystem {
     // Order we define swerve modules in kinematics
     public static final Transform2d offset = new Transform2d(new Translation2d(-0.0, 0), new Rotation2d());
-    private static final int NORTH_WEST_IDX = 0;
-    private static final int SOUTH_WEST_IDX = 1;
-    private static final int SOUTH_EAST_IDX = 2;
-    private static final int NORTH_EAST_IDX = 3;
+    private static final int NORTH_EAST_IDX = 0;
+    private static final int SOUTH_EAST_IDX = 1;
+    private static final int SOUTH_WEST_IDX = 2;
+    private static final int NORTH_WEST_IDX = 3;
     private final SwerveModule[] _modules;
     private final SwerveDriveKinematics _kinematics;
     private final SwerveDriveOdometry _odometry;
@@ -437,7 +437,7 @@ public class DriveTrain extends OutliersSubsystem {
         var roboCentric = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, getHeading());
         var swerveStates = _kinematics.toSwerveModuleStates(roboCentric);
         for (int i = 0; i < _modules.length; ++i) {
-            _modules[i].setModuleState(swerveStates[i]);
+            _modules[i].setIdealState(swerveStates[i]);
         }
     }
 
@@ -592,6 +592,14 @@ public class DriveTrain extends OutliersSubsystem {
         metric("Pitch Angle", getPitch());
         metric("Estimated X", _systemIO.estimatedPose.getX());
         metric("Estimated Y", _systemIO.estimatedPose.getY());
+        metric("NW Angle Rot", _modules[0].getCanCoderAngle().getRotations());
+        metric("SW Angle Rot", _modules[1].getCanCoderAngle().getRotations());
+        metric("SE Angle Rot", _modules[2].getCanCoderAngle().getRotations());
+        metric("NE Angle Rot", _modules[3].getCanCoderAngle().getRotations());
+        metric("NW Velocity", _modules[0].getWheelVelocity());
+        metric("SW Velocity", _modules[1].getWheelVelocity());
+        metric("SE Velocity", _modules[2].getWheelVelocity());
+        metric("NE Velocity", _modules[3].getWheelVelocity());
         metric(
                 "Distance to goal node",
                 _systemIO.estimatedPose

@@ -56,10 +56,10 @@ public abstract class OutliersSubsystem extends SubsystemBase
         RioLogger.debug(this, message);
     }
 
-    public void metric(String name, String value) {
-        SmartDashboard.putString(getClass().getSimpleName() + "/" + name, value);
+    public void metric(String string, String value) {
+        SmartDashboard.putString(getClass().getSimpleName() + "/" + string, value);
         if (_metricTracker != null) {
-            _metricTracker.put(name, value);
+            _metricTracker.put(string, value);
         }
     }
 

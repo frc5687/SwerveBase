@@ -11,7 +11,6 @@ import org.frc5687.swerve.subsystems.DriveTrain;
 import org.frc5687.swerve.subsystems.DriveTrain.Mode;
 import org.frc5687.swerve.util.Helpers;
 import org.frc5687.lib.control.SwerveHeadingController;
-import org.frc5687.lib.control.SwerveHeadingController.HeadingState;
 import org.frc5687.lib.math.Vector2d;
 
 
@@ -22,7 +21,7 @@ public class Drive extends OutliersCommand {
     // private final PIDController _yCordinateElementController;
     private final OI _oi;
     private boolean _lockHeading;
-    private int segmentationArray[] = new int[((int) 360 / 5)];
+    private int segmentationArray[] = new int[360 / 5];
     private boolean isOverride = false;
 
     public Drive(DriveTrain driveTrain, OI oi) {
@@ -151,10 +150,10 @@ public class Drive extends OutliersCommand {
         vx = vec.x() * maxMPS;
         vy = vec.y() * maxMPS;
         rot = rot * Constants.DriveTrain.MAX_ANG_VEL;
-        // _driveTrain.setVelocity(
-        //         ChassisSpeeds.fromFieldRelativeSpeeds(
-        //                 vx, vy, rot + controllerPower, _driveTrain.getHeading()));
-        _driveTrain.driveFieldCentric(ChassisSpeeds.fromFieldRelativeSpeeds(vx, vy, rot + controllerPower, _driveTrain.getHeading()));
+        _driveTrain.setVelocity(
+                ChassisSpeeds.fromFieldRelativeSpeeds(
+                        vx, vy, rot + controllerPower, _driveTrain.getHeading()));
+        // _driveTrain.driveFieldCentric(ChassisSpeeds.fromFieldRelativeSpeeds(vx, vy, rot + controllerPower, _driveTrain.getHeading()));
         // }
     }
 

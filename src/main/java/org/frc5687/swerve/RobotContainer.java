@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 import org.frc5687.swerve.commands.Drive;
 import org.frc5687.swerve.commands.OutliersCommand;
-import org.frc5687.swerve.commands.TestModule;
 import org.frc5687.swerve.subsystems.*;
 import org.frc5687.swerve.util.*;
 // import org.frc5687.lib.vision.VisionProcessor;
@@ -52,24 +51,14 @@ public class RobotContainer extends OutliersContainer {
         var pigeonConfig = new Pigeon2Configuration();
         _imu.getConfigurator().apply(pigeonConfig);
 
-        // _driveTrain = new DriveTrain(this, _imu);
-        _module = new TestyModule(this, new SwerveModule(
-            Constants.DriveTrain.SOUTH_EAST_CONFIG,
-            RobotMap.CAN.TALONFX.SOUTH_EAST_ROTATION,
-            RobotMap.CAN.TALONFX.SOUTH_EAST_TRANSLATION, 
-            RobotMap.PWM.Servo.SE_SERVO,
-            RobotMap.CAN.CANCODER.ENCODER_SE));
-        //         This is for auto temporarily, need to fix for both in future.
+        _driveTrain = new DriveTrain(this, _imu);
 
-        // setDefaultCommand(_driveTrain, new Drive(_driveTrain, _oi));
+        setDefaultCommand(_driveTrain, new Drive(_driveTrain, _oi));
 
         _oi.initializeButtons(_driveTrain);
 
-        setDefaultCommand(_module, new TestModule(_module, _oi));
-
         // _visionProcessor.start();
         // _robot.addPeriodic(this::controllerPeriodic, 0.005, 0.00);
-        //_driveTrain.startModules();
         startPeriodic();
         //        _driveTrain.plotTrajectory(TrajectoryGenerator.generateTrajectory(
         //                Constants.Auto.TrajectoryPoints.Node8.RED_NODE_EIGHT_TRAJECTORY_ONE,
@@ -84,6 +73,7 @@ public class RobotContainer extends OutliersContainer {
     }
 
     public void periodic() {
+        _driveTrain.updateDashboard();
         _module.updateDashboard();
     }
 

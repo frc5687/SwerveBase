@@ -4,7 +4,6 @@ package org.frc5687.swerve.subsystems;
 import static org.frc5687.swerve.Constants.SwerveModule.*;
 
 import org.frc5687.lib.drivers.OutliersTalon;
-import org.frc5687.lib.drivers.OutliersTalon.ClosedLoopConfiguration;
 import org.frc5687.swerve.Constants;
 
 // import com.ctre.phoenix.sensors.AbsoluteSensorRange;
@@ -14,7 +13,6 @@ import com.ctre.phoenix6.configs.FeedbackConfigs;
 // import com.ctre.phoenix.sensors.SensorTimeBase;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
@@ -90,7 +88,7 @@ public class SwerveModule {
         CANcoderConfiguration CANfig = new CANcoderConfiguration();
         // set units of the CANCoder to radians, with velocity being radians per second
         CANfig.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
-        CANfig.MagnetSensor.MagnetOffset = Constants.SwerveModule.CAN_OFFSET;
+        CANfig.MagnetSensor.MagnetOffset = -config.encoderOffset;
         _encoder.getConfigurator().apply(CANfig);
 
         FeedbackConfigs feedback = new FeedbackConfigs();
@@ -102,9 +100,6 @@ public class SwerveModule {
 
         _metPerRot = 2 * Math.PI * Constants.SwerveModule.WHEEL_RADIUS;
         _rotPerMet = 1/_metPerRot;
-
-        _shiftDownAngle = config.servoShiftDownAngle;
-        _shiftUpAngle = config.servoShiftUpAngle;
 
         _positionVector = config.position;
 
@@ -118,7 +113,7 @@ public class SwerveModule {
 
         _steeringVelocityRotationsPerSec.setUpdateFrequency(1 / kDt);
         _steeringPositionRotations.setUpdateFrequency(1 / kDt);
-
+        
         _signals = new BaseStatusSignal[4];
         _signals[0] = _driveVelocityRotationsPerSec;
         _signals[1] = _drivePositionRotations;
@@ -228,10 +223,6 @@ public class SwerveModule {
         _steeringMotor.stopMotor();
     }
 
-    public boolean isReal(){
-        return _encoder != null;
-    }
-
     public double getEncoderAngleDouble() {
         return _encoder.getAbsolutePosition().getValue();
     }
@@ -285,38 +276,15 @@ public class SwerveModule {
     }
 
     public void updateDashboard() {
-        SmartDashboard.putNumber("/driveVoltage", _driveMotor.getSupplyVoltage().getValue());
         SmartDashboard.putNumber("/moduleAngle", getEncoderAngleDouble());
-        SmartDashboard.putNumber("/wheelVelocity", getWheelVelocity());
         SmartDashboard.putNumber("/driveRPM", getDriveRPM());
+        SmartDashboard.putNumber("/wheelVelocity", getWheelVelocity());
         SmartDashboard.putNumber("/wheelAngularVelocity", getWheelAngularVelocity());
         SmartDashboard.putNumber("/driveVoltage", _driveMotor.getSupplyVoltage().getValue());
         SmartDashboard.putNumber("/steerVoltage", _steeringMotor.getSupplyVoltage().getValue());
         SmartDashboard.putBoolean("/isLowGear", _isLowGear);
-        // SmartDashboard.putNumber(_name + "/leftNextCurrent", getLeftNextCurrent());
-        // SmartDashboard.putNumber(_name + "/rightNextCurrent", getRightNextCurrent());
         SmartDashboard.putNumber("/driveSupplyCurrent", _driveMotor.getSupplyCurrent().getValue());
         SmartDashboard.putNumber("/steerSupplyCurrent", _steeringMotor.getSupplyCurrent().getValue());
-        // SmartDashboard.putNumber(_name + "/leftStatorCurrent", getLeftCurrent());
-        // SmartDashboard.putNumber(_name + "/rightStatorCurrent", getRightCurrent());
-        // SmartDashboard.putNumber(_name + "/referenceAngleGoal",
-        // getReferenceModuleAngle());
-        // SmartDashboard.putNumber(_name + "/moduleAngle", getModuleAngle());
-        // SmartDashboard.putNumber(_name + "/moduleAngleABS", getABSEncoderAngle());
-
-        // SmartDashboard.putNumber(_name + "/moduleAngVel",
-        // getAzimuthAngularVelocity());
-
-        // SmartDashboard.putNumber(_name + "/velocityWheel", getWheelVelocity());
-        // SmartDashboard.putNumber(_name + "/referenceWheelVelocity",
-        // getReferenceWheelVelocity());
-        
-        // SmartDashboard.putString(_name + "/KMatrix",
-        // _moduleControlLoop.getController().getK().toString());
-        
-        // SmartDashboard.putNumber(_name + "/estimatedModuleAngle",
-        // getPredictedAzimuthAngle());
-        // SmartDashboard.putString(_name + "/refernce", _reference.toString());
     }
 
     public static class ModuleConfiguration {
@@ -328,9 +296,6 @@ public class SwerveModule {
         public boolean encoderInverted = false;
 
         public String canBus = "CANivore";
-
-        public double servoShiftUpAngle = 90; // degrees
-        public double servoShiftDownAngle = 72; //degrees
     }
 
     // public enum ControlState {

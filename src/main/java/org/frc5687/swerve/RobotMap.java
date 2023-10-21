@@ -13,14 +13,14 @@ public class RobotMap {
     public static class CAN {
 
         public static class TALONFX {
-            public static final int NORTH_WEST_ROTATION = 30;
-            public static final int NORTH_WEST_TRANSLATION = 31;
-            public static final int NORTH_EAST_ROTATION = 7;
-            public static final int NORTH_EAST_TRANSLATION = 8;
-            public static final int SOUTH_EAST_ROTATION = 3;
-            public static final int SOUTH_EAST_TRANSLATION = 4;
-            public static final int SOUTH_WEST_ROTATION = 35;
-            public static final int SOUTH_WEST_TRANSLATION = 34;
+            public static final int NORTH_WEST_ROTATION = 0;
+            public static final int NORTH_WEST_TRANSLATION = 1;
+            public static final int NORTH_EAST_ROTATION = 2;
+            public static final int NORTH_EAST_TRANSLATION = 3;
+            public static final int SOUTH_EAST_ROTATION = 4;
+            public static final int SOUTH_EAST_TRANSLATION = 5;
+            public static final int SOUTH_WEST_ROTATION = 6;
+            public static final int SOUTH_WEST_TRANSLATION = 7;
             
             public static final int ARM = 9;
             public static final int EXT_ARM = 12;
@@ -29,14 +29,14 @@ public class RobotMap {
         }
 
         public static class CANCODER {
-        public static final int ENCODER_NE = 0;
-        public static final int ENCODER_NW = 1; 
-        public static final int ENCODER_SE = 2; 
-        public static final int ENCODER_SW = 3; 
+            public static final int ENCODER_NW = 0; 
+            public static final int ENCODER_SE = 1; //1
+            public static final int ENCODER_SW = 2; 
+            public static final int ENCODER_NE = 3;
         }
 
         public static class PIGEON {
-            public static final int PIGEON = 20;
+            public static final int PIGEON = 0;
         }
 
         public static class CANDLE {

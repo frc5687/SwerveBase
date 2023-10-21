@@ -2,10 +2,6 @@ package org.frc5687.swerve.subsystems;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
-import org.frc5687.swerve.subsystems.OutliersSubsystem;
-import org.frc5687.swerve.util.Helpers;
 import org.frc5687.swerve.util.OutliersContainer;
 
 public class TestyModule extends OutliersSubsystem {
@@ -22,7 +18,6 @@ public class TestyModule extends OutliersSubsystem {
 
     public void shiftUp(){
         _module.shiftUp();
-        // System.out.println("SHIFTING UP!!!");
     }
 
     public void shiftDown(){

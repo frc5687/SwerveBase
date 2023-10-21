@@ -51,7 +51,6 @@ public class Constants {
           public static final String CAN_BUS = "CANivore";
         public static final int NUM_MODULES = 4;
 
-        public static final double CAN_OFFSET = 0.0;
         public static final double kDt = 0.005;
         public static final OutliersTalon.Configuration CONFIG = new OutliersTalon.Configuration();
         public static final OutliersTalon.Configuration STEER_CONFIG = new OutliersTalon.Configuration();
@@ -212,7 +211,7 @@ public class Constants {
             NORTH_WEST_CONFIG.position = new Translation2d(SWERVE_NS_POS, SWERVE_WE_POS); // +,+
 
             NORTH_WEST_CONFIG.encoderInverted = false;
-            NORTH_WEST_CONFIG.encoderOffset = -0.07617;
+            NORTH_WEST_CONFIG.encoderOffset = -0.1033;
         }
 
         public static final ModuleConfiguration SOUTH_WEST_CONFIG =
@@ -224,7 +223,7 @@ public class Constants {
             SOUTH_WEST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, SWERVE_WE_POS); // -,+
 
             SOUTH_WEST_CONFIG.encoderInverted = false;
-            SOUTH_WEST_CONFIG.encoderOffset = -0.1624;
+            SOUTH_WEST_CONFIG.encoderOffset = 0.0559;
         }
 
         public static final ModuleConfiguration SOUTH_EAST_CONFIG =
@@ -236,7 +235,7 @@ public class Constants {
             SOUTH_EAST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, -SWERVE_WE_POS); // -,-
 
             SOUTH_EAST_CONFIG.encoderInverted = false;
-            SOUTH_EAST_CONFIG.encoderOffset = -0.05523;
+            SOUTH_EAST_CONFIG.encoderOffset = -0.1797;
         }
 
         public static final ModuleConfiguration NORTH_EAST_CONFIG =
@@ -248,7 +247,7 @@ public class Constants {
             NORTH_EAST_CONFIG.position = new Translation2d(SWERVE_NS_POS, -SWERVE_WE_POS); // +,-
 
             NORTH_EAST_CONFIG.encoderInverted = false;
-            NORTH_EAST_CONFIG.encoderOffset = -0.0575;
+            NORTH_EAST_CONFIG.encoderOffset = -0.0083;
         }
         
     

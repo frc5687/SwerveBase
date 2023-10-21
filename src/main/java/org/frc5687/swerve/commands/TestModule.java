@@ -1,12 +1,7 @@
 package org.frc5687.swerve.commands;
 
 import org.frc5687.swerve.OI;
-import org.frc5687.swerve.subsystems.SwerveModule;
 import org.frc5687.swerve.subsystems.TestyModule;
-import org.frc5687.swerve.util.Helpers;
-
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
 
 public class TestModule extends OutliersCommand{
     private TestyModule _module;
