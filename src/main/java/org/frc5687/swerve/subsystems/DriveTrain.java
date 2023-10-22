@@ -49,10 +49,10 @@ import org.frc5687.lib.swerve.SwerveSetpointGenerator.KinematicLimits;
 public class DriveTrain extends OutliersSubsystem {
     // Order we define swerve modules in kinematics
     public static final Transform2d offset = new Transform2d(new Translation2d(-0.0, 0), new Rotation2d());
-    private static final int NORTH_EAST_IDX = 0;
-    private static final int SOUTH_EAST_IDX = 1;
-    private static final int SOUTH_WEST_IDX = 2;
-    private static final int NORTH_WEST_IDX = 3;
+    private static final int NORTH_WEST_IDX = 0;
+    private static final int SOUTH_WEST_IDX = 1;
+    private static final int SOUTH_EAST_IDX = 2;
+    private static final int NORTH_EAST_IDX = 3;
     private final SwerveModule[] _modules;
     private final SwerveDriveKinematics _kinematics;
     private final SwerveDriveOdometry _odometry;

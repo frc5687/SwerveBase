@@ -16,6 +16,7 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -89,6 +90,7 @@ public class SwerveModule {
         // set units of the CANCoder to radians, with velocity being radians per second
         CANfig.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
         CANfig.MagnetSensor.MagnetOffset = -config.encoderOffset;
+        CANfig.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
         _encoder.getConfigurator().apply(CANfig);
 
         FeedbackConfigs feedback = new FeedbackConfigs();
@@ -178,10 +180,10 @@ public class SwerveModule {
                 * (_isLowGear ? Constants.SwerveModule.GEAR_RATIO_DRIVE_LOW
                         : Constants.SwerveModule.GEAR_RATIO_DRIVE_HIGH) * _rotPerMet;
         double position = state.angle.getRotations();
-        _driveMotor.setControl(_velocityTorqueCurrentFOC.withVelocity(speed)); // jitters
+        _driveMotor.setControl(_velocityTorqueCurrentFOC.withVelocity(-speed)); // jitters
         // _driveMotor.setPercentOutput(0.5); // works without jitter
         _steeringMotor.setPositionVoltage(position);
-        SmartDashboard.putNumber("/wantedSpeed", speed);
+        SmartDashboard.putNumber("/wantedSpeed", -speed);
         SmartDashboard.putNumber("/actualSpeed", _driveMotor.getVelocity().getValue());
         SmartDashboard.putNumber("/wantedPosition", position);
         SmartDashboard.putNumber("/stateSpeedMPS", state.speedMetersPerSecond);

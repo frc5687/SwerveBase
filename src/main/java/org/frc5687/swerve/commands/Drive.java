@@ -57,22 +57,22 @@ public class Drive extends OutliersCommand {
             _driveTrain.setHeadingControllerState(SwerveHeadingController.HeadingState.OFF);
             _lockHeading = false;
         }
-        if (_oi.shiftOverride()){
-            if (isOverride){
-                isOverride = false;
-            } else if(! isOverride){
-                isOverride = true;
-            }
-        }
+        // if (_oi.shiftOverride()){
+        //     if (isOverride){
+        //         isOverride = false;
+        //     } else if(! isOverride){
+        //         isOverride = true;
+        //     }
+        // }
         if (_oi.shiftUp()){
             _driveTrain.shiftUpModules();
         }
         if (_oi.shiftDown()){
             _driveTrain.shiftDownModules();
         }
-        if (! isOverride){
-            _driveTrain.autoShifter();
-        }
+        // if (! isOverride){
+        //     _driveTrain.autoShifter();
+        // }
         // driveX and driveY are swapped due to coordinate system that WPILib uses.
         Vector2d vec =
                 Helpers.axisToSegmentedUnitCircleRadians(
@@ -153,6 +153,7 @@ public class Drive extends OutliersCommand {
         _driveTrain.setVelocity(
                 ChassisSpeeds.fromFieldRelativeSpeeds(
                         vx, vy, rot + controllerPower, _driveTrain.getHeading()));
+        
         // _driveTrain.driveFieldCentric(ChassisSpeeds.fromFieldRelativeSpeeds(vx, vy, rot + controllerPower, _driveTrain.getHeading()));
         // }
     }
