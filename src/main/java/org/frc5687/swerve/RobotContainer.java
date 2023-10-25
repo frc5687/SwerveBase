@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 import org.frc5687.swerve.commands.Drive;
 import org.frc5687.swerve.commands.OutliersCommand;
+import org.frc5687.swerve.commands.TestModule;
 import org.frc5687.swerve.subsystems.*;
 import org.frc5687.swerve.util.*;
 // import org.frc5687.lib.vision.VisionProcessor;
@@ -54,6 +55,16 @@ public class RobotContainer extends OutliersContainer {
         _driveTrain = new DriveTrain(this, _imu);
 
         setDefaultCommand(_driveTrain, new Drive(_driveTrain, _oi));
+
+        // _module = new TestyModule(this, new SwerveModule(
+        //     Constants.DriveTrain.SOUTH_WEST_CONFIG,
+        //     RobotMap.CAN.TALONFX.SOUTH_WEST_ROTATION,
+        //     RobotMap.CAN.TALONFX.SOUTH_WEST_TRANSLATION, 
+        //     0, 
+        //     RobotMap.CAN.CANCODER.ENCODER_SW
+        // ));
+
+        // setDefaultCommand(_module, new TestModule(_module, _oi));
 
         _oi.initializeButtons(_driveTrain);
 

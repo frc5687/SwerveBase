@@ -358,8 +358,9 @@ public class DriveTrain extends OutliersSubsystem {
 
     public void setModuleStates(SwerveModuleState[] states) {
         for (int module = 0; module < _modules.length; module++) {
-            _modules[module].setIdealState(states[module]);
+            _modules[module].setModuleState(states[module]);
         }
+        // _modules[0].setIdealState(states[0]);
     }
 
     public void shiftUpModules(){
@@ -592,10 +593,18 @@ public class DriveTrain extends OutliersSubsystem {
         metric("Pitch Angle", getPitch());
         metric("Estimated X", _systemIO.estimatedPose.getX());
         metric("Estimated Y", _systemIO.estimatedPose.getY());
-        metric("NW Angle Rot", _modules[0].getCanCoderAngle().getRotations());
-        metric("SW Angle Rot", _modules[1].getCanCoderAngle().getRotations());
-        metric("SE Angle Rot", _modules[2].getCanCoderAngle().getRotations());
-        metric("NE Angle Rot", _modules[3].getCanCoderAngle().getRotations());
+        metric("NW Angle", _modules[0].getCanCoderAngle().getRadians());
+        metric("SW Angle", _modules[1].getCanCoderAngle().getRadians());
+        metric("SE Angle", _modules[2].getCanCoderAngle().getRadians());
+        metric("NE Angle", _modules[3].getCanCoderAngle().getRadians());
+        metric("NW AngleRot", _modules[0].getCanCoderAngle().getRotations());
+        metric("SW AngleRot", _modules[1].getCanCoderAngle().getRotations());
+        metric("SE AngleRot", _modules[2].getCanCoderAngle().getRotations());
+        metric("NE AngleRot", _modules[3].getCanCoderAngle().getRotations());
+        metric("NW Angle Wanted", _systemIO.setpoint.moduleStates[0].angle.getRadians());
+        metric("SW Angle Wanted", _systemIO.setpoint.moduleStates[1].angle.getRadians());
+        metric("SE Angle Wanted", _systemIO.setpoint.moduleStates[2].angle.getRadians());
+        metric("NE Angle Wanted", _systemIO.setpoint.moduleStates[3].angle.getRadians());
         metric("NW Velocity", _modules[0].getWheelVelocity());
         metric("SW Velocity", _modules[1].getWheelVelocity());
         metric("SE Velocity", _modules[2].getWheelVelocity());

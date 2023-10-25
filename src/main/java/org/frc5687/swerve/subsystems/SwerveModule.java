@@ -55,7 +55,6 @@ public class SwerveModule {
 
     private SwerveModulePosition _internalState = new SwerveModulePosition();
 
-
     private double _rotPerMet;
     private double _gearRatio;
     private double _metPerRot;
@@ -89,8 +88,8 @@ public class SwerveModule {
         CANcoderConfiguration CANfig = new CANcoderConfiguration();
         // set units of the CANCoder to radians, with velocity being radians per second
         CANfig.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
-        CANfig.MagnetSensor.MagnetOffset = -config.encoderOffset;
-        CANfig.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
+        CANfig.MagnetSensor.MagnetOffset = config.encoderOffset;
+        CANfig.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
         _encoder.getConfigurator().apply(CANfig);
 
         FeedbackConfigs feedback = new FeedbackConfigs();

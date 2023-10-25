@@ -84,7 +84,7 @@ public class Constants {
             STEER_CONFIG.TIME_OUT = 0.1;
 
             STEER_CONFIG.NEUTRAL_MODE = NeutralModeValue.Brake;
-            STEER_CONFIG.INVERTED = InvertedValue.Clockwise_Positive;
+            STEER_CONFIG.INVERTED = InvertedValue.CounterClockwise_Positive;
 
             STEER_CONFIG.MAX_VOLTAGE = 12.0;
 
@@ -211,7 +211,7 @@ public class Constants {
             NORTH_WEST_CONFIG.position = new Translation2d(SWERVE_NS_POS, SWERVE_WE_POS); // +,+
 
             NORTH_WEST_CONFIG.encoderInverted = false;
-            NORTH_WEST_CONFIG.encoderOffset = -0.1033;
+            NORTH_WEST_CONFIG.encoderOffset = -0.010010;
         }
 
         public static final ModuleConfiguration SOUTH_WEST_CONFIG =
@@ -223,7 +223,7 @@ public class Constants {
             SOUTH_WEST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, SWERVE_WE_POS); // -,+
 
             SOUTH_WEST_CONFIG.encoderInverted = false;
-            SOUTH_WEST_CONFIG.encoderOffset = 0.0559;
+            SOUTH_WEST_CONFIG.encoderOffset = 0.122314;
         }
 
         public static final ModuleConfiguration SOUTH_EAST_CONFIG =
@@ -235,7 +235,7 @@ public class Constants {
             SOUTH_EAST_CONFIG.position = new Translation2d(-SWERVE_NS_POS, -SWERVE_WE_POS); // -,-
 
             SOUTH_EAST_CONFIG.encoderInverted = false;
-            SOUTH_EAST_CONFIG.encoderOffset = -0.1797;
+            SOUTH_EAST_CONFIG.encoderOffset = -0.105225;
         }
 
         public static final ModuleConfiguration NORTH_EAST_CONFIG =
@@ -247,7 +247,7 @@ public class Constants {
             NORTH_EAST_CONFIG.position = new Translation2d(SWERVE_NS_POS, -SWERVE_WE_POS); // +,-
 
             NORTH_EAST_CONFIG.encoderInverted = false;
-            NORTH_EAST_CONFIG.encoderOffset = -0.0083;
+            NORTH_EAST_CONFIG.encoderOffset = 0.009766;
         }
         
     
