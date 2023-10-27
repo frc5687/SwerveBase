@@ -34,7 +34,6 @@ public class SwerveModule {
 
     private final OutliersTalon _driveMotor;
     private final OutliersTalon _steeringMotor;
-    private final Servo _shiftMotor;
     private final CANcoder _encoder;
 
     private boolean _isLowGear;
@@ -59,19 +58,14 @@ public class SwerveModule {
     private double _gearRatio;
     private double _metPerRot;
 
-    private double _shiftUpAngle;
-    private double _shiftDownAngle;
-
     public SwerveModule(
             SwerveModule.ModuleConfiguration config,
             int steeringMotorID,
             int driveMotorID,
-            int shiftMotorID,
             int encoderPort) {
 
         _driveMotor = new OutliersTalon(driveMotorID, config.canBus, "Drive");
         _steeringMotor = new OutliersTalon(steeringMotorID, config.canBus, "Steer");
-        _shiftMotor = new Servo(shiftMotorID);
 
         _driveMotor.configure(Constants.SwerveModule.CONFIG);
         _steeringMotor.configure(Constants.SwerveModule.STEER_CONFIG);
@@ -98,9 +92,8 @@ public class SwerveModule {
         feedback.RotorToSensorRatio = Constants.SwerveModule.GEAR_RATIO_STEER;
         _steeringMotor.configureFeedback(feedback);
 
-
         _metPerRot = 2 * Math.PI * Constants.SwerveModule.WHEEL_RADIUS;
-        _rotPerMet = 1/_metPerRot;
+        _rotPerMet = 1 / _metPerRot;
 
         _positionVector = config.position;
 
@@ -114,7 +107,7 @@ public class SwerveModule {
 
         _steeringVelocityRotationsPerSec.setUpdateFrequency(1 / kDt);
         _steeringPositionRotations.setUpdateFrequency(1 / kDt);
-        
+
         _signals = new BaseStatusSignal[4];
         _signals[0] = _driveVelocityRotationsPerSec;
         _signals[1] = _drivePositionRotations;
@@ -134,10 +127,10 @@ public class SwerveModule {
         }
 
         /* Now latency-compensate our signals */
-        double drive_rot =
-            BaseStatusSignal.getLatencyCompensatedValue(_drivePositionRotations, _driveVelocityRotationsPerSec);
-        double angle_rot =
-            BaseStatusSignal.getLatencyCompensatedValue(_steeringPositionRotations, _steeringVelocityRotationsPerSec);
+        double drive_rot = BaseStatusSignal.getLatencyCompensatedValue(_drivePositionRotations,
+                _driveVelocityRotationsPerSec);
+        double angle_rot = BaseStatusSignal.getLatencyCompensatedValue(_steeringPositionRotations,
+                _steeringVelocityRotationsPerSec);
 
         /* And push them into a SwerveModuleState object to return */
         _internalState.distanceMeters = drive_rot / _rotPerMet;
@@ -173,11 +166,13 @@ public class SwerveModule {
     }
 
     public void setModuleState(SwerveModuleState state) {
-        // SwerveModuleState optimized = SwerveModuleState.optimize(state, _internalState.angle);
+        // SwerveModuleState optimized = SwerveModuleState.optimize(state,
+        // _internalState.angle);
 
-        double speed = state.speedMetersPerSecond 
+        double speed = state.speedMetersPerSecond
                 * (_isLowGear ? Constants.SwerveModule.GEAR_RATIO_DRIVE_LOW
-                        : Constants.SwerveModule.GEAR_RATIO_DRIVE_HIGH) * _rotPerMet;
+                        : Constants.SwerveModule.GEAR_RATIO_DRIVE_HIGH)
+                * _rotPerMet;
         double position = state.angle.getRotations();
         _driveMotor.setControl(_velocityTorqueCurrentFOC.withVelocity(-speed)); // jitters
         // _driveMotor.setPercentOutput(0.5); // works without jitter
@@ -204,21 +199,6 @@ public class SwerveModule {
         return (getDriveMotorVoltage() + getSteeringMotorVoltage());
     }
 
-    public void shiftUp() {
-        _shiftMotor.setAngle(_shiftUpAngle);
-        // _shiftMotor.set(1);
-        _velocityTorqueCurrentFOC = _velocityTorqueCurrentFOC.withSlot(1);
-        _isLowGear = false;
-        System.out.println("SHIFTING UP GOSH DARN IT!!!!! >:(");
-    }
-
-    public void shiftDown() {
-        _shiftMotor.setAngle(_shiftDownAngle);
-        // _shiftMotor.set(0);
-        _velocityTorqueCurrentFOC = _velocityTorqueCurrentFOC.withSlot(0);
-        _isLowGear = true;
-    }
-
     public void stopAll() {
         _driveMotor.stopMotor();
         _steeringMotor.stopMotor();
@@ -229,7 +209,7 @@ public class SwerveModule {
     }
 
     public Rotation2d getCanCoderAngle() {
-        if (_encoder == null){
+        if (_encoder == null) {
             return Rotation2d.fromDegrees(0);
         } else {
             return Rotation2d.fromRotations(_encoder.getAbsolutePosition().getValue());
