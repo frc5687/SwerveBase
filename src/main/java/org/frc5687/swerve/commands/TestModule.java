@@ -23,12 +23,13 @@ public class TestModule extends OutliersCommand{
     public void execute() {
         _module.testModule(_oi.getDriveX(), _oi.getDriveY());
 
-        if (_oi.shiftUp()) {
-            _module.shiftUp();
-        }
+        //FIXME find a way to implement pneumatic shifting for one module
+        // if (_oi.shiftUp()) {
+        //     _module.shiftUp();
+        // }
 
-        if (_oi.shiftDown()) {
-            _module.shiftDown();
-        }
+        // if (_oi.shiftDown()) {
+        //     _module.shiftDown();
+        // }
     }
 }
